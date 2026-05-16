@@ -7,7 +7,9 @@ const JWT_SECRET = process.env.JWT_SECRET || 'lule-mashhad-jwt-secret-2024';
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password } = await request.json();
+    const body = await request.json();
+    const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
+    const password = typeof body.password === 'string' ? body.password : '';
 
     if (!email || !password) {
       return NextResponse.json(
