@@ -1,26 +1,704 @@
 @import "tailwindcss";
 
+/* ─── CSS CUSTOM PROPERTIES ─────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Brand colors - dynamic accent system */
+  --accent-h: 38;          /* hue   - amber default */
+  --accent-s: 92%;         /* sat   */
+  --accent-l: 50%;         /* light */
+  
+  --accent:          hsl(var(--accent-h), var(--accent-s), var(--accent-l));
+  --accent-hover:    hsl(var(--accent-h), var(--accent-s), calc(var(--accent-l) - 8%));
+  --accent-light:    hsl(var(--accent-h), var(--accent-s), 95%);
+  --accent-foreground: #0F172A;
+  --accent-rgb: 245, 158, 11;
+
+  /* Layout */
+  --background:      #ffffff;
+  --foreground:      #0F172A;
+  --card:            #F8FAFC;
+  --card-foreground: #0F172A;
+  --muted:           #F1F5F9;
+  --muted-foreground:#64748B;
+  --border:          #E2E8F0;
+  --input:           #F8FAFC;
+  --ring:            var(--accent);
+  --destructive:     #EF4444;
+  --success:         #10B981;
+  --warning:         #F59E0B;
+
+  /* Typography */
+  --font-sans: 'Vazirmatn', 'Tahoma', system-ui, sans-serif;
+  --font-mono: 'Courier New', monospace;
+
+  /* Spacing */
+  --nav-height: 72px;
+  --section-py: 5rem;
+  --container-px: 1.5rem;
+  --radius-sm:  0.5rem;
+  --radius:     0.75rem;
+  --radius-lg:  1rem;
+  --radius-xl:  1.5rem;
+  --radius-2xl: 2rem;
+
+  /* Shadows */
+  --shadow-sm:  0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow:     0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg:  0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl:  0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-accent: 0 8px 24px -4px rgba(var(--accent-rgb), 0.35);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ─── DARK MODE ──────────────────────────────────────────────────── */
+.dark {
+  --accent-light:    hsl(var(--accent-h), var(--accent-s), 15%);
+  --accent-foreground: #ffffff;
+
+  --background:      #080F1A;
+  --foreground:      #F1F5F9;
+  --card:            #0D1526;
+  --card-foreground: #F1F5F9;
+  --muted:           #1E293B;
+  --muted-foreground:#94A3B8;
+  --border:          #1E293B;
+  --input:           #0D1526;
+
+  --shadow-sm:  0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow:     0 4px 6px -1px rgb(0 0 0 / 0.4);
+  --shadow-lg:  0 10px 15px -3px rgb(0 0 0 / 0.5);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ─── PRESET THEME COLORS ────────────────────────────────────────── */
+[data-theme-color="blue"]   { --accent-h: 217; --accent-s: 91%; --accent-l: 60%; --accent-rgb: 59, 130, 246; }
+[data-theme-color="green"]  { --accent-h: 142; --accent-s: 71%; --accent-l: 45%; --accent-rgb: 34, 197, 94; }
+[data-theme-color="red"]    { --accent-h: 0;   --accent-s: 84%; --accent-l: 60%; --accent-rgb: 239, 68, 68; }
+[data-theme-color="purple"] { --accent-h: 262; --accent-s: 83%; --accent-l: 58%; --accent-rgb: 139, 92, 246; }
+[data-theme-color="teal"]   { --accent-h: 174; --accent-s: 77%; --accent-l: 37%; --accent-rgb: 20, 184, 166; }
+[data-theme-color="amber"]  { --accent-h: 38;  --accent-s: 92%; --accent-l: 50%; --accent-rgb: 245, 158, 11; }
+[data-theme-color="indigo"] { --accent-h: 239; --accent-s: 84%; --accent-l: 67%; --accent-rgb: 99, 102, 241; }
+[data-theme-color="rose"]   { --accent-h: 350; --accent-s: 89%; --accent-l: 60%; --accent-rgb: 244, 63, 94; }
+
+/* ─── RESET & BASE ───────────────────────────────────────────────── */
+/*
+ * Must stay inside @layer base — an unlayered * { padding:0 } reset
+ * overrides ALL Tailwind spacing utilities (px-*, py-*, gap-*, m-*).
+ */
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  input:focus,
+  input:focus-visible,
+  textarea:focus,
+  textarea:focus-visible,
+  select:focus,
+  select:focus-visible {
+    outline: none;
+    outline-offset: 0;
+    box-shadow: none;
   }
 }
 
+html {
+  direction: rtl;
+  scroll-behavior: smooth;
+  scroll-padding-top: var(--nav-height);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ─── TYPOGRAPHY ─────────────────────────────────────────────────── */
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--foreground);
+    text-align: right;
+  }
+
+  p {
+    line-height: 1.85;
+    color: var(--foreground);
+    text-align: right;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  button {
+    font-family: var(--font-sans);
+    cursor: pointer;
+  }
+}
+
+/* Dark cards / CTA bands — readable text on navy/slate backgrounds */
+@layer components {
+  .surface-dark {
+    color: #f1f5f9;
+  }
+
+  .surface-dark :is(h1, h2, h3, h4, h5, h6) {
+    color: #ffffff;
+  }
+
+  .surface-dark p,
+  .surface-dark .text-muted-on-dark {
+    color: #cbd5e1;
+  }
+
+  .surface-dark a {
+    color: #cbd5e1;
+  }
+
+  .surface-dark a:hover {
+    color: var(--accent);
+  }
+
+  /* Theme-aware accents (follow admin color picker / data-theme-color) */
+  .text-theme-accent {
+    color: var(--accent);
+  }
+
+  .bg-theme-accent {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+  }
+
+  .bg-theme-accent-soft {
+    background-color: color-mix(in srgb, var(--accent) 12%, transparent);
+  }
+
+  .border-theme-accent {
+    border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+  }
+
+  .badge-featured {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+    font-weight: 700;
+  }
+
+  .icon-star {
+    color: var(--accent);
+    fill: var(--accent);
+  }
+
+  .btn-accent {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+    box-shadow: var(--shadow-accent);
+  }
+
+  .btn-accent:hover {
+    background-color: var(--accent-hover);
+  }
+
+  .btn-accent-outline {
+    border: 2px solid color-mix(in srgb, var(--accent) 50%, transparent);
+  }
+
+  .btn-accent-outline:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+}
+
+/* ─── SCROLLBAR ──────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--muted); }
+::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent-hover); }
+
+/* ─── SELECTION ──────────────────────────────────────────────────── */
+::selection {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+/* ─── FOCUS (links & buttons only — not form fields) ─────────────── */
+:focus-visible:not(input):not(textarea):not(select):not([role="combobox"]) {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ─── LAYOUT UTILITIES ───────────────────────────────────────────── */
+.container-main {
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+@media (min-width: 640px)  { .container-main { padding-inline: 2rem; } }
+@media (min-width: 1024px) { .container-main { padding-inline: 2.5rem; } }
+@media (min-width: 1280px) { .container-main { padding-inline: 3rem; } }
+
+/* ─── GLASS MORPHISM ─────────────────────────────────────────────── */
+.glass {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.dark .glass {
+  background: rgba(13, 21, 38, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+}
+
+.dark .glass-card {
+  background: rgba(13, 21, 38, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+/* ─── GRADIENT EFFECTS ───────────────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-cool {
+  background: linear-gradient(135deg, #3B82F6, #06B6D4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── SHADOWS ────────────────────────────────────────────────────── */
+.shadow-accent {
+  box-shadow: var(--shadow-accent);
+}
+
+/* ─── NOISE TEXTURE ──────────────────────────────────────────────── */
+.noise::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  opacity: 0.03;
+}
+
+/* ─── ANIMATIONS ─────────────────────────────────────────────────── */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-12px); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.3); }
+  50%       { box-shadow: 0 0 28px rgba(var(--accent-rgb), 0.65); }
+}
+
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes wave {
+  0%, 100% { transform: scaleY(1); }
+  50%       { transform: scaleY(1.4); }
+}
+
+@keyframes blob {
+  0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+  50%       { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+}
+
+@keyframes borderRotate {
+  from { --angle: 0deg; }
+  to   { --angle: 360deg; }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.animate-float        { animation: float 5s ease-in-out infinite; }
+.animate-pulse-glow   { animation: pulse-glow 2.5s ease-in-out infinite; }
+.animate-shimmer      { animation: shimmer 2s linear infinite; }
+.animate-spin-slow    { animation: spin-slow 20s linear infinite; }
+.animate-blob         { animation: blob 8s ease-in-out infinite; }
+.animate-slide-up     { animation: slide-up 0.6s ease-out forwards; }
+.animate-fade-in      { animation: fade-in 0.5s ease-out forwards; }
+
+/* ─── SKELETON ───────────────────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--muted) 25%,
+    var(--border) 50%,
+    var(--muted) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--radius);
+}
+
+/* ─── RTL SPECIFIC FIXES ─────────────────────────────────────────── */
+[dir="rtl"] .rtl-flip { transform: scaleX(-1); }
+
+/* Navigation arrows in RTL: right-pointing = "back/previous" */
+.rtl-arrow-forward { transform: rotate(180deg); }
+
+/* Ensure Tailwind's text-left/right work correctly in RTL context */
+.text-start { text-align: right !important; }
+.text-end   { text-align: left  !important; }
+
+/* ─── SECTION DIVIDER ────────────────────────────────────────────── */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(
+    to left,
+    transparent,
+    var(--border) 20%,
+    var(--border) 80%,
+    transparent
+  );
+}
+
+/* ─── CARD BASE ──────────────────────────────────────────────────── */
+.card-base {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.card-base:hover {
+  border-color: rgba(var(--accent-rgb), 0.4);
+  box-shadow: var(--shadow-lg);
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl), 0 0 0 1px rgba(var(--accent-rgb), 0.1);
+}
+
+/* ─── BUTTON BASE ────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  user-select: none;
+  text-decoration: none;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-foreground);
+  box-shadow: var(--shadow-accent);
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px -4px rgba(var(--accent-rgb), 0.45);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--accent);
+  border: 2px solid var(--accent);
+}
+
+.btn-outline:hover {
+  background: var(--accent);
+  color: var(--accent-foreground);
+  transform: translateY(-2px);
+}
+
+/* ─── FORM ELEMENTS ──────────────────────────────────────────────── */
+input, textarea, select {
+  font-family: var(--font-sans);
+  direction: rtl;
+  text-align: right;
+}
+
+/* ─── PROSE RTL ──────────────────────────────────────────────────── */
+.prose-rtl {
+  direction: rtl;
+  text-align: right;
+}
+
+.prose-rtl h1, .prose-rtl h2, .prose-rtl h3,
+.prose-rtl h4, .prose-rtl h5, .prose-rtl h6 {
+  text-align: right;
+}
+
+.prose-rtl ul, .prose-rtl ol {
+  padding-right: 1.5rem;
+  padding-left: 0;
+}
+
+/* ─── BADGE ──────────────────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-accent {
+  background: rgba(var(--accent-rgb), 0.12);
+  color: var(--accent);
+}
+
+/* ─── GLOW EFFECTS (legacy compat) ──────────────────────────────── */
+.glow-accent    { box-shadow: 0 0 30px rgba(var(--accent-rgb), 0.3); }
+.glow-accent-sm { box-shadow: 0 0 15px rgba(var(--accent-rgb), 0.2); }
+
+/* ─── ACCENT UTILITIES ───────────────────────────────────────────── */
+.bg-accent         { background-color: var(--accent); }
+.text-accent       { color: var(--accent); }
+.border-accent     { border-color: var(--accent); }
+.bg-accent-light   { background-color: var(--accent-light); }
+.ring-accent       { box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.25); }
+
+/* ─── UNIFIED PAGE SPACING ───────────────────────────────────────── */
+
+/*
+ * Inner page hero banner — used at the top of every inner page (About, Contact, etc.)
+ * Main layout adds pt-[var(--nav-height)] so the hero only needs bottom padding + symmetry.
+ */
+.page-hero {
+  padding-top:    2rem;
+  padding-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+  .page-hero {
+    padding-top:    4.5rem;
+    padding-bottom: 4rem;
+  }
+}
+
+/*
+ * section-padding — consistent block padding for content sections.
+ */
+.section-padding {
+  padding-top:    3rem;
+  padding-bottom: 3rem;
+}
+
+@media (min-width: 640px) {
+  .section-padding {
+    padding-top:    4rem;
+    padding-bottom: 4rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .section-padding {
+    padding-top:    5rem;
+    padding-bottom: 5rem;
+  }
+}
+
+/* Tighter section for secondary/supporting blocks */
+.section-padding-sm {
+  padding-top:    2rem;
+  padding-bottom: 2rem;
+}
+
+@media (min-width: 640px) {
+  .section-padding-sm {
+    padding-top:    2.75rem;
+    padding-bottom: 2.75rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .section-padding-sm {
+    padding-top:    3.5rem;
+    padding-bottom: 3.5rem;
+  }
+}
+
+/* Homepage: full-bleed hero under fixed nav */
+.home-hero {
+  margin-top: calc(-1 * var(--nav-height));
+  padding-top: var(--nav-height);
+  min-height: auto;
+}
+
+@media (min-width: 640px) {
+  .home-hero {
+    min-height: 100svh;
+  }
+}
+
+/* Homepage section rhythm (slightly tighter than inner pages) */
+.home-section {
+  padding-top:    2rem;
+  padding-bottom: 2rem;
+}
+
+@media (min-width: 640px) {
+  .home-section {
+    padding-top:    3.5rem;
+    padding-bottom: 3.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .home-section {
+    padding-top:    4.5rem;
+    padding-bottom: 4.5rem;
+  }
+}
+
+.home-section-compact {
+  padding-top:    2rem;
+  padding-bottom: 2rem;
+}
+
+@media (min-width: 640px) {
+  .home-section-compact {
+    padding-top:    2.5rem;
+    padding-bottom: 2.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .home-section-compact {
+    padding-top:    3rem;
+    padding-bottom: 3rem;
+  }
+}
+
+
+/* ─── SHARED INPUT STYLES ────────────────────────────────────────── */
+@layer components {
+  .input-base {
+    width: 100%;
+    background: var(--input);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.625rem 0.875rem;
+    font-size: 0.9375rem;
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    direction: rtl;
+    text-align: right;
+    outline: none;
+  }
+
+  .input-base::placeholder {
+    color: var(--muted-foreground);
+  }
+
+  .input-base:focus,
+  .input-base:focus-visible {
+    outline: none;
+    box-shadow: none;
+    border-color: var(--border);
+    border-width: 1.5px;
+  }
+
+  input[type='search'].input-base::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+  }
+
+  /* Icon / clear padding — logical props for RTL search fields */
+  .input-base--with-icon {
+    padding-inline-end: 2.75rem;
+    padding-inline-start: 0.875rem;
+  }
+
+  .input-base--with-clear {
+    padding-inline-start: 2.5rem;
+  }
+}
+
+/* ─── ADMIN SPECIFIC ─────────────────────────────────────────────── */
+@layer components {
+.admin-input {
+  width: 100%;
+  background: #1E293B;
+  border: 1.5px solid #334155;
+  border-radius: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  font-family: var(--font-sans);
+  color: #F1F5F9;
+  direction: rtl;
+  text-align: right;
+  outline: none;
+  font-size: 0.875rem;
+}
+
+.admin-input:focus,
+.admin-input:focus-visible {
+  outline: none;
+  box-shadow: none;
+  border-color: #334155;
+  border-width: 1.5px;
+}
+
+.admin-input::placeholder {
+  color: #475569;
+}
+}
+
+.admin-card {
+  background: #0F172A;
+  border: 1px solid #1E293B;
+  border-radius: 1rem;
+  padding: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .admin-card { padding: 1.75rem; }
 }
