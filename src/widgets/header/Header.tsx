@@ -100,12 +100,8 @@ export function Header() {
 
             {/* ── Logo ── */}
             <Link href="/" className="flex items-center gap-2.5 group flex-shrink-0">
-              <div className="w-9 h-9 bg-[var(--accent)] rounded-xl flex items-center justify-center shadow-md shadow-[var(--accent)]/30 group-hover:scale-105 transition-transform duration-200 flex-shrink-0">
-                <svg viewBox="0 0 20 20" fill="none" className="w-5 h-5 text-white" stroke="currentColor" strokeWidth="2">
-                  <path d="M3 10h14M3 5h14M3 15h14" strokeLinecap="round"/>
-                  <circle cx="7" cy="5" r="1.5" fill="white" stroke="none"/>
-                  <circle cx="13" cy="15" r="1.5" fill="white" stroke="none"/>
-                </svg>
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-200 flex-shrink-0">
+                <img src={'/images/logo.png'} />
               </div>
               <div className="leading-tight">
                 <div className="font-extrabold text-sm sm:text-base text-[var(--foreground)] group-hover:text-[var(--accent)] transition-colors">

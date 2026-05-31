@@ -45,23 +45,19 @@ export function Footer() {
       {/* Main Footer */}
       <div className="container-main py-10 sm:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
-          
+
           {/* Brand Column */}
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center gap-3 mb-6 group">
-              <div className="w-12 h-12 bg-[var(--accent)] rounded-xl flex items-center justify-center shadow-lg shadow-accent">
-                <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7 text-white" stroke="currentColor" strokeWidth="2">
-                  <path d="M4 12h16M4 6h16M4 18h16" strokeLinecap="round"/>
-                  <circle cx="8" cy="6" r="2" fill="white" stroke="none"/>
-                  <circle cx="16" cy="18" r="2" fill="white" stroke="none"/>
-                </svg>
+              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg shadow-accent">
+                <img src={'/images/logo.png'} />
               </div>
               <div>
                 <div className="font-bold text-xl text-white leading-tight">{siteName}</div>
                 <div className="text-xs text-slate-300">عرضه کننده لوله های دوجداره اتصالات صنعتی</div>
               </div>
             </Link>
-            
+
             <p className="text-slate-300 text-sm leading-relaxed mb-6 max-w-xs">
               {siteDescription}
             </p>
@@ -97,41 +93,41 @@ export function Footer() {
             {/* Socials */}
             <div className="flex items-center gap-3 mt-6">
               {[
-                { 
-                  href: 'https://instagram.com/luleonlinemashhad', 
+                {
+                  href: 'https://instagram.com/luleonlinemashhad',
                   icon: (
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
                       <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
                       <circle cx="12" cy="12" r="4"/>
                       <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/>
                     </svg>
-                  ), 
-                  label: 'اینستاگرام' 
+                  ),
+                  label: 'اینستاگرام'
                 },
-                { 
-                  href: 'https://t.me/luleonlinemashhad', 
-                  icon: <Send className="w-4 h-4" />, 
-                  label: 'تلگرام' 
+                {
+                  href: 'https://t.me/luleonlinemashhad',
+                  icon: <Send className="w-4 h-4" />,
+                  label: 'تلگرام'
                 },
-                { 
-                  href: whatsappUrl, 
+                {
+                  href: whatsappUrl,
                   icon: (
                     <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
                       <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
                       <path d="M12 2C6.477 2 2 6.477 2 12c0 1.759.459 3.411 1.265 4.845L2 22l5.293-1.254A9.937 9.937 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/>
                     </svg>
-                  ), 
-                  label: 'واتساپ' 
+                  ),
+                  label: 'واتساپ'
                 },
-                { 
-                  href: 'https://linkedin.com/company/luleonlinemashhad', 
+                {
+                  href: 'https://linkedin.com/company/luleonlinemashhad',
                   icon: (
                     <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
                       <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/>
                       <circle cx="4" cy="4" r="2"/>
                     </svg>
-                  ), 
-                  label: 'لینکدین' 
+                  ),
+                  label: 'لینکدین'
                 },
               ].map((social) => (
                 <a
