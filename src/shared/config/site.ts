@@ -6,7 +6,7 @@ export const siteConfig = {
   phone: '09121184970',
   mobile: '09123837505',
   email: 'atlastejaratazhand@gmail.com',
-  address:'',
+  address:' ',
   workingHours: 'شنبه تا پنجشنبه: ۸ صبح تا ۶ عصر',
   socials: {
     // instagram: 'https://instagram.com/luleonlinemashhad',

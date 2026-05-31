@@ -20,7 +20,7 @@ export const defaultSiteSettings: SiteSettings = {
   phone: siteConfig.phone,
   mobile: siteConfig.mobile,
   email: siteConfig.email,
-  address: siteConfig.address,
+  address: siteConfig?.address,
   heroTitle: 'تامین کامل لوله آب و فاضلاب',
   heroSubtitle:
     'عرضه‌کننده انواع لوله پلیکا، پلی‌اتیلن، چدن داکتیل، منهول و اتصالات آب و فاضلاب — تامین پروژه‌های شهری، صنعتی و کشاورزی در مشهد و سراسر ایران.',
