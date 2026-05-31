@@ -8,7 +8,7 @@ const footerLinks = {
   company: {
     title: 'شرکت',
     links: [
-      { href: '/about', label: 'درباره ما' },
+      // { href: '/about', label: 'درباره ما' },
       { href: '/services', label: 'خدمات ما' },
       { href: '/projects', label: 'پروژه‌ها' },
       { href: '/blog', label: 'وبلاگ' },

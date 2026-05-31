@@ -30,7 +30,7 @@ const baseNavItems = [
   },
   { href: '/services', label: 'خدمات' },
   { href: '/blog',     label: 'وبلاگ' },
-  { href: '/about',    label: 'درباره ما' },
+  // { href: '/about',    label: 'درباره ما' },
   { href: '/contact', label: 'تماس با ما' },
 ];
 

@@ -30,12 +30,12 @@ export default async function ContactPage() {
       href: `mailto:${settings.email}`,
       color: 'blue',
     },
-    {
-      icon: 'map',
-      title: 'آدرس',
-      items: [settings.address],
-      color: 'green',
-    },
+    // {
+    //   icon: 'map',
+    //   title: 'آدرس',
+    //   items: [settings.address],
+    //   color: 'green',
+    // },
     {
       icon: 'clock',
       title: 'ساعت کاری',
