@@ -38,6 +38,40 @@ const emptySettings: SettingsForm = {
   heroSubtitle: '',
 };
 
+const inputCls =
+  'w-full h-11 bg-slate-800 border border-slate-700 rounded-xl px-4 text-white placeholder:text-slate-500 focus:outline-none transition-colors';
+
+function SettingsField({
+  label,
+  type = 'text',
+  icon,
+  value,
+  onChange,
+}: {
+  label: string;
+  type?: string;
+  icon?: React.ReactNode;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <div>
+      <label className="block text-sm font-medium text-slate-300 mb-1.5">{label}</label>
+      <div className="relative">
+        {icon && (
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500">{icon}</div>
+        )}
+        <input
+          type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className={`${inputCls} ${icon ? 'pr-10' : ''}`}
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function AdminSettingsPage() {
   const [settings, setSettings] = useState<SettingsForm>(emptySettings);
   const [loading, setLoading] = useState(true);
@@ -71,6 +105,10 @@ export default function AdminSettingsPage() {
     })();
   }, []);
 
+  const updateField = (fieldKey: keyof SettingsForm) => (value: string) => {
+    setSettings((s) => ({ ...s, [fieldKey]: value }));
+  };
+
   const handleSave = async () => {
     setSaving(true);
     const payload: Record<string, string> = {};
@@ -99,40 +137,6 @@ export default function AdminSettingsPage() {
     }
   };
 
-  const inputCls =
-    'w-full h-11 bg-slate-800 border border-slate-700 rounded-xl px-4 text-white placeholder:text-slate-500 focus:outline-none transition-colors';
-
-  type SettingsKey = keyof SettingsForm;
-
-  function Field({
-    fieldKey,
-    label,
-    type = 'text',
-    icon,
-  }: {
-    fieldKey: SettingsKey;
-    label: string;
-    type?: string;
-    icon?: React.ReactNode;
-  }) {
-    return (
-      <div>
-        <label className="block text-sm font-medium text-slate-300 mb-1.5">{label}</label>
-        <div className="relative">
-          {icon && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500">{icon}</div>
-          )}
-          <input
-            type={type}
-            value={settings[fieldKey]}
-            onChange={(e) => setSettings((s) => ({ ...s, [fieldKey]: e.target.value }))}
-            className={`${inputCls} ${icon ? 'pr-10' : ''}`}
-          />
-        </div>
-      </div>
-    );
-  }
-
   if (loading) {
     return (
       <div className="flex items-center justify-center py-24 text-slate-400 gap-2">
@@ -159,10 +163,10 @@ export default function AdminSettingsPage() {
             <Globe className="w-5 h-5 text-amber-400" />
             اطلاعات عمومی
           </h2>
-          <Field fieldKey="siteName" label="نام سایت" />
-          <Field fieldKey="siteDescription" label="توضیحات سایت" />
-          <Field fieldKey="heroTitle" label="عنوان هیرو (صفحه اصلی)" />
-          <Field fieldKey="heroSubtitle" label="زیرعنوان هیرو" />
+          <SettingsField label="نام سایت" value={settings.siteName} onChange={updateField('siteName')} />
+          <SettingsField label="توضیحات سایت" value={settings.siteDescription} onChange={updateField('siteDescription')} />
+          <SettingsField label="عنوان هیرو (صفحه اصلی)" value={settings.heroTitle} onChange={updateField('heroTitle')} />
+          <SettingsField label="زیرعنوان هیرو" value={settings.heroSubtitle} onChange={updateField('heroSubtitle')} />
         </motion.div>
 
         <motion.div
@@ -175,10 +179,10 @@ export default function AdminSettingsPage() {
             <Phone className="w-5 h-5 text-amber-400" />
             اطلاعات تماس
           </h2>
-          <Field fieldKey="phone" label="تلفن" type="tel" icon={<Phone className="w-4 h-4" />} />
-          <Field fieldKey="mobile" label="موبایل" type="tel" icon={<Phone className="w-4 h-4" />} />
-          <Field fieldKey="email" label="ایمیل" type="email" icon={<Mail className="w-4 h-4" />} />
-          <Field fieldKey="address" label="آدرس" icon={<MapPin className="w-4 h-4" />} />
+          <SettingsField label="تلفن" type="tel" icon={<Phone className="w-4 h-4" />} value={settings.phone} onChange={updateField('phone')} />
+          <SettingsField label="موبایل" type="tel" icon={<Phone className="w-4 h-4" />} value={settings.mobile} onChange={updateField('mobile')} />
+          <SettingsField label="ایمیل" type="email" icon={<Mail className="w-4 h-4" />} value={settings.email} onChange={updateField('email')} />
+          <SettingsField label="آدرس" icon={<MapPin className="w-4 h-4" />} value={settings.address} onChange={updateField('address')} />
         </motion.div>
 
         <button

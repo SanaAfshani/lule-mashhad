@@ -2,27 +2,9 @@
 
 import { motion } from 'framer-motion';
 import { SectionHeading } from '@/shared/ui/SectionHeading';
-import { Truck, HeadphonesIcon, Wrench, FileText, ShieldCheck, Zap } from 'lucide-react';
+import { FileText, ShieldCheck, Zap } from 'lucide-react';
 
 const services = [
-  {
-    icon: HeadphonesIcon,
-    title: 'مشاوره تخصصی رایگان',
-    desc: 'کارشناسان با بیش از ۲۰ سال تجربه در انتخاب لوله و اتصالات مناسب برای هر پروژه راهنمایی می‌کنند.',
-    color: 'amber',
-  },
-  {
-    icon: Truck,
-    title: 'تحویل سراسر ایران',
-    desc: 'ارسال به تمام استان‌ها با بسته‌بندی ایمن. برای پروژه‌های بزرگ، حمل با ماشین‌آلات اختصاصی.',
-    color: 'blue',
-  },
-  {
-    icon: Wrench,
-    title: 'برش و سایزبندی',
-    desc: 'برش لوله در هر اندازه با دقت بالا. سرویس قلاف‌کاری (Chamfering) برای اتصال مناسب.',
-    color: 'green',
-  },
   {
     icon: FileText,
     title: 'گواهینامه کیفیت',

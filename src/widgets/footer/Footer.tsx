@@ -25,7 +25,6 @@ const footerLinks = {
       { href: '/products/cast-iron-pipes',    label: 'لوله چدن داکتیل' },
       { href: '/products/manholes',           label: 'منهول و دریچه' },
       { href: '/products/fittings',           label: 'اتصالات' },
-      { href: '/products/valves',             label: 'شیرآلات صنعتی' },
     ],
   },
   support: {
@@ -59,7 +58,7 @@ export function Footer() {
               </div>
               <div>
                 <div className="font-bold text-xl text-white leading-tight">{siteName}</div>
-                <div className="text-xs text-slate-300">تامین کننده لوله و اتصالات صنعتی</div>
+                <div className="text-xs text-slate-300">عرضه کننده لوله های دوجداره اتصالات صنعتی</div>
               </div>
             </Link>
             

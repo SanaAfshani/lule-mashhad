@@ -19,7 +19,6 @@ const defaultCategories: NavCategory[] = [
   { href: '/products/cast-iron-pipes', label: 'لوله چدن داکتیل', icon: '⚙️' },
   { href: '/products/manholes', label: 'منهول و دریچه', icon: '🔩' },
   { href: '/products/fittings', label: 'اتصالات آب و فاضلاب', icon: '🔧' },
-  { href: '/products/valves', label: 'شیرآلات صنعتی', icon: '🚰' },
 ];
 
 const baseNavItems = [
