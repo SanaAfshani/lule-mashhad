@@ -101,12 +101,18 @@ export default function AdminCategoriesPage() {
     }
   };
 
-  const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`دسته‌بندی «${name}» حذف شود؟`)) return;
+  const handleDelete = async (cat: CategoryRow) => {
+    const productCount = cat._count?.products ?? 0;
+    const message =
+      productCount > 0
+        ? `دسته‌بندی «${cat.name}» و ${productCount} محصول مرتبط حذف شوند؟ این عمل قابل بازگشت نیست.`
+        : `دسته‌بندی «${cat.name}» حذف شود؟`;
 
-    setDeletingId(id);
+    if (!confirm(message)) return;
+
+    setDeletingId(cat.id);
     try {
-      const res = await fetch(`/api/categories/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/categories/${cat.id}`, { method: 'DELETE' });
       const json = await res.json();
 
       if (!res.ok || !json.success) {
@@ -114,8 +120,12 @@ export default function AdminCategoriesPage() {
         return;
       }
 
-      toast.success('دسته‌بندی حذف شد');
-      setCategories((prev) => prev.filter((c) => c.id !== id));
+      if (json.deletedProducts > 0) {
+        toast.success(`دسته‌بندی و ${json.deletedProducts} محصول حذف شد`);
+      } else {
+        toast.success('دسته‌بندی حذف شد');
+      }
+      setCategories((prev) => prev.filter((c) => c.id !== cat.id));
     } catch {
       toast.error('خطا در ارتباط با سرور');
     } finally {
@@ -251,7 +261,7 @@ export default function AdminCategoriesPage() {
                       <button
                         type="button"
                         disabled={deletingId === cat.id}
-                        onClick={() => handleDelete(cat.id, cat.name)}
+                        onClick={() => handleDelete(cat)}
                         className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all disabled:opacity-50"
                       >
                         {deletingId === cat.id ? (

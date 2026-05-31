@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/shared/lib/prisma';
 import { hashPassword } from '@/shared/lib/auth';
+import { serverErrorResponse } from '@/shared/lib/api-errors';
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -49,8 +50,7 @@ export async function PUT(request: NextRequest, { params }: Props) {
 
     return NextResponse.json({ success: true, data: user });
   } catch (error) {
-    console.error('User PUT error:', error);
-    return NextResponse.json({ success: false, error: 'خطای سرور' }, { status: 500 });
+    return serverErrorResponse(error, 'User PUT error:');
   }
 }
 
@@ -58,7 +58,10 @@ export async function DELETE(_request: NextRequest, { params }: Props) {
   try {
     const { id } = await params;
 
-    const target = await prisma.user.findUnique({ where: { id } });
+    const target = await prisma.user.findUnique({
+      where: { id },
+      include: { _count: { select: { posts: true } } },
+    });
     if (!target) {
       return NextResponse.json({ success: false, error: 'کاربر یافت نشد' }, { status: 404 });
     }
@@ -73,10 +76,15 @@ export async function DELETE(_request: NextRequest, { params }: Props) {
       }
     }
 
-    await prisma.user.delete({ where: { id } });
-    return NextResponse.json({ success: true });
+    await prisma.$transaction(async (tx) => {
+      if (target._count.posts > 0) {
+        await tx.blogPost.deleteMany({ where: { authorId: id } });
+      }
+      await tx.user.delete({ where: { id } });
+    });
+
+    return NextResponse.json({ success: true, deletedPosts: target._count.posts });
   } catch (error) {
-    console.error('User DELETE error:', error);
-    return NextResponse.json({ success: false, error: 'خطای سرور' }, { status: 500 });
+    return serverErrorResponse(error, 'User DELETE error:');
   }
 }

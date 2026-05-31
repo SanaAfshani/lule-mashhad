@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { prisma } from '@/shared/lib/prisma';
+import { serverErrorResponse } from '@/shared/lib/api-errors';
 
 export async function GET(request: NextRequest) {
   try {
@@ -12,8 +14,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ success: true, data: categories });
   } catch (error) {
-    console.error('Categories GET error:', error);
-    return NextResponse.json({ success: false, error: 'خطای سرور' }, { status: 500 });
+    return serverErrorResponse(error, 'Categories GET error:');
   }
 }
 
@@ -21,9 +22,12 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const category = await prisma.category.create({ data: body });
+
+    revalidatePath('/categories');
+    revalidatePath('/products', 'layout');
+
     return NextResponse.json({ success: true, data: category }, { status: 201 });
   } catch (error) {
-    console.error('Categories POST error:', error);
-    return NextResponse.json({ success: false, error: 'خطای سرور' }, { status: 500 });
+    return serverErrorResponse(error, 'Categories POST error:');
   }
 }

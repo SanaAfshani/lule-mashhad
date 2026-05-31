@@ -1,7 +1,6 @@
 import { HeroSection } from '@/widgets/home/HeroSection';
 import { StatsSection } from '@/widgets/home/StatsSection';
 import { CategoriesSection } from '@/widgets/home/CategoriesSection';
-import { FeaturedProducts } from '@/widgets/home/FeaturedProducts';
 import { ServicesSection } from '@/widgets/home/ServicesSection';
 import { ProjectsPreview } from '@/widgets/home/ProjectsPreview';
 import { TestimonialsSection } from '@/widgets/home/TestimonialsSection';
@@ -9,7 +8,6 @@ import { BlogPreview } from '@/widgets/home/BlogPreview';
 import { BrandsSection } from '@/widgets/home/BrandsSection';
 import { CTASection } from '@/widgets/home/CTASection';
 import {
-  getFeaturedProducts,
   getPublishedBlogPosts,
   getPublishedCategories,
   getPublishedProjects,
@@ -23,9 +21,8 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const [categories, products, posts, testimonials, projects] = await Promise.all([
+  const [categories, posts, testimonials, projects] = await Promise.all([
     getPublishedCategories(),
-    getFeaturedProducts(6),
     getPublishedBlogPosts({ limit: 3 }),
     getPublishedTestimonials(3),
     getPublishedProjects({ limit: 3 }),
@@ -36,7 +33,6 @@ export default async function HomePage() {
       <HeroSection />
       <StatsSection />
       <CategoriesSection categories={categories} />
-      <FeaturedProducts products={products} />
       <ServicesSection />
       <ProjectsPreview projects={projects} />
       <TestimonialsSection testimonials={testimonials} />

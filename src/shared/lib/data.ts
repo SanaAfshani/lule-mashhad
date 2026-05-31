@@ -68,10 +68,6 @@ export async function getProductBySlug(slug: string, categorySlug?: string) {
   return product ? serializeProduct(product) : null;
 }
 
-export async function getFeaturedProducts(limit = 6) {
-  return getPublishedProducts({ featured: true, limit });
-}
-
 export async function getPublishedBlogPosts(options?: { featured?: boolean; limit?: number }) {
   const posts = await prisma.blogPost.findMany({
     where: { published: true, ...(options?.featured ? { featured: true } : {}) },
