@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/shared/lib/utils';
+import { useSiteSettings } from '@/shared/providers/SiteSettingsProvider';
 
 type NavCategory = { href: string; label: string; icon: string };
 
@@ -44,6 +45,7 @@ export function Header() {
   const [productCategories, setProductCategories] = useState<NavCategory[]>(defaultCategories);
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
+  const { phone, phoneHref, whatsappUrl } = useSiteSettings();
 
   const navItems = baseNavItems.map((item) =>
     'mega' in item && item.mega
@@ -197,11 +199,11 @@ export function Header() {
             <div className="flex items-center gap-2 flex-shrink-0">
               {/* Phone — lg+ */}
               <a
-                href="tel:05112345678"
+                href={phoneHref}
                 className="hidden lg:flex items-center gap-1.5 h-9 px-3 rounded-lg text-xs text-[var(--muted-foreground)] hover:text-[var(--accent)] hover:bg-[var(--accent)]/8 transition-all font-mono"
               >
                 <Phone className="w-3.5 h-3.5 flex-shrink-0" />
-                <span className="hidden xl:inline">051-12345678</span>
+                <span className="hidden xl:inline">{phone}</span>
               </a>
 
               {/* Search */}
@@ -321,11 +323,11 @@ export function Header() {
               {/* Bottom actions */}
               <div className="p-4 border-t border-[var(--border)] space-y-2.5 flex-shrink-0">
                 <a
-                  href="tel:05112345678"
+                  href={phoneHref}
                   className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[var(--muted)] text-[var(--foreground)] text-sm"
                 >
                   <Phone className="w-4 h-4 text-[var(--accent)]" />
-                  051-12345678
+                  {phone}
                 </a>
                 <Link
                   href="/contact"
@@ -404,7 +406,7 @@ export function Header() {
       {/* ─── Floating Action Buttons ─── */}
       <div className="fixed left-3 sm:left-4 bottom-[max(1rem,env(safe-area-inset-bottom))] sm:bottom-6 z-40 flex flex-col gap-2.5">
         <motion.a
-          href="https://wa.me/989151234567"
+          href={whatsappUrl}
           target="_blank"
           rel="noopener noreferrer"
           initial={{ scale: 0, opacity: 0 }}
@@ -419,7 +421,7 @@ export function Header() {
           </svg>
         </motion.a>
         <motion.a
-          href="tel:05112345678"
+          href={phoneHref}
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 1.4, type: 'spring' }}

@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Package, Phone, MessageCircle, Share2, CheckCircle, XCircle, ChevronDown, ArrowRight } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useSiteSettings } from '@/shared/providers/SiteSettingsProvider';
 
 const productData: Record<string, {
   name: string;
@@ -59,6 +60,7 @@ interface Props { slug: string; }
 export function ProductDetailClient({ slug }: Props) {
   const product = productData[slug] ?? { ...defaultProduct, name: slug.replace(/-/g, ' ') };
   const [openSpec, setOpenSpec] = useState(true);
+  const { phone, phoneHref } = useSiteSettings();
 
   const handleQuote = () => {
     toast.success('درخواست شما ارسال شد. کارشناس ما با شما تماس می‌گیرد.');
@@ -151,11 +153,11 @@ export function ProductDetailClient({ slug }: Props) {
               درخواست قیمت
             </button>
             <a
-              href="tel:05112345678"
+              href={phoneHref}
               className="flex items-center gap-2 h-12 px-6 rounded-2xl border-2 border-[var(--border)] text-[var(--foreground)] font-medium hover:border-[var(--accent)] hover:text-[var(--accent)] transition-all"
             >
               <Phone className="w-5 h-5" />
-              051-12345678
+              {phone}
             </a>
             <button
               onClick={() => {

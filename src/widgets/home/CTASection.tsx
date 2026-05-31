@@ -3,8 +3,11 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Phone, MessageCircle } from 'lucide-react';
+import { useSiteSettings } from '@/shared/providers/SiteSettingsProvider';
 
 export function CTASection() {
+  const { phone, phoneHref } = useSiteSettings();
+
   return (
     <section className="surface-dark home-section bg-[var(--foreground)] dark:bg-[#0A1120] relative overflow-hidden text-white">
       {/* Background decoration */}
@@ -54,11 +57,11 @@ export function CTASection() {
               درخواست مشاوره رایگان
             </Link>
             <a
-              href="tel:05112345678"
+              href={phoneHref}
               className="flex items-center gap-3 h-14 px-10 rounded-2xl border-2 border-slate-600 text-white text-base font-semibold hover:border-[var(--accent)] hover:text-[var(--accent)] transition-all duration-300 hover:-translate-y-1"
             >
               <Phone className="w-5 h-5" />
-              051-12345678
+              {phone}
             </a>
           </div>
         </motion.div>

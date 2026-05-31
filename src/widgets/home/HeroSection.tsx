@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowLeft, Phone, ShieldCheck, Truck, Clock, Award } from 'lucide-react';
+import { useSiteSettings } from '@/shared/providers/SiteSettingsProvider';
 
 const features = [
   { icon: ShieldCheck, label: 'کیفیت ISO تضمین‌شده' },
@@ -18,6 +19,8 @@ const stats = [
 ];
 
 export function HeroSection() {
+  const { phone, phoneHref, heroTitle, heroSubtitle } = useSiteSettings();
+
   return (
     <section className="home-hero relative flex items-center overflow-hidden bg-[var(--background)]">
       {/* ── Backgrounds ── */}
@@ -76,10 +79,7 @@ export function HeroSection() {
               transition={{ delay: 0.18, duration: 0.6 }}
               className="text-[1.65rem] leading-[1.25] sm:text-4xl md:text-5xl xl:text-6xl font-black text-[var(--foreground)] mb-4 sm:mb-5"
             >
-              تامین کامل
-              <br />
-              <span className="gradient-text">لوله آب</span>
-              {' '}و فاضلاب
+              {heroTitle}
             </motion.h1>
 
             {/* Description */}
@@ -89,8 +89,7 @@ export function HeroSection() {
               transition={{ delay: 0.28 }}
               className="text-[var(--muted-foreground)] text-sm sm:text-base md:text-lg leading-relaxed mb-5 sm:mb-7 max-w-[520px]"
             >
-              عرضه‌کننده انواع لوله پلیکا، پلی‌اتیلن، چدن داکتیل، منهول و اتصالات آب و فاضلاب —
-              تامین پروژه‌های شهری، صنعتی و کشاورزی در مشهد و سراسر ایران.
+              {heroSubtitle}
             </motion.p>
 
             {/* Feature chips */}
@@ -132,11 +131,11 @@ export function HeroSection() {
                 مشاهده محصولات
               </Link>
               <a
-                href="tel:05112345678"
+                href={phoneHref}
                 className="inline-flex items-center justify-center gap-2 h-11 sm:h-12 px-5 rounded-xl bg-[var(--muted)] text-[var(--foreground)] font-medium text-sm hover:bg-[var(--border)] transition-all duration-200 w-full sm:w-auto"
               >
                 <Phone className="w-4 h-4 text-[var(--accent)] flex-shrink-0" />
-                051-12345678
+                {phone}
               </a>
             </motion.div>
           </motion.div>

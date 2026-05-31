@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { prisma } from '@/shared/lib/prisma';
 
 export async function GET() {
@@ -27,6 +28,10 @@ export async function POST(request: NextRequest) {
         })
       )
     );
+
+    revalidatePath('/', 'layout');
+    revalidatePath('/contact');
+
     return NextResponse.json({ success: true, data: updates });
   } catch (error) {
     console.error('Settings POST error:', error);

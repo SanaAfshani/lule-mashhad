@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Clock, User, Share2, MessageCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useSiteSettings } from '@/shared/providers/SiteSettingsProvider';
 
 const postData: Record<string, {
   title: string;
@@ -59,6 +60,7 @@ interface Props { slug: string; }
 
 export function BlogPostClient({ slug }: Props) {
   const post = postData[slug] ?? { ...defaultPost, title: slug.replace(/-/g, ' ') };
+  const { phone, phoneHref } = useSiteSettings();
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -171,10 +173,10 @@ export function BlogPostClient({ slug }: Props) {
             <div className="text-[var(--accent-foreground)] font-bold mb-2">نیاز به مشاوره دارید؟</div>
             <p className="text-[var(--accent-foreground)]/80 text-sm mb-4">کارشناسان ما آماده راهنمایی هستند</p>
             <a
-              href="tel:05112345678"
+              href={phoneHref}
               className="block w-full py-2.5 rounded-xl bg-[var(--accent-foreground)]/90 text-[var(--accent)] font-semibold text-sm hover:opacity-90 transition-colors"
             >
-              051-12345678
+              {phone}
             </a>
           </motion.div>
         </aside>

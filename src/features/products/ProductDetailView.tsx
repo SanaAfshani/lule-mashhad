@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { Phone, Check, X, ChevronLeft, MessageCircle, Package, ShieldCheck, Truck } from 'lucide-react';
 import type { Product } from '@/shared/types';
 import { formatProductPrice } from '@/shared/lib/serializers';
+import { useSiteSettings } from '@/shared/providers/SiteSettingsProvider';
 
 type TabKey = 'specs' | 'description';
 
@@ -18,6 +19,7 @@ const highlights = [
 
 export function ProductDetailView({ product }: { product: Product }) {
   const [activeTab, setActiveTab] = useState<TabKey>('specs');
+  const { phoneHref, whatsappUrl } = useSiteSettings();
   const priceDisplay = formatProductPrice(product.price);
   const specEntries = Object.entries(product.specifications);
   const image = product.images[0] || product.category.image;
@@ -113,14 +115,14 @@ export function ProductDetailView({ product }: { product: Product }) {
 
             <div className="flex flex-col gap-2.5">
               <a
-                href="tel:05112345678"
+                href={phoneHref}
                 className="flex items-center justify-center gap-2.5 h-13 px-6 rounded-xl font-bold text-base bg-[var(--accent)] text-[var(--accent-foreground)] hover:opacity-90 transition-opacity"
               >
                 <Phone className="w-5 h-5" />
                 تماس برای استعلام قیمت
               </a>
               <a
-                href="https://wa.me/989151234567"
+                href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2.5 h-11 px-6 rounded-xl border-2 border-green-500 text-green-500 font-semibold text-sm hover:bg-green-500 hover:text-white transition-all"
