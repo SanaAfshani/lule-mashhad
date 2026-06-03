@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { HeroSection } from '@/widgets/home/HeroSection';
 import { StatsSection } from '@/widgets/home/StatsSection';
 import { CategoriesSection } from '@/widgets/home/CategoriesSection';

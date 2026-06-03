@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import type { Metadata } from 'next';
 import { FAQPageClient } from '@/features/faq/FAQPageClient';
 import { getPublishedFaqs } from '@/shared/lib/data';

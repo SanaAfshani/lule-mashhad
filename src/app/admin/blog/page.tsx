@@ -153,7 +153,7 @@ export default function AdminBlogPage() {
                       <div className="flex items-center gap-2">
                         {post.published && (
                           <Link
-                            href={`/blog/${post.slug}`}
+                            href={`/blog/${encodeURIComponent(post.slug)}`}
                             target="_blank"
                             className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 hover:text-blue-400 hover:bg-blue-500/10 transition-all"
                           >
@@ -161,7 +161,7 @@ export default function AdminBlogPage() {
                           </Link>
                         )}
                         <Link
-                          href={`/admin/blog/${post.slug}/edit`}
+                          href={`/admin/blog/${encodeURIComponent(post.slug)}/edit`}
                           className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 hover:text-amber-400 hover:bg-amber-500/10 transition-all"
                         >
                           <Pencil className="w-4 h-4" />

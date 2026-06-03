@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import type { Metadata } from 'next';
 import { ProductsPageClient } from '@/features/products/ProductsPageClient';
 import { getPublishedCategories, getPublishedProducts } from '@/shared/lib/data';

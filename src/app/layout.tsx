@@ -3,6 +3,7 @@ import './globals.css';
 import { siteConfig } from '@/shared/config/site';
 import { ThemeProvider } from '@/shared/providers/ThemeProvider';
 import { Toaster } from 'react-hot-toast';
+import { NavigationProgress } from '@/shared/ui/NavigationProgress';
 
 export const metadata: Metadata = {
   title: {
@@ -42,6 +43,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen antialiased">
         <ThemeProvider>
+          <NavigationProgress />
           {children}
           <Toaster
             position="bottom-center"
