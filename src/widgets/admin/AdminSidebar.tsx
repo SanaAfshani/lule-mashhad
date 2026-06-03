@@ -133,7 +133,7 @@ export function AdminSidebar() {
               <Globe className="w-4 h-4 text-white" />
             </div>
             <div className="min-w-0">
-              <div className="font-bold text-white text-sm truncate">لوله آنلاین مشهد</div>
+              <div className="font-bold text-white text-sm truncate">لوله آنلاین </div>
               <div className="text-slate-500 text-xs">پنل مدیریت</div>
             </div>
           </div>

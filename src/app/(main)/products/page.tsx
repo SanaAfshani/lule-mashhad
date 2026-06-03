@@ -3,7 +3,7 @@ import { ProductsPageClient } from '@/features/products/ProductsPageClient';
 import { getPublishedCategories, getPublishedProducts } from '@/shared/lib/data';
 
 export const metadata: Metadata = {
-  title: 'محصولات | لوله آنلاین مشهد',
+  title: 'محصولات | لوله آنلاین ',
   description: 'انواع لوله فولادی، مانیسمان، اتصالات، فلنج و شیرآلات صنعتی',
 };
 

@@ -7,8 +7,6 @@ import { useSiteSettings } from '@/shared/providers/SiteSettingsProvider';
 
 const features = [
   { icon: ShieldCheck, label: 'کیفیت ISO تضمین‌شده' },
-  { icon: Truck,       label: 'تحویل سراسر ایران' },
-  { icon: Clock,       label: 'مشاوره فوری رایگان' },
   { icon: Award,       label: '۲۰+ سال تجربه' },
 ];
 

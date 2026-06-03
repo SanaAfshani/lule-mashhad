@@ -209,7 +209,7 @@ async function main() {
 
   // ─── Site settings ────────────────────────────────────
   const settings = [
-    { key: 'site_title',      value: 'لوله آنلاین مشهد' },
+    { key: 'site_title',      value: 'لوله آنلاین ' },
     { key: 'site_description', value: 'تامین‌کننده انواع لوله آب و فاضلاب، پلیکا، پلی اتیلن، چدن، منهول و اتصالات' },
     { key: 'contact_phone',   value: '051-12345678' },
     { key: 'contact_mobile',  value: '0915-1234567' },

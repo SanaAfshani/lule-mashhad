@@ -3,7 +3,7 @@ import { ProjectsPageClient } from '@/features/projects/ProjectsPageClient';
 import { getPublishedProjects } from '@/shared/lib/data';
 
 export const metadata: Metadata = {
-  title: 'پروژه‌ها | لوله آنلاین مشهد',
+  title: 'پروژه‌ها | لوله آنلاین ',
   description: 'نمونه پروژه‌های تامین لوله آب و فاضلاب در مشهد و خراسان',
 };
 

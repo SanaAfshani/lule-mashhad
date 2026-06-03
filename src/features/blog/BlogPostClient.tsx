@@ -16,7 +16,7 @@ const postData: Record<string, {
 }> = {
   'guide-to-choosing-industrial-pipes': {
     title: 'راهنمای انتخاب لوله مناسب برای پروژه‌های صنعتی',
-    author: 'تیم فنی لوله آنلاین مشهد',
+    author: 'تیم فنی لوله آنلاین ',
     date: '۱۵ آذر ۱۴۰۲',
     readTime: 5,
     tag: 'راهنما',
@@ -49,7 +49,7 @@ const postData: Record<string, {
 
 const defaultPost = {
   title: 'مقاله تخصصی',
-  author: 'تیم فنی لوله آنلاین مشهد',
+  author: 'تیم فنی لوله آنلاین ',
   date: '۱۴۰۲',
   readTime: 5,
   tag: 'فنی',

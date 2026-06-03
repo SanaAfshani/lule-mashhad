@@ -192,7 +192,7 @@ export function Footer() {
       <div className="border-t border-slate-800">
         <div className="container-main py-5">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-slate-400">
-            <p>© ۱۴۰۳ لوله آنلاین مشهد. تمامی حقوق محفوظ است.</p>
+            <p>© ۱۴۰۳ لوله آنلاین . تمامی حقوق محفوظ است.</p>
             <div className="flex items-center gap-4">
               <Link href="/privacy" className="hover:text-[var(--accent)] transition-colors">حریم خصوصی</Link>
               <Link href="/terms" className="hover:text-[var(--accent)] transition-colors">قوانین استفاده</Link>

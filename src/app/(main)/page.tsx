@@ -14,7 +14,7 @@ import {
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'لوله آنلاین مشهد | تامین کننده لوله و اتصالات صنعتی',
+  title: 'لوله آنلاین | تامین کننده لوله و اتصالات صنعتی',
   description: 'تامین کننده معتبر انواع لوله، اتصالات و تجهیزات صنعتی در مشهد. با بیش از ۲۰ سال تجربه.',
 };
 
@@ -33,7 +33,7 @@ export default async function HomePage() {
       <ServicesSection />
       <BlogPreview posts={posts} />
       <BrandsSection />
-      <CTASection />
+      {/*<CTASection />*/}
     </>
   );
 }

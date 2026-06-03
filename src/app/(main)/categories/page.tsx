@@ -3,7 +3,7 @@ import { CategoriesPageClient } from '@/features/categories/CategoriesPageClient
 import { getPublishedCategories } from '@/shared/lib/data';
 
 export const metadata: Metadata = {
-  title: 'دسته‌بندی محصولات | لوله آنلاین مشهد',
+  title: 'دسته‌بندی محصولات | لوله آنلاین ',
   description: 'دسته‌بندی لوله پلیکا، پلی اتیلن، چدن داکتیل، منهول، اتصالات و شیرآلات',
 };
 

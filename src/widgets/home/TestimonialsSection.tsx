@@ -25,7 +25,7 @@ export function TestimonialsSection({ testimonials }: Props) {
         <SectionHeading
           label="نظر مشتریان"
           title="آنچه مشتریان می‌گویند"
-          description="رضایت مشتریان ما، بهترین معرف کیفیت خدمات و محصولات لوله آنلاین مشهد است"
+          description="رضایت مشتریان ما، بهترین معرف کیفیت خدمات و محصولات لوله آنلاین است"
         />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

@@ -105,7 +105,7 @@ export function Header() {
               </div>
               <div className="leading-tight">
                 <div className="font-extrabold text-sm sm:text-base text-[var(--foreground)] group-hover:text-[var(--accent)] transition-colors">
-                  لوله آنلاین مشهد
+                  لوله آنلاین
                 </div>
                 <div className="text-[10px] text-[var(--muted-foreground)] hidden sm:block">
                   تامین‌کننده لوله آب و فاضلاب
@@ -273,7 +273,7 @@ export function Header() {
             >
               {/* Header */}
               <div className="flex items-center justify-between px-5 h-[var(--nav-height)] border-b border-[var(--border)] flex-shrink-0">
-                <span className="font-bold text-[var(--foreground)]">لوله آنلاین مشهد</span>
+                <span className="font-bold text-[var(--foreground)]">لوله آنلاین </span>
                 <button
                   onClick={() => setMobileOpen(false)}
                   className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-[var(--muted)] transition-colors"

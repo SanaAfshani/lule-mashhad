@@ -7,7 +7,7 @@ import { getSiteSettingsMap } from '@/shared/lib/data';
 import { mergeSiteSettings } from '@/shared/lib/site-settings';
 
 export const metadata: Metadata = {
-  title: 'تماس با ما | لوله آنلاین مشهد',
+  title: 'تماس با ما | لوله آنلاین ',
   description: 'راه‌های ارتباط با لوله آنلاین مشهد — تلفن، ایمیل و فرم تماس',
 };
 
