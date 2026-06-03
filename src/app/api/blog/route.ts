@@ -81,6 +81,7 @@ export async function POST(request: NextRequest) {
         excerpt: body.excerpt ? String(body.excerpt) : null,
         content: content || '<p></p>',
         coverImage: body.coverImage ? String(body.coverImage) : null,
+        pdfUrl: body.pdfUrl ? String(body.pdfUrl) : null,
         tags: JSON.stringify(body.tags || []),
         published: Boolean(body.published),
         featured: Boolean(body.featured),

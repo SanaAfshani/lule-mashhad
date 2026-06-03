@@ -3,6 +3,8 @@ import type { Metadata } from 'next';
 import { BlogPostView } from '@/features/blog/BlogPostView';
 import { getBlogPostBySlug } from '@/shared/lib/data';
 
+export const dynamic = 'force-dynamic';
+
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

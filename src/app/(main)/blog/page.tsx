@@ -3,6 +3,8 @@ import { BlogListClient } from '@/features/blog/BlogListClient';
 import { getPublishedBlogPosts } from '@/shared/lib/data';
 import { formatDate } from '@/shared/lib/utils';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'وبلاگ | لوله آنلاین ',
   description: 'مقالات تخصصی لوله آب و فاضلاب، پلیکا، پلی اتیلن و چدن',

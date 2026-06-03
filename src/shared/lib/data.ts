@@ -80,19 +80,25 @@ export async function getPublishedBlogPosts(options?: { featured?: boolean; limi
 }
 
 export async function getBlogPostBySlug(slug: string) {
-  const post = await prisma.blogPost.findUnique({
-    where: { slug },
-    include: { author: { select: { id: true, name: true, email: true } } },
-  });
+  try {
+    const decodedSlug = decodeURIComponent(slug);
+    const post = await prisma.blogPost.findFirst({
+      where: { slug: decodedSlug, published: true },
+      include: { author: { select: { id: true, name: true, email: true } } },
+    });
 
-  if (!post || !post.published) return null;
+    if (!post) return null;
 
-  await prisma.blogPost.update({
-    where: { id: post.id },
-    data: { viewCount: { increment: 1 } },
-  });
+    prisma.blogPost.update({
+      where: { id: post.id },
+      data: { viewCount: { increment: 1 } },
+    }).catch(() => {});
 
-  return serializeBlogPost(post);
+    return serializeBlogPost(post);
+  } catch (e) {
+    console.error('getBlogPostBySlug error:', e);
+    return null;
+  }
 }
 
 export async function getPublishedFaqs() {

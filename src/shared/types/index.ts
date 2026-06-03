@@ -38,6 +38,7 @@ export interface BlogPost {
   excerpt: string;
   content: string;
   coverImage: string;
+  pdfUrl?: string;
   author: User;
   authorId: string;
   tags: string[];

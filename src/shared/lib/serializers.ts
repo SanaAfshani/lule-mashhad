@@ -96,6 +96,7 @@ type DbBlogPost = {
   excerpt: string | null;
   content: string;
   coverImage: string | null;
+  pdfUrl?: string | null;
   tags: string;
   published: boolean;
   featured: boolean;
@@ -112,6 +113,7 @@ export function serializeBlogPost(p: DbBlogPost): BlogPost {
     ...p,
     excerpt: p.excerpt ?? '',
     coverImage: p.coverImage ?? '',
+    pdfUrl: p.pdfUrl ?? undefined,
     tags: parseJsonArray(p.tags),
     author: p.author as BlogPost['author'],
   };

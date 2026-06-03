@@ -41,7 +41,9 @@ export function BlogListClient({ posts }: { posts: BlogPostCard[] }) {
                   {featured.coverImage ? (
                     <Image src={featured.coverImage} alt={featured.title} fill className="object-cover" />
                   ) : (
-                    <div className="absolute inset-0 flex items-center justify-center text-8xl">📰</div>
+                    <div className="absolute inset-0 bg-gradient-to-br from-amber-600/20 to-slate-900 flex items-center justify-center">
+                      <img src="/images/logo.png" alt="لوله مشهد" className="h-20 opacity-60 drop-shadow-lg" />
+                    </div>
                   )}
                 </div>
                 <div className="p-8 flex flex-col justify-center">
@@ -84,7 +86,9 @@ export function BlogListClient({ posts }: { posts: BlogPostCard[] }) {
                   {post.coverImage ? (
                     <Image src={post.coverImage} alt={post.title} fill className="object-cover" />
                   ) : (
-                    <div className="absolute inset-0 flex items-center justify-center text-5xl">📄</div>
+                    <div className="absolute inset-0 bg-gradient-to-br from-amber-600/20 to-slate-800 flex items-center justify-center">
+                      <img src="/images/logo.png" alt="لوله مشهد" className="h-14 opacity-60 drop-shadow-md" />
+                    </div>
                   )}
                   <div className="absolute top-3 right-3 bg-[var(--accent)] text-[var(--accent-foreground)] text-xs font-bold px-2.5 py-1 rounded-full">
                     {post.tag}

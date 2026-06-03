@@ -1,8 +1,8 @@
 'use client';
 
-import { use, useEffect, useState } from 'react';
+import { use, useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, Save, Loader2 } from 'lucide-react';
+import { ArrowRight, Save, Loader2, FileText, X } from 'lucide-react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 
@@ -11,6 +11,8 @@ export default function EditBlogPostPage({ params }: { params: Promise<{ slug: s
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
+  const [pdfUploading, setPdfUploading] = useState(false);
+  const pdfInputRef = useRef<HTMLInputElement>(null);
   const [originalSlug, setOriginalSlug] = useState(slug);
   const [form, setForm] = useState({
     title: '',
@@ -18,6 +20,7 @@ export default function EditBlogPostPage({ params }: { params: Promise<{ slug: s
     excerpt: '',
     content: '',
     coverImage: '',
+    pdfUrl: '',
     featured: false,
     published: true,
   });
@@ -42,6 +45,7 @@ export default function EditBlogPostPage({ params }: { params: Promise<{ slug: s
           excerpt: post.excerpt || '',
           content: post.content || '',
           coverImage: post.coverImage || '',
+          pdfUrl: post.pdfUrl || '',
           featured: post.featured,
           published: post.published,
         });
@@ -52,6 +56,26 @@ export default function EditBlogPostPage({ params }: { params: Promise<{ slug: s
       }
     })();
   }, [slug, router]);
+
+  const handlePdfUpload = async (file: File) => {
+    setPdfUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await fetch('/api/upload/pdf', { method: 'POST', body: fd });
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        toast.error(json.error || 'آپلود PDF ناموفق بود');
+        return;
+      }
+      setForm((f) => ({ ...f, pdfUrl: json.url }));
+      toast.success('فایل PDF با موفقیت آپلود شد');
+    } catch {
+      toast.error('خطا در آپلود فایل');
+    } finally {
+      setPdfUploading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,6 +91,7 @@ export default function EditBlogPostPage({ params }: { params: Promise<{ slug: s
           excerpt: form.excerpt || undefined,
           content: form.content,
           coverImage: form.coverImage || undefined,
+          pdfUrl: form.pdfUrl || null,
           featured: form.featured,
           published: form.published,
         }),
@@ -166,6 +191,63 @@ export default function EditBlogPostPage({ params }: { params: Promise<{ slug: s
           </div>
 
           <div className="space-y-6">
+            {/* PDF Upload */}
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+              <h2 className="text-white font-bold mb-4">فایل PDF مقاله</h2>
+              <input
+                ref={pdfInputRef}
+                type="file"
+                accept="application/pdf"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handlePdfUpload(file);
+                }}
+              />
+              {form.pdfUrl ? (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 bg-slate-800 rounded-xl px-4 py-3">
+                    <FileText className="w-5 h-5 text-amber-400 flex-shrink-0" />
+                    <span className="text-sm text-slate-300 flex-1 truncate" dir="ltr">
+                      {form.pdfUrl.split('/').pop()}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setForm((f) => ({ ...f, pdfUrl: '' }))}
+                      className="text-slate-500 hover:text-red-400 transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => pdfInputRef.current?.click()}
+                    disabled={pdfUploading}
+                    className="w-full text-xs text-slate-500 hover:text-amber-400 transition-colors py-1"
+                  >
+                    تغییر فایل PDF
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => pdfInputRef.current?.click()}
+                  disabled={pdfUploading}
+                  className="w-full border-2 border-dashed border-slate-700 rounded-xl p-6 flex flex-col items-center justify-center gap-3 text-slate-500 hover:border-amber-500 hover:text-amber-400 transition-colors disabled:opacity-50"
+                >
+                  {pdfUploading ? (
+                    <Loader2 className="w-7 h-7 animate-spin" />
+                  ) : (
+                    <FileText className="w-7 h-7" />
+                  )}
+                  <div className="text-sm text-center">
+                    <div>{pdfUploading ? 'در حال آپلود...' : 'آپلود فایل PDF'}</div>
+                    <div className="text-xs mt-1 text-slate-600">حداکثر ۲۰ مگابایت</div>
+                  </div>
+                </button>
+              )}
+            </div>
+
             <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
               <h2 className="text-white font-bold">تنظیمات</h2>
 

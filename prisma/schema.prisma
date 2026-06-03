@@ -67,6 +67,7 @@ model BlogPost {
   excerpt    String?
   content    String
   coverImage String?
+  pdfUrl     String?
   tags       String   @default("[]")
   published  Boolean  @default(false)
   featured   Boolean  @default(false)
