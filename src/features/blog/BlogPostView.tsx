@@ -3,9 +3,10 @@
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { Clock, Calendar, ArrowRight, FileText, Download, ExternalLink, BookOpen } from 'lucide-react';
+import { Clock, Calendar, ArrowRight, BookOpen } from 'lucide-react';
 import type { BlogPost } from '@/shared/types';
 import { formatDate } from '@/shared/lib/utils';
+import { PdfViewer } from '@/shared/ui/PdfViewer';
 
 const DEFAULT_COVER = '/images/blog-default.jpg';
 
@@ -26,7 +27,8 @@ export function BlogPostView({ post }: { post: BlogPost }) {
         </nav>
 
         <motion.article initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <div className="relative h-64 md:h-80 rounded-2xl overflow-hidden mb-8">
+          {/* Cover image */}
+          <div className="relative h-52 sm:h-64 md:h-80 rounded-2xl overflow-hidden mb-8">
             <Image src={coverImage} alt={post.title} fill className="object-cover" priority />
             {!post.coverImage && (
               <div className="absolute inset-0 bg-gradient-to-br from-amber-500/30 to-slate-900/60 flex items-center justify-center">
@@ -38,11 +40,12 @@ export function BlogPostView({ post }: { post: BlogPost }) {
             )}
           </div>
 
+          {/* Meta */}
           <div className="mb-8">
             <span className="inline-block bg-[var(--accent)] text-[var(--accent-foreground)] text-xs font-bold px-3 py-1.5 rounded-full mb-4">
               {tag}
             </span>
-            <h1 className="text-3xl md:text-4xl font-black text-[var(--foreground)] mb-5 leading-tight">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-[var(--foreground)] mb-5 leading-tight">
               {post.title}
             </h1>
             <div className="flex flex-wrap items-center gap-4 text-sm text-[var(--muted-foreground)]">
@@ -66,6 +69,7 @@ export function BlogPostView({ post }: { post: BlogPost }) {
             </div>
           </div>
 
+          {/* Text content */}
           {!isPdfOnly && (
             <div
               className="prose prose-lg max-w-none text-[var(--foreground)] leading-relaxed [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mt-8 [&_h2]:mb-4 [&_p]:mb-4 [&_ul]:mr-6 [&_li]:mb-2 mb-10"
@@ -73,68 +77,14 @@ export function BlogPostView({ post }: { post: BlogPost }) {
             />
           )}
 
-          {/* PDF Catalog Viewer */}
+          {/* PDF Viewer */}
           {post.pdfUrl && (
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15 }}
-              className="rounded-2xl overflow-hidden border border-[var(--border)] shadow-lg"
             >
-              {/* Header bar */}
-              <div className="flex items-center justify-between px-5 py-4 bg-[var(--card)] border-b border-[var(--border)]">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-[var(--accent)]/10 flex items-center justify-center">
-                    <FileText className="w-5 h-5 text-[var(--accent)]" />
-                  </div>
-                  <div>
-                    <div className="text-[var(--foreground)] font-semibold text-sm">کاتالوگ محصول</div>
-                    <div className="text-[var(--muted-foreground)] text-xs">{post.title}</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <a
-                    href={post.pdfUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] border border-[var(--border)] px-3 py-1.5 rounded-lg transition-colors"
-                  >
-                    <ExternalLink className="w-3.5 h-3.5" />
-                    باز کردن
-                  </a>
-                  <a
-                    href={post.pdfUrl}
-                    download
-                    className="flex items-center gap-1.5 text-sm bg-[var(--accent)] text-[var(--accent-foreground)] px-3 py-1.5 rounded-lg font-medium hover:opacity-90 transition-opacity"
-                  >
-                    <Download className="w-3.5 h-3.5" />
-                    دانلود PDF
-                  </a>
-                </div>
-              </div>
-
-              {/* PDF iframe viewer */}
-              <div className="relative bg-slate-100 dark:bg-slate-900">
-                <iframe
-                  src={`${post.pdfUrl}#toolbar=1&navpanes=1&scrollbar=1&view=FitH`}
-                  className="w-full border-0"
-                  style={{ height: '85vh', minHeight: '600px' }}
-                  title={post.title}
-                />
-              </div>
-
-              {/* Footer */}
-              <div className="px-5 py-3 bg-[var(--card)] border-t border-[var(--border)] flex items-center justify-between text-xs text-[var(--muted-foreground)]">
-                <span>برای مشاهده بهتر، فایل را دانلود کنید</span>
-                <a
-                  href={post.pdfUrl}
-                  download
-                  className="flex items-center gap-1 hover:text-[var(--accent)] transition-colors"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  دانلود
-                </a>
-              </div>
+              <PdfViewer url={post.pdfUrl} title={`کاتالوگ — ${post.title}`} />
             </motion.div>
           )}
 
