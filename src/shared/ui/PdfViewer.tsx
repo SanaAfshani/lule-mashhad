@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { FileText, Download, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
+import { FileText, Download, ExternalLink, ChevronDown, ChevronUp, BookOpen } from 'lucide-react';
 
 interface PdfViewerProps {
   url: string;
@@ -11,93 +11,92 @@ interface PdfViewerProps {
 export function PdfViewer({ url, title }: PdfViewerProps) {
   const [expanded, setExpanded] = useState(true);
 
-  // For external URLs (Vercel Blob), use directly.
-  // For local /uploads paths, build full URL for Google Docs viewer.
-  const isAbsolute = url.startsWith('http');
-  const fullUrl = isAbsolute
-    ? url
-    : typeof window !== 'undefined'
-      ? `${window.location.origin}${url}`
-      : url;
-
-  const googleViewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(fullUrl)}&embedded=true`;
+  const label = title ?? 'فایل PDF مقاله';
 
   return (
-    <div className="mt-10 rounded-2xl border border-[var(--border)] overflow-hidden">
-      {/* Header */}
+    <div className="mt-10 rounded-2xl border border-[var(--border)] overflow-hidden shadow-lg">
+
+      {/* ── Header ── */}
       <div className="flex items-center justify-between px-4 sm:px-5 py-4 bg-[var(--card)] border-b border-[var(--border)]">
-        <div className="flex items-center gap-2 text-[var(--foreground)] font-semibold text-sm sm:text-base">
-          <FileText className="w-5 h-5 text-[var(--accent)] flex-shrink-0" />
-          <span>{title ?? 'فایل PDF مقاله'}</span>
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center flex-shrink-0">
+            <FileText className="w-5 h-5 text-amber-500" />
+          </div>
+          <div>
+            <p className="text-[var(--foreground)] font-semibold text-sm leading-tight">{label}</p>
+            <p className="text-[var(--muted-foreground)] text-xs mt-0.5">کاتالوگ PDF</p>
+          </div>
         </div>
+
         <div className="flex items-center gap-2">
           <a
             href={url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden sm:flex items-center gap-1.5 text-sm text-[var(--muted-foreground)] hover:text-[var(--accent)] transition-colors"
-          >
-            <ExternalLink className="w-4 h-4" />
-            باز کردن
-          </a>
-          <a
-            href={url}
             download
-            className="flex items-center gap-1.5 text-sm bg-[var(--accent)] text-[var(--accent-foreground)] px-3 py-1.5 rounded-lg font-bold hover:opacity-90 transition-opacity"
+            className="flex items-center gap-1.5 text-xs sm:text-sm bg-amber-500 text-black px-3 py-2 rounded-xl font-bold hover:bg-amber-400 transition-colors"
           >
-            <Download className="w-4 h-4" />
-            دانلود
+            <Download className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">دانلود PDF</span>
+            <span className="sm:hidden">دانلود</span>
           </a>
+
+          {/* collapse toggle — desktop only */}
           <button
             onClick={() => setExpanded((v) => !v)}
-            className="w-8 h-8 rounded-lg bg-slate-800/50 flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
-            title={expanded ? 'بستن نمایش' : 'نمایش PDF'}
+            className="hidden md:flex w-9 h-9 rounded-xl bg-slate-800/50 items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+            title={expanded ? 'بستن' : 'نمایش PDF'}
           >
             {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
         </div>
       </div>
 
-      {/* Viewer */}
+      {/* ── Desktop: native iframe ── */}
       {expanded && (
-        <>
-          {/* Desktop: native iframe */}
-          <div className="hidden md:block">
-            <iframe
-              src={url}
-              className="w-full border-0"
-              style={{ height: '780px' }}
-              title={title ?? 'PDF Viewer'}
-            />
-          </div>
-
-          {/* Mobile: Google Docs viewer (scrollable) + fallback open button */}
-          <div className="block md:hidden">
-            <iframe
-              src={googleViewerUrl}
-              className="w-full border-0"
-              style={{ height: '520px' }}
-              title={title ?? 'PDF Viewer'}
-              allow="autoplay"
-            />
-            {/* Fallback if Google Docs viewer fails on mobile */}
-            <div className="bg-[var(--card)] px-4 py-3 border-t border-[var(--border)] flex items-center justify-between gap-3">
-              <span className="text-xs text-[var(--muted-foreground)]">
-                اگر PDF نمایش داده نمیشه، مستقیم باز کنید
-              </span>
-              <a
-                href={url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 text-xs bg-[var(--accent)] text-[var(--accent-foreground)] px-3 py-2 rounded-lg font-bold whitespace-nowrap hover:opacity-90 transition-opacity"
-              >
-                <ExternalLink className="w-3.5 h-3.5" />
-                مشاهده PDF
-              </a>
-            </div>
-          </div>
-        </>
+        <div className="hidden md:block bg-slate-100 dark:bg-slate-900">
+          <iframe
+            src={`${url}#toolbar=1&view=FitH`}
+            className="w-full border-0"
+            style={{ height: '800px' }}
+            title={label}
+          />
+        </div>
       )}
+
+      {/* ── Mobile: open-in-browser card ── */}
+      <div className="md:hidden px-5 py-8 flex flex-col items-center gap-5 bg-[var(--card)]">
+        {/* icon */}
+        <div className="w-20 h-20 rounded-2xl bg-amber-500/10 border-2 border-amber-500/20 flex items-center justify-center">
+          <BookOpen className="w-10 h-10 text-amber-500" />
+        </div>
+
+        <div className="text-center space-y-1.5">
+          <p className="text-[var(--foreground)] font-bold text-base">{label}</p>
+          <p className="text-[var(--muted-foreground)] text-sm">
+            برای مشاهده کاتالوگ، دکمه زیر را لمس کنید
+          </p>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xs">
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 bg-amber-500 text-black px-5 py-3.5 rounded-xl font-bold text-sm hover:bg-amber-400 transition-colors w-full"
+          >
+            <ExternalLink className="w-4 h-4" />
+            مشاهده کاتالوگ
+          </a>
+          <a
+            href={url}
+            download
+            className="flex items-center justify-center gap-2 border border-[var(--border)] text-[var(--foreground)] px-5 py-3.5 rounded-xl font-semibold text-sm hover:bg-slate-800/40 transition-colors w-full"
+          >
+            <Download className="w-4 h-4" />
+            دانلود فایل
+          </a>
+        </div>
+      </div>
+
     </div>
   );
 }
