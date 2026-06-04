@@ -83,7 +83,7 @@ function LoginForm() {
               <path d="M4 12h16M12 4v16" strokeLinecap="round" />
             </svg>
           </motion.div>
-          <h1 className="text-2xl font-bold text-white">لوله آنلاین </h1>
+          <h1 className="text-2xl font-bold text-white">قدیر لوله آنلاین </h1>
           <p className="text-slate-500 text-sm mt-1">پنل مدیریت سیستم</p>
         </div>
 
@@ -166,7 +166,7 @@ function LoginForm() {
         </div>
 
         <p className="text-center text-xs text-slate-700 mt-6">
-          © ۱۴۰۳ لوله آنلاین  — تمامی حقوق محفوظ است
+          © ۱۴۰۳ قدیر لوله آنلاین  — تمامی حقوق محفوظ است
         </p>
       </motion.div>
     </div>

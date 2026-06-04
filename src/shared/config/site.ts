@@ -1,6 +1,6 @@
 export const siteConfig = {
-  name: 'لوله آنلاین',
-  nameEn: 'Lule Online',
+  name: 'قدیر لوله آنلاین',
+  nameEn: 'Qadir Lule Online',
   description: 'تامین کننده انواع لوله، اتصالات و تجهیزات صنعتی در مشهد. با بیش از ۲۰ سال تجربه در صنعت لوله و اتصالات.',
   url: 'https://luleonline-mashhad.ir',
   phone: '09121184970',
@@ -14,5 +14,5 @@ export const siteConfig = {
     whatsapp: 'https://wa.me/989123837505',
     // linkedin: 'https://linkedin.com/company/luleonlinemashhad',
   },
-  keywords: ['لوله', 'اتصالات', 'لوله صنعتی', 'لوله', 'لوله آنلاین', 'لوله فروشی مشهد'],
+  keywords: ['لوله', 'اتصالات', 'لوله صنعتی', 'لوله', 'قدیر لوله آنلاین', 'لوله فروشی مشهد'],
 };

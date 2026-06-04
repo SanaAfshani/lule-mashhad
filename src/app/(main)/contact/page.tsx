@@ -7,8 +7,8 @@ import { getSiteSettingsMap } from '@/shared/lib/data';
 import { mergeSiteSettings } from '@/shared/lib/site-settings';
 
 export const metadata: Metadata = {
-  title: 'تماس با ما | لوله آنلاین ',
-  description: 'راه‌های ارتباط با لوله آنلاین مشهد — تلفن، ایمیل و فرم تماس',
+  title: 'تماس با ما | قدیر لوله آنلاین ',
+  description: 'راه‌های ارتباط با قدیر لوله آنلاین مشهد — تلفن، ایمیل و فرم تماس',
 };
 
 export default async function ContactPage() {

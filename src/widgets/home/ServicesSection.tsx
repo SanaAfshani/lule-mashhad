@@ -34,7 +34,7 @@ export function ServicesSection() {
       <div className="container-main">
         <SectionHeading
           label="خدمات ما"
-          title="چرا لوله آنلاین؟"
+          title="چرا قدیر لوله آنلاین؟"
           description="فراتر از فروش محصول، خدمات جامعی ارائه می‌دهیم تا پروژه شما با کمترین دغدغه پیش برود"
         />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">

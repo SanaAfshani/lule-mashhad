@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const product = await getProductBySlug(slug, category);
   if (!product) return { title: 'محصول یافت نشد' };
   return {
-    title: `${product.name} | لوله آنلاین `,
+    title: `${product.name} | قدیر لوله آنلاین `,
     description: product.shortDescription || product.description?.slice(0, 160),
   };
 }

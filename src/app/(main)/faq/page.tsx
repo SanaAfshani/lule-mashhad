@@ -5,7 +5,7 @@ import { FAQPageClient } from '@/features/faq/FAQPageClient';
 import { getPublishedFaqs } from '@/shared/lib/data';
 
 export const metadata: Metadata = {
-  title: 'سوالات متداول | لوله آنلاین ',
+  title: 'سوالات متداول | قدیر لوله آنلاین ',
   description: 'پاسخ پرتکرارترین سوالات درباره محصولات، سفارش و تحویل',
 };
 

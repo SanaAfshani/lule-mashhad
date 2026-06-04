@@ -33,7 +33,7 @@ export function BlogPostView({ post }: { post: BlogPost }) {
             {!post.coverImage && (
               <div className="absolute inset-0 bg-gradient-to-br from-amber-500/30 to-slate-900/60 flex items-center justify-center">
                 <div className="text-center">
-                  <img src="/images/logo.png" alt="لوله مشهد" className="h-16 mx-auto mb-3 drop-shadow-lg" />
+                  <img src="/images/logo.png" alt="قدیر لوله آنلاین" className="h-16 mx-auto mb-3 drop-shadow-lg" />
                   <span className="text-white/80 text-sm font-medium bg-black/30 px-4 py-1.5 rounded-full">{tag}</span>
                 </div>
               </div>

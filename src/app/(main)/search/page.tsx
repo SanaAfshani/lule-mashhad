@@ -3,8 +3,8 @@ import Link from 'next/link';
 import { SearchPageClient } from '@/features/search/SearchPageClient';
 
 export const metadata: Metadata = {
-  title: 'جستجو | لوله آنلاین ',
-  description: 'جستجو در محصولات، مقالات و پروژه‌های لوله آنلاین ',
+  title: 'جستجو | قدیر لوله آنلاین ',
+  description: 'جستجو در محصولات، مقالات و پروژه‌های قدیر لوله آنلاین ',
 };
 
 export default function SearchPage() {
