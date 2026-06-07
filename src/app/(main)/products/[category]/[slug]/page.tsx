@@ -8,7 +8,9 @@ import { getProductBySlug } from '@/shared/lib/data';
 type Props = { params: Promise<{ category: string; slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { category, slug } = await params;
+  const { category: rawCat, slug: rawSlug } = await params;
+  const category = decodeURIComponent(rawCat);
+  const slug = decodeURIComponent(rawSlug);
   const product = await getProductBySlug(slug, category);
   if (!product) return { title: 'محصول یافت نشد' };
   return {
@@ -18,7 +20,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ProductDetailPage({ params }: Props) {
-  const { category, slug } = await params;
+  const { category: rawCat, slug: rawSlug } = await params;
+  const category = decodeURIComponent(rawCat);
+  const slug = decodeURIComponent(rawSlug);
   const product = await getProductBySlug(slug, category);
   if (!product) notFound();
   return <ProductDetailView product={product} />;

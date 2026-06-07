@@ -8,7 +8,8 @@ import { getCategoryBySlug, getPublishedProducts } from '@/shared/lib/data';
 type Props = { params: Promise<{ category: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { category: slug } = await params;
+  const { category: rawSlug } = await params;
+  const slug = decodeURIComponent(rawSlug);
   const category = await getCategoryBySlug(slug);
   if (!category) return { title: 'دسته‌بندی یافت نشد' };
   return {
@@ -18,7 +19,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function CategoryPage({ params }: Props) {
-  const { category: slug } = await params;
+  const { category: rawSlug } = await params;
+  const slug = decodeURIComponent(rawSlug);
   const category = await getCategoryBySlug(slug);
   if (!category) notFound();
 

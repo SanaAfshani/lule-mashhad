@@ -8,14 +8,16 @@ export const dynamic = 'force-dynamic';
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  const slug = decodeURIComponent(rawSlug);
   const post = await getBlogPostBySlug(slug);
   if (!post) return { title: 'مقاله یافت نشد' };
   return { title: `${post.title} | وبلاگ`, description: post.excerpt };
 }
 
 export default async function BlogPostPage({ params }: Props) {
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  const slug = decodeURIComponent(rawSlug);
   const post = await getBlogPostBySlug(slug);
   if (!post) notFound();
   return <BlogPostView post={post} />;
