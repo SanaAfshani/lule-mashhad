@@ -18,10 +18,11 @@ const highlights = [
 ];
 
 export function ProductDetailView({ product }: { product: Product }) {
-  const [activeTab, setActiveTab] = useState<TabKey>('specs');
+  const specEntries = Object.entries(product.specifications ?? {});
+  const hasSpecs = specEntries.length > 0;
+  const [activeTab, setActiveTab] = useState<TabKey>(hasSpecs ? 'specs' : 'description');
   const { phoneHref, whatsappUrl } = useSiteSettings();
   const priceDisplay = formatProductPrice(product.price);
-  const specEntries = Object.entries(product.specifications);
   const image = product.images[0] || product.category.image;
 
   return (
@@ -134,47 +135,71 @@ export function ProductDetailView({ product }: { product: Product }) {
           </motion.div>
         </div>
 
-        <div className="rounded-3xl border border-[var(--border)] overflow-hidden bg-[var(--card)]">
-          <div className="flex border-b border-[var(--border)]">
-            {(
-              [
-                { key: 'specs' as const, label: 'مشخصات فنی' },
-                { key: 'description' as const, label: 'توضیحات' },
-              ] as const
-            ).map((tab) => (
-              <button
-                key={tab.key}
-                type="button"
-                onClick={() => setActiveTab(tab.key)}
-                className={`flex-1 py-4 text-sm font-semibold transition-all ${
-                  activeTab === tab.key
-                    ? 'bg-[var(--accent)] text-[var(--accent-foreground)]'
-                    : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-          <div className="p-6">
-            {activeTab === 'specs' && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {specEntries.map(([k, v]) => (
-                  <div key={k} className="flex items-center justify-between p-3.5 rounded-xl bg-[var(--muted)] border border-[var(--border)]">
-                    <span className="text-[var(--muted-foreground)] text-sm">{k}</span>
-                    <span className="font-semibold text-[var(--foreground)] text-sm">{v}</span>
-                  </div>
+        {(hasSpecs || product.description) && (
+          <div className="rounded-3xl border border-[var(--border)] overflow-hidden bg-[var(--card)]">
+
+            {/* Tabs — فقط اگر هر دو وجود داشتن نشان بده */}
+            {hasSpecs && product.description && (
+              <div className="flex border-b border-[var(--border)]">
+                {([
+                  { key: 'specs' as const, label: 'مشخصات فنی' },
+                  { key: 'description' as const, label: 'توضیحات' },
+                ] as const).map((tab) => (
+                  <button
+                    key={tab.key}
+                    type="button"
+                    onClick={() => setActiveTab(tab.key)}
+                    className={`flex-1 py-4 text-sm font-semibold transition-all ${
+                      activeTab === tab.key
+                        ? 'bg-[var(--accent)] text-[var(--accent-foreground)]'
+                        : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
                 ))}
               </div>
             )}
-            {activeTab === 'description' && product.description && (
-              <div
-                className="prose prose-sm max-w-none text-[var(--foreground)] leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: product.description }}
-              />
+
+            {/* فقط یکی — هدر ثابت */}
+            {!(hasSpecs && product.description) && (
+              <div className="px-6 py-4 border-b border-[var(--border)]">
+                <h2 className="text-[var(--foreground)] font-bold">
+                  {hasSpecs ? 'مشخصات فنی' : 'توضیحات'}
+                </h2>
+              </div>
             )}
+
+            <div className="p-6">
+              {/* Specs */}
+              {(activeTab === 'specs' || !product.description) && hasSpecs && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {specEntries.map(([k, v]) => (
+                    <div key={k} className="flex items-center justify-between p-3.5 rounded-xl bg-[var(--muted)] border border-[var(--border)]">
+                      <span className="text-[var(--muted-foreground)] text-sm">{k}</span>
+                      <span className="font-semibold text-[var(--foreground)] text-sm">{v}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Description */}
+              {(activeTab === 'description' || !hasSpecs) && product.description && (
+                <div
+                  className="prose prose-sm max-w-none text-[var(--foreground)] leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: product.description }}
+                />
+              )}
+
+              {/* هیچ‌کدام */}
+              {!hasSpecs && !product.description && (
+                <p className="text-[var(--muted-foreground)] text-sm text-center py-4">
+                  اطلاعات بیشتر به زودی اضافه می‌شود.
+                </p>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
