@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowRight, Save, Loader2, FileText, X } from 'lucide-react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
+import { uploadPdf } from '@/shared/lib/uploadPdf';
 
 export default function EditBlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
@@ -12,6 +13,7 @@ export default function EditBlogPostPage({ params }: { params: Promise<{ slug: s
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
   const [pdfUploading, setPdfUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const pdfInputRef = useRef<HTMLInputElement>(null);
   const [originalSlug, setOriginalSlug] = useState(slug);
   const [form, setForm] = useState({
@@ -59,21 +61,16 @@ export default function EditBlogPostPage({ params }: { params: Promise<{ slug: s
 
   const handlePdfUpload = async (file: File) => {
     setPdfUploading(true);
+    setUploadProgress(0);
     try {
-      const fd = new FormData();
-      fd.append('file', file);
-      const res = await fetch('/api/upload/pdf', { method: 'POST', body: fd });
-      const json = await res.json();
-      if (!res.ok || !json.success) {
-        toast.error(json.error || 'آپلود PDF ناموفق بود');
-        return;
-      }
-      setForm((f) => ({ ...f, pdfUrl: json.url }));
+      const url = await uploadPdf(file, (pct) => setUploadProgress(pct));
+      setForm((f) => ({ ...f, pdfUrl: url }));
       toast.success('فایل PDF با موفقیت آپلود شد');
-    } catch {
-      toast.error('خطا در آپلود فایل');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'خطا در آپلود فایل');
     } finally {
       setPdfUploading(false);
+      setUploadProgress(0);
     }
   };
 
@@ -236,13 +233,21 @@ export default function EditBlogPostPage({ params }: { params: Promise<{ slug: s
                   className="w-full border-2 border-dashed border-slate-700 rounded-xl p-6 flex flex-col items-center justify-center gap-3 text-slate-500 hover:border-amber-500 hover:text-amber-400 transition-colors disabled:opacity-50"
                 >
                   {pdfUploading ? (
-                    <Loader2 className="w-7 h-7 animate-spin" />
+                    <Loader2 className="w-7 h-7 animate-spin text-amber-400" />
                   ) : (
                     <FileText className="w-7 h-7" />
                   )}
-                  <div className="text-sm text-center">
-                    <div>{pdfUploading ? 'در حال آپلود...' : 'آپلود فایل PDF'}</div>
-                    <div className="text-xs mt-1 text-slate-600">حداکثر ۲۰ مگابایت</div>
+                  <div className="text-sm text-center w-full">
+                    <div>{pdfUploading ? `در حال آپلود... ${uploadProgress}%` : 'آپلود فایل PDF'}</div>
+                    <div className="text-xs mt-1 text-slate-600">حداکثر ۱۰۰ مگابایت</div>
+                    {pdfUploading && (
+                      <div className="mt-2 w-full bg-slate-700 rounded-full h-1.5">
+                        <div
+                          className="bg-amber-500 h-1.5 rounded-full transition-all duration-300"
+                          style={{ width: `${uploadProgress}%` }}
+                        />
+                      </div>
+                    )}
                   </div>
                 </button>
               )}
