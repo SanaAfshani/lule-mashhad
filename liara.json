@@ -1,0 +1,8 @@
+{
+  "app": "ghadir-louleh-online",
+  "platform": "node",
+  "port": 3000,
+  "build": {
+    "command": "npm run build"
+  }
+}
