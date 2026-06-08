@@ -1,5 +1,5 @@
 {
-  "app": "ghadir-louleh-online",
+  "app": "ghadirloulehonline",
   "platform": "node",
   "port": 3000,
   "build": {
