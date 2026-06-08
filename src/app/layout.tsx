@@ -7,20 +7,31 @@ import { NavigationProgress } from '@/shared/ui/NavigationProgress';
 
 export const metadata: Metadata = {
   title: {
-    default: siteConfig.name + ' | تامین کننده لوله و اتصالات صنعتی',
+    default: siteConfig.name + ' | تامین کننده لوله و اتصالات صنعتی در مشهد',
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
   keywords: siteConfig.keywords,
   authors: [{ name: siteConfig.name }],
-  robots: { index: true, follow: true },
+  metadataBase: new URL(siteConfig.url),
+  alternates: { canonical: '/' },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, 'max-image-preview': 'large' },
+  },
   openGraph: {
     type: 'website',
     locale: 'fa_IR',
     url: siteConfig.url,
-    title: siteConfig.name,
+    title: siteConfig.name + ' | تامین کننده لوله و اتصالات صنعتی در مشهد',
     description: siteConfig.description,
     siteName: siteConfig.name,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: siteConfig.name,
+    description: siteConfig.description,
   },
 };
 

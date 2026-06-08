@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { CategoryProductsClient } from '@/features/products/CategoryProductsClient';
 import { getCategoryBySlug, getPublishedProducts } from '@/shared/lib/data';
+import { siteConfig } from '@/shared/config/site';
 
 type Props = { params: Promise<{ category: string }> };
 
@@ -12,9 +13,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const slug = decodeURIComponent(rawSlug);
   const category = await getCategoryBySlug(slug);
   if (!category) return { title: 'دسته‌بندی یافت نشد' };
+  const desc = category.description ?? `خرید ${category.name} در مشهد — قیمت مناسب، تحویل سریع`;
   return {
-    title: `${category.name} | محصولات`,
-    description: category.description ?? undefined,
+    title: `${category.name} | قدیر لوله آنلاین`,
+    description: desc,
+    alternates: {
+      canonical: `${siteConfig.url}/products/${encodeURIComponent(slug)}`,
+    },
+    openGraph: { title: `${category.name} | قدیر لوله آنلاین`, description: desc },
   };
 }
 
