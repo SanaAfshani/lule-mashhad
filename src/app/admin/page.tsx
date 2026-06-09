@@ -1,7 +1,5 @@
 export const dynamic = 'force-dynamic';
 
-export const dynamic = 'force-dynamic';
-
 import { Suspense } from 'react';
 import { prisma } from '@/shared/lib/prisma';
 import { AdminDashboardClient } from './AdminDashboardClient';
