@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/admin/', '/api/'],
     },
-    sitemap: 'https://luleonline-mashhad.ir/sitemap.xml',
+    sitemap: 'https://ghadirlouleonline.ir/sitemap.xml',
   };
 }
