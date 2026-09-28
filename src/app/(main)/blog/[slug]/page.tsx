@@ -1,4 +1,5 @@
 import { notFound, permanentRedirect } from 'next/navigation';
+import { safeDecode } from '@/shared/lib/utils';
 import { findRedirect } from '@/shared/lib/redirects';
 import type { Metadata } from 'next';
 import { BlogPostView } from '@/features/blog/BlogPostView';
@@ -13,7 +14,7 @@ type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug: rawSlug } = await params;
-  const slug = decodeURIComponent(rawSlug);
+  const slug = safeDecode(rawSlug);
   const post = await getBlogPostBySlug(slug);
   if (!post) return { title: 'مقاله یافت نشد', robots: { index: false, follow: true } };
 
@@ -51,7 +52,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug: rawSlug } = await params;
-  const slug = decodeURIComponent(rawSlug);
+  const slug = safeDecode(rawSlug);
   const post = await getBlogPostBySlug(slug);
   if (!post) {
     const moved = await findRedirect(`/blog/${slug}`);

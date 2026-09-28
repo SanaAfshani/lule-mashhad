@@ -108,26 +108,24 @@ export async function getPublishedBlogPosts(options?: { featured?: boolean; limi
   return posts.map(serializeBlogPost);
 }
 
+/**
+ * slug باید decode‌شده باشد (صفحه با safeDecode این کار را می‌کند).
+ * خطای دیتابیس عمداً بالا می‌رود: ۵۰۰ یعنی «موقت، دوباره بیا» برای گوگل؛
+ * قبلاً catch آن را به null و در نتیجه ۴۰۴ تبدیل می‌کرد و یک قطعی لحظه‌ای Neon صفحه را از ایندکس خارج می‌کرد.
+ */
 export async function getBlogPostBySlug(slug: string) {
-  try {
-    const decodedSlug = decodeURIComponent(slug);
-    const post = await prisma.blogPost.findFirst({
-      where: { slug: decodedSlug, published: true },
-      include: { author: { select: { id: true, name: true, email: true } } },
-    });
+  const post = await prisma.blogPost.findFirst({
+    where: { slug, published: true },
+    include: { author: { select: { id: true, name: true, email: true } } },
+  });
+  if (!post) return null;
 
-    if (!post) return null;
+  prisma.blogPost.update({
+    where: { id: post.id },
+    data: { viewCount: { increment: 1 } },
+  }).catch(() => {});
 
-    prisma.blogPost.update({
-      where: { id: post.id },
-      data: { viewCount: { increment: 1 } },
-    }).catch(() => {});
-
-    return serializeBlogPost(post);
-  } catch (e) {
-    console.error('getBlogPostBySlug error:', e);
-    return null;
-  }
+  return serializeBlogPost(post);
 }
 
 export async function getPublishedFaqs() {

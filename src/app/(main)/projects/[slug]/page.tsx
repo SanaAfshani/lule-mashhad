@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import { notFound, permanentRedirect } from 'next/navigation';
+import { safeDecode } from '@/shared/lib/utils';
 import { findRedirect } from '@/shared/lib/redirects';
 import type { Metadata } from 'next';
 import { ProjectDetailView } from '@/features/projects/ProjectDetailView';
@@ -13,7 +14,7 @@ type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug: rawSlug } = await params;
-  const slug = decodeURIComponent(rawSlug);
+  const slug = safeDecode(rawSlug);
   const project = await getProjectBySlug(slug);
   if (!project) return { title: 'پروژه یافت نشد', robots: { index: false, follow: true } };
 
@@ -41,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProjectDetailPage({ params }: Props) {
   const { slug: rawSlug } = await params;
-  const slug = decodeURIComponent(rawSlug);
+  const slug = safeDecode(rawSlug);
   const project = await getProjectBySlug(slug);
   if (!project) {
     const moved = await findRedirect(`/projects/${slug}`);

@@ -15,7 +15,8 @@ const baseMetadata: Metadata = {
   keywords: siteConfig.keywords,
   authors: [{ name: siteConfig.name }],
   metadataBase: new URL(siteConfig.url),
-  alternates: { canonical: '/' },
+  // canonical اینجا تعریف نمی‌شود: به همه صفحه‌های بدون canonical ارث می‌رسید و آن‌ها را «نسخه دیگر صفحه اصلی» معرفی می‌کرد.
+  // هر صفحه canonical خودش را می‌گذارد (صفحه اصلی هم).
   robots: {
     index: true,
     follow: true,

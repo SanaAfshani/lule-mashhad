@@ -5,6 +5,15 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+/** decode پارامتر آدرس؛ آدرس خراب (مثل «%E0») به جای خطای ۵۰۰ همان متن خام را برمی‌گرداند تا صفحه ۴۰۴ شود */
+export function safeDecode(value: string): string {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
 export function formatPersianNumber(num: number): string {
   return num.toLocaleString('fa-IR');
 }

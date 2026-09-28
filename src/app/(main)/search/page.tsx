@@ -5,6 +5,9 @@ import { SearchPageClient } from '@/features/search/SearchPageClient';
 export const metadata: Metadata = {
   title: 'جستجو در محصولات و مقالات',
   description: 'جستجو در محصولات، مقالات و پروژه‌های قدیر لوله آنلاین ',
+  // صفحه نتایج جستجوی داخلی — طبق راهنمای گوگل ایندکس نشود، ولی لینک‌هایش دنبال شود
+  robots: { index: false, follow: true },
+  alternates: { canonical: '/search' },
 };
 
 export default function SearchPage() {

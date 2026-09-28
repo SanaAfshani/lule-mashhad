@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import { notFound, permanentRedirect } from 'next/navigation';
+import { safeDecode } from '@/shared/lib/utils';
 import { findRedirect } from '@/shared/lib/redirects';
 import type { Metadata } from 'next';
 import { ProductDetailView } from '@/features/products/ProductDetailView';
@@ -14,8 +15,8 @@ type Props = { params: Promise<{ category: string; slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { category: rawCat, slug: rawSlug } = await params;
-  const category = decodeURIComponent(rawCat);
-  const slug = decodeURIComponent(rawSlug);
+  const category = safeDecode(rawCat);
+  const slug = safeDecode(rawSlug);
   const product = await getProductBySlug(slug, category);
   if (!product) return { title: 'محصول یافت نشد', robots: { index: false, follow: true } };
 
@@ -58,8 +59,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProductDetailPage({ params }: Props) {
   const { category: rawCat, slug: rawSlug } = await params;
-  const category = decodeURIComponent(rawCat);
-  const slug = decodeURIComponent(rawSlug);
+  const category = safeDecode(rawCat);
+  const slug = safeDecode(rawSlug);
   const product = await getProductBySlug(slug, category);
   if (!product) {
     // اسلاگ محصول یکتاست؛ اگر فقط دسته عوض شده، محصول را بدون دسته پیدا و به آدرس درست منتقل کن

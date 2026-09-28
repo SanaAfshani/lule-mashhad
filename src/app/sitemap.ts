@@ -18,13 +18,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/products`, lastModified: now, changeFrequency: 'daily', priority: 0.9 },
     { url: `${baseUrl}/prices`, lastModified: now, changeFrequency: 'daily', priority: 0.9 },
     { url: `${baseUrl}/categories`, lastModified: now, changeFrequency: 'weekly', priority: 0.85 },
-    { url: `${baseUrl}/search`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
     { url: `${baseUrl}/about`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${baseUrl}/contact`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${baseUrl}/blog`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
-    { url: `${baseUrl}/projects`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${baseUrl}/services`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${baseUrl}/faq`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${baseUrl}/terms`, lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${baseUrl}/privacy`, lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
   ];
 
   const [categories, products, posts, projects] = await Promise.all([
@@ -62,5 +62,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.65,
   }));
 
-  return [...staticPages, ...categoryPages, ...productPages, ...blogPages, ...projectPages];
+  // /search (noindex) در سایت‌مپ نیست؛ /projects فقط وقتی پروژه‌ای ثبت شده باشد
+  const projectsIndex: MetadataRoute.Sitemap = projects.length
+    ? [{ url: `${baseUrl}/projects`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 }]
+    : [];
+
+  return [...staticPages, ...categoryPages, ...productPages, ...blogPages, ...projectsIndex, ...projectPages];
 }
