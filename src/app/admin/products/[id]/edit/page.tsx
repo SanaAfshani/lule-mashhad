@@ -7,6 +7,11 @@ import Link from 'next/link';
 import toast from 'react-hot-toast';
 import type { Category, Product } from '@/shared/types';
 import { ImageUploader } from '@/shared/ui/ImageUploader';
+import { HtmlContentEditor } from '@/features/admin/editor/HtmlContentEditor';
+import { SeoPanel } from '@/features/admin/seo/SeoPanel';
+import { FaqEditor } from '@/features/admin/seo/FaqEditor';
+import type { SeoFields } from '@/features/admin/seo/seo';
+import type { FaqItem } from '@/shared/types';
 
 type Spec = { key: string; value: string };
 
@@ -21,6 +26,14 @@ interface FormState {
   featured: boolean;
   published: boolean;
   specs: Spec[];
+  // --- سئو ---
+  slug: string;
+  metaTitle: string;
+  metaDescription: string;
+  focusKeyword: string;
+  ogTitle: string;
+  ogDescription: string;
+  faqs: FaqItem[];
 }
 
 export default function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
@@ -33,7 +46,20 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
     name: '', categoryId: '', shortDescription: '', description: '',
     price: '', images: [], inStock: true, featured: false, published: true,
     specs: [{ key: '', value: '' }],
+    slug: '',
+    metaTitle: '',
+    metaDescription: '',
+    focusKeyword: '',
+    ogTitle: '',
+    ogDescription: '',
+    faqs: [],
   });
+
+  const handleSeoChange = (patch: Partial<SeoFields>) =>
+    setForm((f) => ({ ...f, ...patch }));
+
+  const selectedCategorySlug =
+    categories.find((c) => c.id === form.categoryId)?.slug || 'دسته-بندی';
 
   useEffect(() => {
     (async () => {
@@ -67,6 +93,13 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
           specs: specEntries.length > 0
             ? specEntries.map(([key, value]) => ({ key, value }))
             : [{ key: '', value: '' }],
+          slug: product.slug || '',
+          metaTitle: product.metaTitle || '',
+          metaDescription: product.metaDescription || '',
+          focusKeyword: product.focusKeyword || '',
+          ogTitle: product.ogTitle || '',
+          ogDescription: product.ogDescription || '',
+          faqs: Array.isArray(product.faqs) ? product.faqs : [],
         });
       } catch {
         toast.error('خطا در ارتباط با سرور');
@@ -100,6 +133,13 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
           inStock: form.inStock,
           featured: form.featured,
           published: form.published,
+          slug: form.slug || undefined,
+          metaTitle: form.metaTitle,
+          metaDescription: form.metaDescription,
+          focusKeyword: form.focusKeyword,
+          ogTitle: form.ogTitle,
+          ogDescription: form.ogDescription,
+          faqs: form.faqs,
         }),
       });
 
@@ -179,13 +219,13 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                   className={inputCls} />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1.5">توضیحات کامل</label>
-                <textarea value={form.description}
-                  onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  rows={5}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none resize-none transition-colors" />
-              </div>
+              <HtmlContentEditor
+                label="توضیحات کامل"
+                value={form.description}
+                onChange={(description) => setForm((f) => ({ ...f, description }))}
+                rows={8}
+                placeholder="توضیحات کامل محصول — می‌توانی مستقیم از ابزار تولید محتوا پیست کنی..."
+              />
             </div>
 
             {/* Images */}
@@ -224,6 +264,42 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                 ))}
               </div>
             </div>
+
+            <Link
+              href={`/admin/prices?product=${id}`}
+              className="flex items-center justify-between gap-3 rounded-2xl border-2 border-emerald-500/30 bg-emerald-500/10 px-5 py-4 hover:border-emerald-500/60 transition-colors"
+            >
+              <span>
+                <span className="block text-white font-bold">جدول قیمت این محصول</span>
+                <span className="block text-emerald-200/60 text-xs mt-0.5">قیمت‌ها در «تابلوی قیمت» لحظه‌ای ویرایش می‌شوند</span>
+              </span>
+              <span className="text-emerald-400 text-sm font-bold shrink-0">باز کردن ←</span>
+            </Link>
+
+            <SeoPanel
+              value={{
+                slug: form.slug,
+                metaTitle: form.metaTitle,
+                metaDescription: form.metaDescription,
+                focusKeyword: form.focusKeyword,
+                ogTitle: form.ogTitle,
+                ogDescription: form.ogDescription,
+              }}
+              onChange={handleSeoChange}
+              context={{
+                title: form.name,
+                excerpt: form.shortDescription,
+                content: form.description,
+              }}
+              variant="product"
+              previewPath={`products/${selectedCategorySlug}`}
+            />
+
+            <FaqEditor
+              value={form.faqs}
+              onChange={(faqs) => setForm((f) => ({ ...f, faqs }))}
+              entityLabel="محصول"
+            />
           </div>
 
           {/* ── Sidebar ── */}

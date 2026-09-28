@@ -90,7 +90,7 @@ export default function NewProjectPage() {
             type="text"
             value={form.location}
             onChange={(e) => setForm({ ...form, location: e.target.value })}
-            placeholder="مثال: مشهد"
+            placeholder="مثال: شهرک صنعتی"
             className={inputCls}
           />
         </div>

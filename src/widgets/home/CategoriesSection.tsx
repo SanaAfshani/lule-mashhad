@@ -1,134 +1,82 @@
 'use client';
 
-import Image from 'next/image';
-import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ArrowLeft, LayoutGrid } from 'lucide-react';
 import { SectionHeading } from '@/shared/ui/SectionHeading';
-import { formatPersianNumber } from '@/shared/lib/utils';
+import { CategoryThumb } from '@/widgets/header/Header';
+import { cn, faDigits } from '@/shared/lib/utils';
+import type { NavCategory } from '@/shared/lib/data';
 
-const CATEGORY_IMAGE_HEIGHT = 'h-48';
-
-const styleBySlug: Record<string, { from: string; to: string; accent: string }> = {
-  'pvc-pipes': { from: 'from-blue-950', to: 'to-slate-900', accent: '#3B82F6' },
-  'polyethylene-pipes': { from: 'from-teal-950', to: 'to-slate-900', accent: '#14B8A6' },
-  'cast-iron-pipes': { from: 'from-slate-800', to: 'to-slate-950', accent: '#94A3B8' },
-  manholes: { from: 'from-stone-900', to: 'to-slate-950', accent: '#A8A29E' },
-  fittings: { from: 'from-indigo-950', to: 'to-slate-900', accent: '#6366F1' },
-  valves: { from: 'from-amber-950', to: 'to-slate-900', accent: '#F59E0B' },
-};
-
-const defaultStyle = { from: 'from-slate-800', to: 'to-slate-950', accent: 'var(--accent)' };
-
-export type HomeCategory = {
-  slug: string;
-  name: string;
-  description: string | null;
-  image: string | null;
-  _count: { products: number };
-};
-
-type Props = {
-  categories: HomeCategory[];
-};
-
-export function CategoriesSection({ categories }: Props) {
-  if (categories.length === 0) return null;
+export function CategoriesSection({ categories }: { categories: NavCategory[] }) {
+  if (!categories.length) return null;
+  const shown = categories.slice(0, 7);
 
   return (
-    <section className="home-section bg-[var(--background)]">
+    <section className="section-padding" aria-labelledby="categories-title">
       <div className="container-main">
-        <SectionHeading
+        <SectionHeading id="categories-title"
+          align="right"
           label="دسته‌بندی محصولات"
-          title="کاتالوگ کامل لوله و اتصالات"
-          description="از لوله‌های پلیکا تا چدن داکتیل؛ هر آنچه برای پروژه آب و فاضلاب نیاز دارید"
+          title="خرید لوله و اتصالات"
+          description="دسته مورد نظرتان را انتخاب کنید؛ قیمت روز و مشخصات فنی همه محصولات در دسترس است."
+          action={{ href: '/categories', label: 'همه دسته‌ها' }}
         />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {categories.map((cat, index) => {
-            const style = styleBySlug[cat.slug] ?? defaultStyle;
-            const image = cat.image || `/images/categories/${cat.slug}.jpg`;
-
+        <div className="grid grid-cols-2 lg:grid-cols-4 lg:auto-rows-[190px] gap-3 sm:gap-4">
+          {shown.map((c, i) => {
+            const big = i === 0;
             return (
               <motion.div
-                key={cat.slug}
-                initial={{ opacity: 0, y: 28 }}
+                key={c.slug}
+                initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.08, duration: 0.5 }}
-                className="h-full"
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{ delay: i * 0.05, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                className={cn(big && 'col-span-2 lg:row-span-2')}
               >
-                <Link
-                  href={`/products/${cat.slug}`}
-                  className={`surface-dark group relative flex h-full flex-col rounded-2xl bg-gradient-to-br ${style.from} ${style.to} overflow-hidden border border-white/5 shadow-lg transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl`}
-                  style={{ ['--accent' as string]: style.accent }}
-                >
-                  <div
-                    className="absolute inset-0 opacity-[0.035]"
-                    style={{
-                      backgroundImage:
-                        'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
-                      backgroundSize: '20px 20px',
-                    }}
-                  />
-
-                  <div
-                    className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-                    style={{
-                      background:
-                        'radial-gradient(ellipse at 50% 110%, color-mix(in srgb, var(--accent) 19%, transparent), transparent 70%)',
-                    }}
-                  />
-
-                  <div className={`relative w-full shrink-0 overflow-hidden ${CATEGORY_IMAGE_HEIGHT}`}>
-                    <Image
-                      src={image}
-                      alt={cat.name}
-                      fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
-                      priority={index < 3}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/25 to-slate-900/10" />
-                    <div className="absolute top-0 inset-x-0 h-0.5 opacity-50 transition-opacity group-hover:opacity-100 bg-gradient-to-r from-transparent via-[var(--accent)] to-transparent" />
-                  </div>
-
-                  <div className="relative z-10 flex flex-1 flex-col p-5">
-                    <h3 className="mb-1.5 text-base font-bold leading-snug text-white">{cat.name}</h3>
-                    <p className="mb-4 line-clamp-2 text-xs leading-relaxed text-slate-300">
-                      {cat.description}
-                    </p>
-
-                    <div className="mt-auto flex items-center justify-between">
-                      <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-slate-300">
-                        {formatPersianNumber(cat._count.products)}+ محصول
+                <div className="h-full rounded-3xl">
+                  <Link
+                    href={`/products/${c.slug}`}
+                    className={cn(
+                      'group relative flex h-full overflow-hidden rounded-3xl bg-[var(--ink-2)]',
+                      big ? 'aspect-[16/10] lg:aspect-auto' : 'aspect-[4/5] sm:aspect-square lg:aspect-auto',
+                    )}
+                  >
+                    <CategoryThumb category={c} className="absolute inset-0 w-full h-full transition-transform duration-700 group-hover:scale-105" />
+                    <span className="absolute inset-0 bg-gradient-to-t from-[var(--ink)] via-[var(--ink)]/40 to-transparent" />
+                    <span className="relative mt-auto w-full p-4 sm:p-5 flex items-end justify-between gap-3">
+                      <span className="min-w-0">
+                        <span className={cn('block font-black text-white leading-snug', big ? 'text-2xl sm:text-3xl' : 'text-[15px] sm:text-lg')}>
+                          {c.name}
+                        </span>
+                        <span className="block mt-1 text-xs text-slate-300 num">{faDigits(c.productCount)} محصول</span>
                       </span>
-                      <div className="flex items-center gap-1.5 text-xs font-semibold text-[var(--accent)] transition-all group-hover:gap-2.5">
-                        مشاهده
-                        <ArrowLeft className="h-3.5 w-3.5" />
-                      </div>
-                    </div>
-                  </div>
-                </Link>
+                      <span className="shrink-0 grid place-items-center w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-white/15 backdrop-blur text-white transition-colors group-hover:bg-[var(--accent)] group-hover:text-[var(--accent-foreground)]">
+                        <ArrowLeft className="w-4 h-4" />
+                      </span>
+                    </span>
+                  </Link>
+                </div>
               </motion.div>
             );
           })}
-        </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mt-8 flex justify-center md:mt-10"
-        >
+          {/* کاشی آخر: همه دسته‌ها */}
           <Link
-            href="/products"
-            className="inline-flex h-12 items-center gap-2 rounded-xl border-2 border-[var(--accent)] px-8 font-semibold text-[var(--accent)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)]"
+            href="/categories"
+            className={cn(
+              'group relative overflow-hidden rounded-3xl border-2 border-dashed border-[var(--border)] flex flex-col items-center justify-center gap-2 p-5 text-center hover:border-[var(--accent)] transition-colors',
+              // کاشی آخر ردیف ناقص را پر می‌کند: موبایل ۲ ستونه، دسکتاپ ۴ ستونه (کارت اول ۲×۲)
+              (shown.length - 1) % 2 === 0 ? 'col-span-2' : 'col-span-1',
+              (shown.length - 1) % 4 === 2 ? 'lg:col-span-2' : 'lg:col-span-1',
+            )}
           >
-            مشاهده همه محصولات
-            <ArrowLeft className="h-4 w-4" />
+            <LayoutGrid className="w-8 h-8 text-[var(--accent)] transition-transform group-hover:scale-110" />
+            <span className="font-black">همه دسته‌ها</span>
+            <span className="text-xs text-[var(--muted-foreground)] num">{faDigits(categories.length)} دسته‌بندی</span>
           </Link>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

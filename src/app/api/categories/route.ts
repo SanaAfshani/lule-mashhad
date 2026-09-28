@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { prisma } from '@/shared/lib/prisma';
+import { slugify } from '@/shared/lib/utils';
 import { serverErrorResponse } from '@/shared/lib/api-errors';
 
 export async function GET(request: NextRequest) {
@@ -21,7 +22,9 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const category = await prisma.category.create({ data: body });
+    const category = await prisma.category.create({
+      data: { ...body, slug: slugify(String(body.slug || '').trim() || String(body.name || '')) },
+    });
 
     revalidatePath('/categories');
     revalidatePath('/products', 'layout');

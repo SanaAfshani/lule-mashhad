@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/shared/lib/prisma';
 import { serializeProject } from '@/shared/lib/serializers';
+import { slugify } from '@/shared/lib/utils';
+import { recordRedirect } from '@/shared/lib/redirects';
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -27,11 +29,13 @@ export async function PUT(request: NextRequest, { params }: Props) {
     const { id } = await params;
     const body = await request.json();
 
+    const before = await prisma.project.findUnique({ where: { id }, select: { slug: true } });
+
     const project = await prisma.project.update({
       where: { id },
       data: {
         ...(body.title != null && { title: String(body.title) }),
-        ...(body.slug != null && { slug: String(body.slug) }),
+        ...(body.slug != null && { slug: slugify(String(body.slug)) }),
         ...(body.description != null && { description: body.description }),
         ...(body.content != null && { content: body.content }),
         ...(body.images != null && { images: JSON.stringify(body.images) }),
@@ -42,6 +46,10 @@ export async function PUT(request: NextRequest, { params }: Props) {
         ...(body.featured != null && { featured: Boolean(body.featured) }),
       },
     });
+
+    if (before && before.slug !== project.slug) {
+      await recordRedirect(`/projects/${before.slug}`, `/projects/${project.slug}`);
+    }
 
     return NextResponse.json({ success: true, data: serializeProject(project) });
   } catch (error) {

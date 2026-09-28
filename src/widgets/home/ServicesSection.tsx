@@ -1,59 +1,79 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { SectionHeading } from '@/shared/ui/SectionHeading';
-import { FileText, ShieldCheck, Zap } from 'lucide-react';
+import { FileText, Headphones, MessageCircle, Phone, Scissors, ShieldCheck, Truck } from 'lucide-react';
+import { useSiteSettings } from '@/shared/providers/SiteSettingsProvider';
+import { useConsult } from '@/features/consult/ConsultProvider';
+import { faDigits } from '@/shared/lib/utils';
 
+/** همان خدماتی که در صفحه «خدمات» سایت اعلام شده */
 const services = [
-  {
-    icon: FileText,
-    title: 'گواهینامه کیفیت',
-    desc: 'ارائه تمام گواهینامه‌های کیفی (ISIRI, ISO, EN) و برگه آزمایش کارخانه برای همه محصولات.',
-    color: 'purple',
-  },
-  {
-    icon: ShieldCheck,
-    title: 'ضمانت اصالت کالا',
-    desc: 'تمام محصولات مستقیم از کارخانه‌های معتبر ایرانی و خارجی تأمین می‌شوند.',
-    color: 'teal',
-  },
+  { icon: Headphones, title: 'مشاوره فنی رایگان', desc: 'انتخاب جنس، سایز و فشار کاری مناسب پروژه با کمک کارشناسان.' },
+  { icon: Truck, title: 'ارسال به سراسر ایران', desc: 'بارگیری و ارسال سفارش به محل پروژه در هر نقطه از کشور.' },
+  { icon: FileText, title: 'گواهینامه کیفیت', desc: 'ارائه گواهینامه‌های کیفی (ISIRI, ISO, EN) و Mill Certificate.' },
+  { icon: ShieldCheck, title: 'ضمانت اصالت کالا', desc: 'تامین مستقیم از کارخانه‌های معتبر ایرانی و خارجی.' },
+  { icon: Scissors, title: 'برش و تبدیل لوله', desc: 'آماده‌سازی لوله در طول و اتصال مورد نیاز پروژه.' },
 ];
 
-const colorMap: Record<string, string> = {
-  amber:  'bg-[var(--accent)]/10  text-[var(--accent)]',
-  blue:   'bg-blue-500/10   text-blue-500',
-  green:  'bg-green-500/10  text-green-500',
-  purple: 'bg-purple-500/10 text-purple-500',
-  teal:   'bg-teal-500/10   text-teal-500',
-  rose:   'bg-rose-500/10   text-rose-500',
-};
-
 export function ServicesSection() {
+  const { phone, phoneHref, whatsappUrl } = useSiteSettings();
+  const { open } = useConsult();
+
   return (
-    <section className="home-section">
+    <section className="section-padding" aria-labelledby="why-title">
       <div className="container-main">
-        <SectionHeading
-          label="خدمات ما"
-          title="چرا قدیر لوله آنلاین؟"
-          description="فراتر از فروش محصول، خدمات جامعی ارائه می‌دهیم تا پروژه شما با کمترین دغدغه پیش برود"
-        />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {services.map(({ icon: Icon, title, desc, color }, i) => (
-            <motion.div
-              key={title}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.08, duration: 0.5 }}
-              className="group p-7 rounded-2xl bg-[var(--card)] border border-[var(--border)] hover:border-[var(--accent)]/30 hover:-translate-y-1 transition-all duration-300"
-            >
-              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-5 ${colorMap[color]} group-hover:scale-110 transition-transform duration-300`}>
-                <Icon className="w-6 h-6" />
+        <div className="relative overflow-hidden rounded-[var(--radius-panel)] bg-[var(--ink)] text-white">
+          <div className="absolute inset-0 bp-grid opacity-70" />
+
+          <div className="relative grid lg:grid-cols-[1fr_1.15fr] gap-8 lg:gap-12 p-6 sm:p-10 lg:p-14">
+            <div className="flex flex-col min-w-0">
+              <span className="eyebrow">چرا ما</span>
+              <h2 id="why-title" className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-black leading-snug text-white">
+                خرید مطمئن لوله و اتصالات، از مشاوره تا تحویل
+              </h2>
+              <p className="mt-4 text-slate-300 leading-8">
+                فرم مشاوره را پر کنید تا کارشناسان ما برای انتخاب محصول، استعلام قیمت روز و زمان ارسال با شما تماس بگیرند.
+              </p>
+              <div className="mt-7 space-y-3 w-full max-w-md">
+                <button
+                  onClick={() => open()}
+                  className="w-full min-h-13 py-3 px-6 rounded-2xl bg-[var(--accent)] text-[var(--accent-foreground)] font-black flex items-center justify-center gap-2 whitespace-nowrap"
+                >
+                  <Headphones className="w-5 h-5 shrink-0" />
+                  ثبت درخواست مشاوره
+                </button>
+                <div className="grid grid-cols-1 min-[400px]:grid-cols-[1.45fr_1fr] gap-3">
+                  <a href={phoneHref} className="min-w-0 h-12 px-3 rounded-2xl border border-white/15 bg-white/5 font-bold flex items-center justify-center gap-2 hover:bg-white/10">
+                    <Phone className="w-4 h-4 shrink-0 text-[var(--accent)]" />
+                    <span dir="ltr" className="num text-sm truncate">{faDigits(phone)}</span>
+                  </a>
+                  <a href={whatsappUrl} target="_blank" rel="noopener" className="min-w-0 h-12 px-3 rounded-2xl border border-white/15 bg-white/5 font-bold flex items-center justify-center gap-2 hover:bg-[#25D366] hover:border-transparent">
+                    <MessageCircle className="w-4 h-4 shrink-0" />
+                    <span className="text-sm">واتس‌اپ</span>
+                  </a>
+                </div>
               </div>
-              <h3 className="font-bold text-lg text-[var(--foreground)] mb-2">{title}</h3>
-              <p className="text-[var(--muted-foreground)] text-sm leading-relaxed">{desc}</p>
-            </motion.div>
-          ))}
+            </div>
+
+            <ul className="grid grid-cols-2 gap-2.5 sm:gap-3">
+              {services.map(({ icon: Icon, title, desc }, i) => (
+                <motion.li
+                  key={title}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.07 }}
+                  className={`rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur p-3.5 sm:p-5 ${i === services.length - 1 ? 'col-span-2' : ''}`}
+                >
+                  <span className="grid place-items-center w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[var(--accent)]/15 text-[var(--accent)]">
+                    <Icon className="w-5 h-5" />
+                  </span>
+                  <h3 className="mt-2.5 sm:mt-3 font-bold text-[14px] sm:text-base text-white leading-6">{title}</h3>
+                  <p className="mt-1 text-xs sm:text-sm text-slate-400 leading-6 sm:leading-7">{desc}</p>
+                </motion.li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </section>

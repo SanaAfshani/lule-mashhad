@@ -1,4 +1,4 @@
-import type { BlogPost, Category, Product, Project } from '@/shared/types';
+import type { FaqItem, BlogPost, Category, Product, Project } from '@/shared/types';
 import { formatPersianNumber } from '@/shared/lib/utils';
 
 export function parseJsonArray(value: string): string[] {
@@ -38,6 +38,12 @@ type DbProduct = {
   inStock: boolean;
   featured: boolean;
   published: boolean;
+  metaTitle?: string | null;
+  metaDescription?: string | null;
+  focusKeyword?: string | null;
+  ogTitle?: string | null;
+  ogDescription?: string | null;
+  faqs?: string;
   categoryId: string;
   category: { slug: string; name: string; image?: string | null };
   createdAt: Date;
@@ -52,6 +58,7 @@ export function serializeProduct(p: DbProduct): Product {
     price: p.price ?? undefined,
     images: parseJsonArray(p.images),
     specifications: parseJsonObject(p.specifications),
+    faqs: parseFaqs(p.faqs),
   } as Product;
 }
 
@@ -66,9 +73,16 @@ export type ProductListItem = {
   featured: boolean;
   specs: Record<string, string>;
   image?: string;
+  /** خلاصه جدول قیمت: تعداد ردیف، کمترین قیمت و تاریخ آخرین به‌روزرسانی */
+  priceRows: number;
+  priceFrom: number | null;
+  priceUpdatedAt: string | null;
 };
 
-export function toProductListItem(p: DbProduct): ProductListItem {
+export function toProductListItem(
+  p: DbProduct & { priceItems?: { price: number | null; priceChangedAt: Date }[] },
+  { showPrices = true }: { showPrices?: boolean } = {},
+): ProductListItem {
   const specs = parseJsonObject(p.specifications);
   const images = parseJsonArray(p.images);
   return {
@@ -77,11 +91,22 @@ export function toProductListItem(p: DbProduct): ProductListItem {
     name: p.name,
     category: p.category.slug,
     categoryName: p.category.name,
-    price: formatProductPrice(p.price),
+    // بیرون از ساعت کاری قیمت تکی هم مثل جدول قیمت پنهان است
+    price: showPrices ? formatProductPrice(p.price) : '۰',
     inStock: p.inStock,
     featured: p.featured,
     specs,
     image: images[0] || p.category.image || undefined,
+    ...(() => {
+      const items = p.priceItems ?? [];
+      const prices = items.map((i) => i.price).filter((x): x is number => x != null);
+      const latest = items.reduce<Date | null>((a, i) => (!a || i.priceChangedAt > a ? i.priceChangedAt : a), null);
+      return {
+        priceRows: items.length,
+        priceFrom: showPrices && prices.length ? Math.min(...prices) : null,
+        priceUpdatedAt: latest?.toISOString() ?? null,
+      };
+    })(),
   };
 }
 
@@ -102,11 +127,34 @@ type DbBlogPost = {
   featured: boolean;
   readTime: number;
   viewCount: number;
+  metaTitle?: string | null;
+  metaDescription?: string | null;
+  focusKeyword?: string | null;
+  ogTitle?: string | null;
+  ogDescription?: string | null;
+  faqs?: string;
   authorId: string;
   author?: { id: string; name: string; email?: string };
   createdAt: Date;
   updatedAt: Date;
 };
+
+/** فقط ردیف‌هایی که هم سوال و هم پاسخ دارند معتبرند — ردیف ناقص در schema گوگل خطا می‌دهد */
+export function parseFaqs(value: string | null | undefined): FaqItem[] {
+  if (!value) return [];
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .map((item) => ({
+        question: String((item as FaqItem)?.question ?? '').trim(),
+        answer: String((item as FaqItem)?.answer ?? '').trim(),
+      }))
+      .filter((item) => item.question && item.answer);
+  } catch {
+    return [];
+  }
+}
 
 export function serializeBlogPost(p: DbBlogPost): BlogPost {
   return {
@@ -115,6 +163,7 @@ export function serializeBlogPost(p: DbBlogPost): BlogPost {
     coverImage: p.coverImage ?? '',
     pdfUrl: p.pdfUrl ?? undefined,
     tags: parseJsonArray(p.tags),
+    faqs: parseFaqs(p.faqs),
     author: p.author as BlogPost['author'],
   };
 }

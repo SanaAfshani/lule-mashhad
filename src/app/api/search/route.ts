@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/shared/lib/prisma';
 import { serializeBlogPost, toProductListItem } from '@/shared/lib/serializers';
+import { getMarketNow } from '@/shared/lib/price-board';
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,6 +14,7 @@ export async function GET(request: NextRequest) {
       });
     }
 
+    const market = await getMarketNow();
     const [products, posts, projects] = await Promise.all([
       prisma.product.findMany({
         where: {
@@ -56,7 +58,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: {
-        products: products.map(toProductListItem),
+        products: products.map((p) => toProductListItem(p, { showPrices: market.open })),
         posts: posts.map(serializeBlogPost),
         projects: projects.map((p) => ({
           id: p.id,

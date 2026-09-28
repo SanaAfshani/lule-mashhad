@@ -54,6 +54,21 @@ model Product {
   inStock          Boolean  @default(true)
   featured         Boolean  @default(false)
   published        Boolean  @default(true)
+
+  // --- فیلدهای سئو (همه اختیاری؛ خالی باشند از نام/توضیح کوتاه محصول fallback می‌شود) ---
+  metaTitle        String?
+  metaDescription  String?
+  focusKeyword     String?
+  ogTitle          String?
+  ogDescription    String?
+  /** سوالات متداول اختصاصی محصول — آرایه JSON از {question, answer} */
+  faqs             String   @default("[]")
+  /** ردیف‌های تابلوی قیمت لحظه‌ای این محصول */
+  priceItems       PriceItem[]
+  /// منسوخ — جایگزین آن جدول PriceItem است و کد جدید آن را نمی‌خواند.
+  /// فقط نگه داشته شده تا نسخه قبلی سایت (اگر روی سرور است) با نبود ستون خطا ندهد؛ بعد از دیپلوی نسخه جدید قابل حذف است.
+  priceList        String   @default("[]")
+
   categoryId       String
   category         Category @relation(fields: [categoryId], references: [id])
   createdAt        DateTime @default(now())
@@ -73,6 +88,16 @@ model BlogPost {
   featured   Boolean  @default(false)
   readTime   Int      @default(5)
   viewCount  Int      @default(0)
+
+  // --- فیلدهای سئو (همه اختیاری؛ خالی باشند از عنوان/خلاصه مقاله fallback می‌شود) ---
+  metaTitle       String?
+  metaDescription String?
+  focusKeyword    String?
+  ogTitle         String?
+  ogDescription   String?
+  /** سوالات متداول اختصاصی مقاله — آرایه JSON از {question, answer} */
+  faqs            String  @default("[]")
+
   authorId   String
   author     User     @relation(fields: [authorId], references: [id])
   createdAt  DateTime @default(now())
@@ -135,4 +160,47 @@ model ContactMessage {
   message   String
   read      Boolean  @default(false)
   createdAt DateTime @default(now())
+}
+
+/// آدرس‌های قدیمی که به آدرس جدید منتقل شده‌اند (ریدایرکت دائمی).
+/// با تغییر اسلاگ در پنل ادمین خودکار ثبت می‌شود تا لینک‌های قبلی و رتبه گوگل از بین نرود.
+model Redirect {
+  id        String   @id @default(cuid())
+  fromPath  String   @unique
+  toPath    String
+  createdAt DateTime @default(now())
+}
+
+/// ردیف تابلوی قیمت لحظه‌ای — هر ردیف یک سایز/مدل از یک محصول.
+/// جدول مستقل (نه JSON داخل محصول) تا هر قیمت جدا و همزمان قابل ویرایش باشد و قیمت قبلی برای نمایش تغییر نگه داشته شود.
+model PriceItem {
+  id             String   @id @default(cuid())
+  productId      String
+  product        Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  title          String
+  /// قیمت به تومان؛ null یعنی «استعلام»
+  price          Int?
+  /// قیمت قبل از آخرین تغییر — برای فلش بالا/پایین و درصد تغییر
+  previousPrice  Int?
+  weight         String   @default("")
+  note           String   @default("")
+  sortOrder      Int      @default(0)
+  priceChangedAt DateTime @default(now())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  history        PriceHistory[]
+
+  @@index([productId, sortOrder])
+  @@index([updatedAt])
+}
+
+/// تاریخچه قیمت هر ردیف — هر تغییر قیمت یک ردیف؛ منبع نمودار نوسان قیمت
+model PriceHistory {
+  id          String    @id @default(cuid())
+  priceItemId String
+  priceItem   PriceItem @relation(fields: [priceItemId], references: [id], onDelete: Cascade)
+  price       Int
+  recordedAt  DateTime  @default(now())
+
+  @@index([priceItemId, recordedAt])
 }

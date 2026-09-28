@@ -2,6 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/shared/lib/prisma';
 import { serializeProduct, toProductListItem } from '@/shared/lib/serializers';
 import { slugify } from '@/shared/lib/utils';
+import { serializeFaqs } from '@/shared/lib/page-faqs';
+import { getMarketNow } from '@/shared/lib/price-board';
+
+/** فیلد متنی اختیاری: رشته خالی را به null تبدیل می‌کند تا fallback سئو درست کار کند */
+function optionalText(value: unknown): string | null {
+  if (value == null) return null;
+  const text = String(value).trim();
+  return text || null;
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -26,6 +35,7 @@ export async function GET(request: NextRequest) {
       ];
     }
 
+    const market = await getMarketNow();
     const [products, total] = await Promise.all([
       prisma.product.findMany({
         where,
@@ -39,7 +49,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: admin ? products.map(serializeProduct) : products.map(toProductListItem),
+      data: admin
+        ? products.map(serializeProduct)
+        : products.map((p) => toProductListItem(p, { showPrices: market.open })),
       pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
     });
   } catch (error) {
@@ -56,7 +68,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'نام و دسته‌بندی الزامی است' }, { status: 400 });
     }
 
-    const slug = String(body.slug || '').trim() || slugify(name);
+    const slug = slugify(String(body.slug || '').trim() || name);
     const product = await prisma.product.create({
       data: {
         name,
@@ -69,6 +81,12 @@ export async function POST(request: NextRequest) {
         inStock: body.inStock ?? true,
         featured: body.featured ?? false,
         published: body.published ?? true,
+        metaTitle: optionalText(body.metaTitle),
+        metaDescription: optionalText(body.metaDescription),
+        focusKeyword: optionalText(body.focusKeyword),
+        ogTitle: optionalText(body.ogTitle),
+        ogDescription: optionalText(body.ogDescription),
+        faqs: serializeFaqs(body.faqs),
         categoryId: body.categoryId,
       },
       include: { category: true },

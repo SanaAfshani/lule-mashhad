@@ -1,10 +1,11 @@
 'use client';
 
 import Image from 'next/image';
-import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { Clock, ArrowLeft } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ArrowLeft, Clock } from 'lucide-react';
 import { PageHero } from '@/shared/ui/PageHero';
+import { faDigits } from '@/shared/lib/utils';
 
 export type BlogPostCard = {
   slug: string;
@@ -17,109 +18,67 @@ export type BlogPostCard = {
   coverImage?: string;
 };
 
+function Cover({ src, alt, sizes }: { src?: string; alt: string; sizes: string }) {
+  return src ? (
+    <Image src={src} alt={alt} fill sizes={sizes} className="object-cover transition-transform duration-700 group-hover:scale-[1.03]" />
+  ) : (
+    <span className="absolute inset-0 bg-[var(--ink-2)] bp-grid" aria-hidden />
+  );
+}
+
 export function BlogListClient({ posts }: { posts: BlogPostCard[] }) {
-  const featured = posts.find((p) => p.featured);
-  const rest = posts.filter((p) => !p.featured);
+  const featured = posts.find((p) => p.featured) ?? posts[0];
+  const rest = posts.filter((p) => p !== featured);
 
   return (
     <>
-      <PageHero
-        label="وبلاگ تخصصی"
-        title="مقالات و راهنماها"
-        description="آموزش، راهنمای فنی و اخبار دنیای لوله آب و فاضلاب، پلیکا، پلی‌اتیلن و چدن"
-      />
+      <PageHero label="مجله تخصصی" title="مقالات و راهنماها" description="آموزش، راهنمای فنی و اخبار دنیای لوله آب و فاضلاب، پلیکا، پلی‌اتیلن و چدن" />
 
-      <div className="container-main section-padding space-y-8">
+      <div className="container-main section-padding space-y-10">
         {featured && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <Link
-              href={`/blog/${featured.slug}`}
-              className="group block rounded-3xl bg-gradient-to-br from-slate-800 to-slate-900 overflow-hidden hover:-translate-y-1 transition-all duration-300 shadow-xl"
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
-                <div className="h-64 md:h-auto relative bg-slate-900">
-                  {featured.coverImage ? (
-                    <Image src={featured.coverImage} alt={featured.title} fill className="object-cover" />
-                  ) : (
-                    <div className="absolute inset-0 bg-gradient-to-br from-amber-600/20 to-slate-900 flex items-center justify-center">
-                      <img src="/images/logo.png" alt="قدیر لوله آنلاین" className="h-20 opacity-60 drop-shadow-lg" />
-                    </div>
-                  )}
+          <motion.article initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
+            <Link href={`/blog/${featured.slug}`} className="group grid md:grid-cols-[1.2fr_1fr] rounded-[var(--radius-panel)] border border-[var(--border)] overflow-hidden">
+              <div className="relative aspect-[16/10] md:aspect-auto md:min-h-[360px] bg-[var(--muted)]">
+                <Cover src={featured.coverImage} alt={featured.title} sizes="(max-width:768px) 100vw, 55vw" />
+              </div>
+              <div className="p-6 sm:p-10 flex flex-col justify-center">
+                <span className="text-xs font-bold text-[var(--accent)]">{featured.tag}</span>
+                <h2 className="mt-2 text-xl sm:text-[1.75rem] font-black leading-snug group-hover:text-[var(--accent)] transition-colors">{faDigits(featured.title)}</h2>
+                {featured.excerpt && <p className="mt-3 text-[15px] leading-8 text-[var(--muted-foreground)] line-clamp-3">{faDigits(featured.excerpt)}</p>}
+                <div className="mt-6 flex items-center gap-4 text-xs text-[var(--muted-foreground)] num">
+                  <span>{featured.date}</span>
+                  <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{faDigits(featured.readTime)} دقیقه مطالعه</span>
                 </div>
-                <div className="p-8 flex flex-col justify-center">
-                  <span className="inline-block bg-[var(--accent)] text-[var(--accent-foreground)] text-xs font-bold px-3 py-1.5 rounded-full mb-4 w-fit">
-                    ویژه
-                  </span>
-                  <h2 className="text-2xl font-black text-white mb-3 group-hover:text-[var(--accent)] transition-colors leading-tight">
-                    {featured.title}
-                  </h2>
-                  <p className="text-slate-400 mb-5 line-clamp-3">{featured.excerpt}</p>
-                  <div className="flex items-center gap-4 text-slate-500 text-sm mb-5">
-                    <span className="flex items-center gap-1.5">
-                      <Clock className="w-3.5 h-3.5" />
-                      {featured.readTime} دقیقه
-                    </span>
-                    <span>{featured.date}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-[var(--accent)] font-semibold group-hover:gap-4 transition-all">
-                    ادامه مطلب <ArrowLeft className="w-4 h-4" />
-                  </div>
-                </div>
+                <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-bold">
+                  خواندن مقاله <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                </span>
               </div>
             </Link>
-          </motion.div>
+          </motion.article>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {rest.map((post, i) => (
-            <motion.div
-              key={post.slug}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.08 }}
-            >
-              <Link
-                href={`/blog/${post.slug}`}
-                className="group block rounded-2xl bg-[var(--card)] border border-[var(--border)] overflow-hidden hover:border-[var(--accent)]/40 hover:-translate-y-1 transition-all duration-300"
-              >
-                <div className="h-44 relative bg-slate-800">
-                  {post.coverImage ? (
-                    <Image src={post.coverImage} alt={post.title} fill className="object-cover" />
-                  ) : (
-                    <div className="absolute inset-0 bg-gradient-to-br from-amber-600/20 to-slate-800 flex items-center justify-center">
-                      <img src="/images/logo.png" alt="قدیر لوله آنلاین" className="h-14 opacity-60 drop-shadow-md" />
-                    </div>
-                  )}
-                  <div className="absolute top-3 right-3 bg-[var(--accent)] text-[var(--accent-foreground)] text-xs font-bold px-2.5 py-1 rounded-full">
-                    {post.tag}
+        {rest.length > 0 && (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
+            {rest.map((post, i) => (
+              <motion.article key={post.slug} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: (i % 3) * 0.06 }}>
+                <Link href={`/blog/${post.slug}`} className="group block">
+                  <div className="relative aspect-[16/10] rounded-3xl overflow-hidden bg-[var(--muted)]">
+                    <Cover src={post.coverImage} alt={post.title} sizes="(max-width:640px) 100vw, 33vw" />
                   </div>
-                </div>
-                <div className="p-5">
-                  <div className="flex items-center gap-3 text-xs text-[var(--muted-foreground)] mb-3">
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-3 h-3" />
-                      {post.readTime} دقیقه
-                    </span>
+                  <div className="mt-4 flex items-center gap-3 text-xs text-[var(--muted-foreground)] num">
+                    <span className="font-bold text-[var(--accent)]">{post.tag}</span>
                     <span>{post.date}</span>
+                    <span>{faDigits(post.readTime)} دقیقه</span>
                   </div>
-                  <h3 className="font-bold text-[var(--foreground)] mb-2 line-clamp-2 group-hover:text-[var(--accent)] transition-colors leading-relaxed">
-                    {post.title}
-                  </h3>
-                  <p className="text-[var(--muted-foreground)] text-sm line-clamp-2 leading-relaxed mb-4">
-                    {post.excerpt}
-                  </p>
-                  <div className="flex items-center gap-2 text-[var(--accent)] text-sm font-medium">
-                    ادامه مطلب <ArrowLeft className="w-3.5 h-3.5" />
-                  </div>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
-
-        {posts.length === 0 && (
-          <p className="text-center text-[var(--muted-foreground)] py-16">هنوز مقاله‌ای منتشر نشده است.</p>
+                  <h3 className="mt-2 font-black text-[17px] leading-8 line-clamp-2 group-hover:text-[var(--accent)] transition-colors">{faDigits(post.title)}</h3>
+                  {post.excerpt && <p className="mt-1.5 text-sm leading-7 text-[var(--muted-foreground)] line-clamp-2">{faDigits(post.excerpt)}</p>}
+                </Link>
+              </motion.article>
+            ))}
+          </div>
         )}
+
+        {posts.length === 0 && <p className="text-center text-[var(--muted-foreground)] py-16">هنوز مقاله‌ای منتشر نشده است.</p>}
       </div>
     </>
   );

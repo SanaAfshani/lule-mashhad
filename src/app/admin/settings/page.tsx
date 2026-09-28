@@ -12,6 +12,9 @@ const SETTINGS_KEYS = {
   mobile: 'contact_mobile',
   email: 'contact_email',
   address: 'contact_address',
+  companyPhones: 'company_phones',
+  factoryAddress: 'factory_address',
+  mapUrl: 'map_url',
   heroTitle: 'hero_title',
   heroSubtitle: 'hero_subtitle',
 } as const;
@@ -23,6 +26,9 @@ type SettingsForm = {
   mobile: string;
   email: string;
   address: string;
+  companyPhones: string;
+  factoryAddress: string;
+  mapUrl: string;
   heroTitle: string;
   heroSubtitle: string;
 };
@@ -34,6 +40,9 @@ const emptySettings: SettingsForm = {
   mobile: '',
   email: '',
   address: '',
+  companyPhones: '',
+  factoryAddress: '',
+  mapUrl: '',
   heroTitle: '',
   heroSubtitle: '',
 };
@@ -47,12 +56,16 @@ function SettingsField({
   icon,
   value,
   onChange,
+  hint,
+  placeholder,
 }: {
   label: string;
   type?: string;
   icon?: React.ReactNode;
   value: string;
   onChange: (value: string) => void;
+  hint?: string;
+  placeholder?: string;
 }) {
   return (
     <div>
@@ -64,10 +77,12 @@ function SettingsField({
         <input
           type={type}
           value={value}
+          placeholder={placeholder}
           onChange={(e) => onChange(e.target.value)}
           className={`${inputCls} ${icon ? 'pr-10' : ''}`}
         />
       </div>
+      {hint && <p className="mt-1 text-xs text-slate-500">{hint}</p>}
     </div>
   );
 }
@@ -91,6 +106,9 @@ export default function AdminSettingsPage() {
             mobile: data.contact_mobile ?? '',
             email: data.contact_email ?? '',
             address: data.contact_address ?? '',
+            companyPhones: data.company_phones ?? '',
+            factoryAddress: data.factory_address ?? '',
+            mapUrl: data.map_url ?? '',
             heroTitle: data.hero_title ?? '',
             heroSubtitle: data.hero_subtitle ?? '',
           });
@@ -179,10 +197,20 @@ export default function AdminSettingsPage() {
             <Phone className="w-5 h-5 text-amber-400" />
             اطلاعات تماس
           </h2>
-          <SettingsField label="تلفن" type="tel" icon={<Phone className="w-4 h-4" />} value={settings.phone} onChange={updateField('phone')} />
-          <SettingsField label="موبایل" type="tel" icon={<Phone className="w-4 h-4" />} value={settings.mobile} onChange={updateField('mobile')} />
+          <SettingsField label="تلفن فروش (هدر و دکمه تماس)" type="tel" icon={<Phone className="w-4 h-4" />} value={settings.phone} onChange={updateField('phone')} />
+          <SettingsField label="موبایل (واتس‌اپ)" type="tel" icon={<Phone className="w-4 h-4" />} value={settings.mobile} onChange={updateField('mobile')} />
+          <SettingsField
+            label="تلفن‌های ثابت شرکت"
+            icon={<Phone className="w-4 h-4" />}
+            value={settings.companyPhones}
+            onChange={updateField('companyPhones')}
+            placeholder="02186038220، 02186038224"
+            hint="با ویرگول از هم جدا کنید. خالی = مقدار پیش‌فرض."
+          />
           <SettingsField label="ایمیل" type="email" icon={<Mail className="w-4 h-4" />} value={settings.email} onChange={updateField('email')} />
-          <SettingsField label="آدرس" icon={<MapPin className="w-4 h-4" />} value={settings.address} onChange={updateField('address')} />
+          <SettingsField label="آدرس دفتر مرکزی" icon={<MapPin className="w-4 h-4" />} value={settings.address} onChange={updateField('address')} hint="خالی = مقدار پیش‌فرض." />
+          <SettingsField label="آدرس کارخانه و انبار" icon={<MapPin className="w-4 h-4" />} value={settings.factoryAddress} onChange={updateField('factoryAddress')} hint="خالی = مقدار پیش‌فرض." />
+          <SettingsField label="لینک گوگل مپ کارخانه" type="url" icon={<MapPin className="w-4 h-4" />} value={settings.mapUrl} onChange={updateField('mapUrl')} hint="خالی = مقدار پیش‌فرض." />
         </motion.div>
 
         <button

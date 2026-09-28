@@ -12,6 +12,14 @@ export interface Product {
   inStock: boolean;
   featured: boolean;
   published: boolean;
+  /** فیلدهای سئو — اختیاری؛ در صورت خالی بودن از name/shortDescription استفاده می‌شود */
+  metaTitle?: string | null;
+  metaDescription?: string | null;
+  focusKeyword?: string | null;
+  ogTitle?: string | null;
+  ogDescription?: string | null;
+  /** سوالات متداول اختصاصی این محصول (در انتهای صفحه به صورت آکاردئون) */
+  faqs: FaqItem[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -31,6 +39,12 @@ export interface Category {
   order: number;
 }
 
+/** یک سوال متداول اختصاصی یک صفحه (مقاله یا محصول) */
+export interface FaqItem {
+  question: string;
+  answer: string;
+}
+
 export interface BlogPost {
   id: string;
   title: string;
@@ -46,6 +60,14 @@ export interface BlogPost {
   featured: boolean;
   readTime: number;
   viewCount: number;
+  /** فیلدهای سئو — اختیاری؛ در صورت خالی بودن از title/excerpt استفاده می‌شود */
+  metaTitle?: string | null;
+  metaDescription?: string | null;
+  focusKeyword?: string | null;
+  ogTitle?: string | null;
+  ogDescription?: string | null;
+  /** سوالات متداول اختصاصی این مقاله (در انتهای صفحه به صورت آکاردئون) */
+  faqs: FaqItem[];
   createdAt: Date;
   updatedAt: Date;
 }

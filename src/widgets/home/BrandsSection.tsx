@@ -9,35 +9,33 @@ const brands = [
   'کوپکو',
   'پارس خزر',
   'شرکت ملی گاز ایران',
-  'پتروشیمی مشهد',
+  'صنایع پتروشیمی',
   'آبفا خراسان رضوی',
 ];
 
 export function BrandsSection() {
   return (
-    <section className="home-section-compact bg-[var(--background)] border-y border-[var(--border)] overflow-hidden">
-      <div className="container-main">
-        <p className="text-center text-sm text-[var(--muted-foreground)] mb-6 md:mb-8 font-medium uppercase tracking-widest">
-          برندها و مشتریان معتمد ما
-        </p>
-
-        <div className="overflow-hidden">
-          <motion.div
-            animate={{ x: [0, '-50%'] }}
-            transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-            className="flex gap-8"
-            style={{ width: 'max-content' }}
-          >
-            {[...brands, ...brands].map((brand, index) => (
-              <div
-                key={index}
-                className="flex-shrink-0 h-16 px-8 rounded-2xl bg-[var(--muted)] border border-[var(--border)] flex items-center justify-center text-[var(--muted-foreground)] font-semibold text-sm whitespace-nowrap hover:border-[var(--accent)]/40 hover:text-[var(--accent)] transition-all duration-300"
-              >
-                {brand}
-              </div>
-            ))}
-          </motion.div>
-        </div>
+    <section className="py-10 sm:py-14 overflow-hidden" aria-label="برندها و مشتریان">
+      <p className="text-center text-xs sm:text-sm text-[var(--muted-foreground)] mb-6 font-bold">
+        تامین‌کنندگان و مشتریان معتمد ما
+      </p>
+      {/* لبه‌های محو + حرکت به راست: در RTL محتوا از لبه راست شروع می‌شود و حرکت به چپ لبه راست را خالی می‌کرد */}
+      <div className="relative [mask-image:linear-gradient(90deg,transparent,#000_12%,#000_88%,transparent)]">
+        <motion.div
+          animate={{ x: ['0%', '50%'] }}
+          transition={{ duration: 28, repeat: Infinity, ease: 'linear' }}
+          className="flex gap-3 sm:gap-4"
+          style={{ width: 'max-content' }}
+        >
+          {[...brands, ...brands].map((brand, index) => (
+            <div
+              key={index}
+              className="shrink-0 h-14 sm:h-16 px-6 sm:px-8 rounded-2xl bg-[var(--muted)] border border-[var(--border)] flex items-center justify-center text-[var(--muted-foreground)] font-bold text-sm whitespace-nowrap"
+            >
+              {brand}
+            </div>
+          ))}
+        </motion.div>
       </div>
     </section>
   );

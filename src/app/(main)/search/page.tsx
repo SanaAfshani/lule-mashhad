@@ -3,14 +3,14 @@ import Link from 'next/link';
 import { SearchPageClient } from '@/features/search/SearchPageClient';
 
 export const metadata: Metadata = {
-  title: 'جستجو | قدیر لوله آنلاین ',
+  title: 'جستجو در محصولات و مقالات',
   description: 'جستجو در محصولات، مقالات و پروژه‌های قدیر لوله آنلاین ',
 };
 
 export default function SearchPage() {
   return (
     <div className="min-h-screen bg-[var(--background)]">
-      <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+      <div className="bg-[var(--ink)] bp-grid relative overflow-hidden">
         <div className="container-main relative z-10 py-10 md:py-14">
           <nav className="flex items-center gap-2 text-xs text-slate-500 mb-4">
             <Link href="/" className="hover:text-slate-300 transition-colors">خانه</Link>

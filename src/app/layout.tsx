@@ -1,13 +1,14 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { siteConfig } from '@/shared/config/site';
+import { getSiteSettingsMap } from '@/shared/lib/data';
 import { ThemeProvider } from '@/shared/providers/ThemeProvider';
 import { Toaster } from 'react-hot-toast';
 import { NavigationProgress } from '@/shared/ui/NavigationProgress';
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title: {
-    default: siteConfig.name + ' | تامین کننده لوله و اتصالات صنعتی در مشهد',
+    default: siteConfig.name + ' | تامین کننده لوله و اتصالات صنعتی',
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
@@ -24,7 +25,7 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'fa_IR',
     url: siteConfig.url,
-    title: siteConfig.name + ' | تامین کننده لوله و اتصالات صنعتی در مشهد',
+    title: siteConfig.name + ' | تامین کننده لوله و اتصالات صنعتی',
     description: siteConfig.description,
     siteName: siteConfig.name,
   },
@@ -33,7 +34,24 @@ export const metadata: Metadata = {
     title: siteConfig.name,
     description: siteConfig.description,
   },
+  applicationName: siteConfig.name,
+  publisher: siteConfig.name,
+  creator: siteConfig.name,
+  category: 'business',
+  // شماره تلفن‌ها خودمان لینک شده‌اند؛ تشخیص خودکار مرورگر باعث hydration mismatch می‌شود
+  formatDetection: { telephone: false, address: false, email: false },
 };
+
+/** کد تایید Search Console از پنل «مرکز سئو» (یا متغیر محیطی) در <head> همه صفحات قرار می‌گیرد */
+export async function generateMetadata(): Promise<Metadata> {
+  let google = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION;
+  try {
+    google = (await getSiteSettingsMap()).google_site_verification || google;
+  } catch {
+    // دیتابیس در دسترس نیست — متادیتای پایه کافی است
+  }
+  return google ? { ...baseMetadata, verification: { google } } : baseMetadata;
+}
 
 export default function RootLayout({
   children,

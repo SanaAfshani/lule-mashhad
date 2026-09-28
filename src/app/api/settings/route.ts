@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { prisma } from '@/shared/lib/prisma';
+import { requireAdmin } from '@/shared/lib/admin-auth';
 
 export async function GET() {
   try {
@@ -17,8 +18,14 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  // تغییر تلفن و آدرس سایت فقط برای ادمین — وگرنه هر کسی می‌توانست شماره تماس سایت را عوض کند
+  const auth = requireAdmin(request);
+  if (auth instanceof NextResponse) return auth;
   try {
     const body = await request.json();
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
+      return NextResponse.json({ success: false, error: 'داده نامعتبر' }, { status: 400 });
+    }
     const updates = await Promise.all(
       Object.entries(body).map(([key, value]) =>
         prisma.siteSettings.upsert({

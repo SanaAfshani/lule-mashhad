@@ -2,12 +2,17 @@ import type { Metadata } from 'next';
 import { BlogListClient } from '@/features/blog/BlogListClient';
 import { getPublishedBlogPosts } from '@/shared/lib/data';
 import { formatDate } from '@/shared/lib/utils';
+import { siteConfig } from '@/shared/config/site';
+import { JsonLd } from '@/shared/ui/JsonLd';
+import { breadcrumbSchema } from '@/shared/lib/seo';
 
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'وبلاگ | قدیر لوله آنلاین ',
-  description: 'مقالات تخصصی لوله آب و فاضلاب، پلیکا، پلی اتیلن و چدن',
+  title: 'وبلاگ | راهنمای خرید و مقالات تخصصی لوله',
+  description:
+    'مقالات تخصصی و راهنمای خرید لوله آب و فاضلاب، پلیکا، پلی اتیلن، چدن و اتصالات صنعتی — نوشته کارشناسان قدیر لوله آنلاین.',
+  alternates: { canonical: `${siteConfig.url}/blog` },
 };
 
 export default async function BlogPage() {
@@ -24,5 +29,26 @@ export default async function BlogPage() {
     coverImage: p.coverImage || undefined,
   }));
 
-  return <BlogListClient posts={cards} />;
+  const blogSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Blog',
+    name: `وبلاگ ${siteConfig.name}`,
+    url: `${siteConfig.url}/blog`,
+    inLanguage: 'fa-IR',
+    publisher: { '@type': 'Organization', name: siteConfig.name, url: siteConfig.url },
+    blogPost: posts.slice(0, 20).map((p) => ({
+      '@type': 'BlogPosting',
+      headline: p.title,
+      url: `${siteConfig.url}/blog/${encodeURIComponent(p.slug)}`,
+      datePublished: p.createdAt.toISOString(),
+    })),
+  };
+
+  return (
+    <>
+      <JsonLd data={blogSchema} />
+      <JsonLd data={breadcrumbSchema([{ name: 'وبلاگ', path: '/blog' }])} />
+      <BlogListClient posts={cards} />
+    </>
+  );
 }

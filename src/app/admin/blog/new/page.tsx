@@ -2,11 +2,19 @@
 
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, Save, ImagePlus, FileText, X, Loader2 } from 'lucide-react';
+import { ArrowRight, Save, FileJson, FileText, X, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { slugify } from '@/shared/lib/utils';
 import { uploadPdf } from '@/shared/lib/uploadPdf';
+import { ImageUploader } from '@/shared/ui/ImageUploader';
+import { ArticleImportDialog } from '@/features/admin/editor/ArticleImportDialog';
+import type { ImportedArticle, ImportField } from '@/shared/lib/article-import';
+import { HtmlContentEditor } from '@/features/admin/editor/HtmlContentEditor';
+import { SeoPanel } from '@/features/admin/seo/SeoPanel';
+import type { SeoFields } from '@/features/admin/seo/seo';
+import { FaqEditor } from '@/features/admin/seo/FaqEditor';
+import type { FaqItem } from '@/shared/types';
 
 export default function NewBlogPostPage() {
   const router = useRouter();
@@ -18,7 +26,45 @@ export default function NewBlogPostPage() {
   const [form, setForm] = useState({
     title: '', slug: '', excerpt: '', content: '', coverImage: '',
     pdfUrl: '', featured: false, published: true,
+    // فیلدهای سئو — در SeoPanel ویرایش می‌شوند
+    metaTitle: '', metaDescription: '', focusKeyword: '', ogTitle: '', ogDescription: '',
+    faqs: [] as FaqItem[],
   });
+
+  /** تغییر اسلاگ توسط کاربر، هم‌گام‌سازی خودکار با عنوان را متوقف می‌کند */
+
+  const [importOpen, setImportOpen] = useState(false);
+
+  /** فقط فیلدهایی که کاربر در دیالوگ انتخاب کرده نوشته می‌شوند */
+  const applyImport = (data: ImportedArticle, fields: ImportField[]) => {
+    setForm((f) => {
+      const next = { ...f };
+      for (const key of fields) {
+        if (key === 'faqs') next.faqs = data.faqs;
+        else next[key] = data[key];
+      }
+      return next;
+    });
+    if (fields.includes('slug')) setSlugTouched(true);
+  };
+
+  const filledFields: Partial<Record<ImportField, boolean>> = {
+    title: Boolean(form.title),
+    slug: Boolean(form.slug),
+    excerpt: Boolean(form.excerpt),
+    content: Boolean(form.content),
+    metaTitle: Boolean(form.metaTitle),
+    metaDescription: Boolean(form.metaDescription),
+    focusKeyword: Boolean(form.focusKeyword),
+    ogTitle: Boolean(form.ogTitle),
+    ogDescription: Boolean(form.ogDescription),
+    faqs: form.faqs.length > 0,
+  };
+
+  const handleSeoChange = (patch: Partial<SeoFields>) => {
+    if (patch.slug !== undefined) setSlugTouched(true);
+    setForm((f) => ({ ...f, ...patch }));
+  };
 
   const handlePdfUpload = async (file: File) => {
     setPdfUploading(true);
@@ -56,6 +102,12 @@ export default function NewBlogPostPage() {
           pdfUrl: form.pdfUrl || undefined,
           featured: form.featured,
           published: form.published,
+          metaTitle: form.metaTitle,
+          metaDescription: form.metaDescription,
+          focusKeyword: form.focusKeyword,
+          ogTitle: form.ogTitle,
+          ogDescription: form.ogDescription,
+          faqs: form.faqs,
           authorId,
         }),
       });
@@ -92,6 +144,14 @@ export default function NewBlogPostPage() {
           <h1 className="text-2xl font-bold text-white">نوشتن مقاله جدید</h1>
           <p className="text-slate-400 text-sm">اطلاعات مقاله جدید را وارد کنید</p>
         </div>
+        <button
+          type="button"
+          onClick={() => setImportOpen(true)}
+          className="mr-auto flex items-center gap-2 h-10 px-4 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-sm font-semibold hover:bg-emerald-500/25 transition-colors"
+        >
+          <FileJson className="w-4 h-4" />
+          ورود از ابزار تولید محتوا
+        </button>
       </div>
 
       <form onSubmit={handleSubmit}>
@@ -119,21 +179,6 @@ export default function NewBlogPostPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1.5">آدرس (slug)</label>
-                <input
-                  type="text"
-                  value={form.slug}
-                  onChange={(e) => {
-                    setSlugTouched(true);
-                    setForm({ ...form, slug: e.target.value });
-                  }}
-                  placeholder="مثال: راهنمای-انتخاب-لوله"
-                  className={inputCls}
-                  dir="ltr"
-                />
-              </div>
-
-              <div>
                 <label className="block text-sm font-medium text-slate-300 mb-1.5">خلاصه</label>
                 <textarea
                   value={form.excerpt}
@@ -144,31 +189,50 @@ export default function NewBlogPostPage() {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1.5">متن کامل مقاله</label>
-                <textarea
-                  value={form.content}
-                  onChange={(e) => setForm({ ...form, content: e.target.value })}
-                  rows={12}
-                  placeholder="متن کامل مقاله را اینجا بنویسید..."
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none resize-none transition-colors"
-                />
-              </div>
+              <HtmlContentEditor
+                label="متن کامل مقاله"
+                value={form.content}
+                onChange={(content) => setForm((f) => ({ ...f, content }))}
+                rows={14}
+                placeholder="متن مقاله را اینجا بنویسید یا از ابزار تولید محتوا پیست کن..."
+              />
             </div>
+
+            <SeoPanel
+              value={{
+                slug: form.slug,
+                metaTitle: form.metaTitle,
+                metaDescription: form.metaDescription,
+                focusKeyword: form.focusKeyword,
+                ogTitle: form.ogTitle,
+                ogDescription: form.ogDescription,
+              }}
+              onChange={handleSeoChange}
+              context={{ title: form.title, excerpt: form.excerpt, content: form.content }}
+              variant="article"
+              previewPath="blog"
+            />
+
+            <FaqEditor
+              value={form.faqs}
+              onChange={(faqs) => setForm((f) => ({ ...f, faqs }))}
+            />
           </div>
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Cover image */}
+            {/* تصویر شاخص */}
             <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
               <h2 className="text-white font-bold mb-4">تصویر شاخص</h2>
-              <div className="border-2 border-dashed border-slate-700 rounded-xl p-8 flex flex-col items-center justify-center gap-3 text-slate-500 hover:border-amber-500 hover:text-amber-400 transition-colors cursor-pointer">
-                <ImagePlus className="w-8 h-8" />
-                <div className="text-sm text-center">
-                  <div>آپلود تصویر</div>
-                  <div className="text-xs mt-1 text-slate-600">JPG, PNG تا ۵ مگابایت</div>
-                </div>
-              </div>
+              <ImageUploader
+                images={form.coverImage ? [form.coverImage] : []}
+                onChange={(imgs) => setForm((f) => ({ ...f, coverImage: imgs[0] ?? '' }))}
+                max={1}
+              />
+              <p className="text-xs text-slate-500 mt-2.5 leading-relaxed">
+                در بالای صفحه مقاله و در کارت‌های وبلاگ نمایش داده می‌شود. نسبت ۱۶:۹ پیشنهاد
+                می‌شود.
+              </p>
             </div>
 
             {/* PDF Upload */}
@@ -267,6 +331,13 @@ export default function NewBlogPostPage() {
           </div>
         </div>
       </form>
+
+      <ArticleImportDialog
+        open={importOpen}
+        onClose={() => setImportOpen(false)}
+        filled={filledFields}
+        onImport={applyImport}
+      />
     </div>
   );
 }

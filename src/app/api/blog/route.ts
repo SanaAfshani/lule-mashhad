@@ -1,15 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/shared/lib/prisma';
+import { parseFaqs } from '@/shared/lib/serializers';
 import { estimateReadTimeMinutes, slugify } from '@/shared/lib/utils';
+import { serializeFaqs } from '@/shared/lib/page-faqs';
 
-function mapPost<T extends { tags: string }>(post: T) {
+/** فیلد متنی اختیاری: رشته خالی را به null تبدیل می‌کند تا fallback سئو درست کار کند */
+function optionalText(value: unknown): string | null {
+  if (value == null) return null;
+  const text = String(value).trim();
+  return text || null;
+}
+
+function mapPost<T extends { tags: string; faqs?: string }>(post: T) {
   let tags: string[] = [];
   try {
     tags = JSON.parse(post.tags) as string[];
   } catch {
     tags = [];
   }
-  return { ...post, tags };
+  return { ...post, tags, faqs: parseFaqs(post.faqs) };
 }
 
 export async function GET(request: NextRequest) {
@@ -56,7 +65,7 @@ export async function POST(request: NextRequest) {
     }
 
     const content = String(body.content || '').trim();
-    const slug = String(body.slug || '').trim() || slugify(title);
+    const slug = slugify(String(body.slug || '').trim() || title);
 
     let authorId = body.authorId as string | undefined;
     if (!authorId) {
@@ -86,6 +95,12 @@ export async function POST(request: NextRequest) {
         published: Boolean(body.published),
         featured: Boolean(body.featured),
         readTime: body.readTime ? Number(body.readTime) : estimateReadTimeMinutes(content),
+        metaTitle: optionalText(body.metaTitle),
+        metaDescription: optionalText(body.metaDescription),
+        focusKeyword: optionalText(body.focusKeyword),
+        ogTitle: optionalText(body.ogTitle),
+        ogDescription: optionalText(body.ogDescription),
+        faqs: serializeFaqs(body.faqs),
         authorId,
       },
       include: { author: { select: { id: true, name: true, email: true } } },

@@ -4,13 +4,25 @@ import path from 'path';
 
 export const maxDuration = 60;
 
+/** کلاینت قبل از آپلود می‌پرسد آیا آپلود مستقیم به CDN ممکن است یا نه */
+export async function GET() {
+  return NextResponse.json({ blobEnabled: Boolean(process.env.BLOB_READ_WRITE_TOKEN) });
+}
+
 export async function POST(request: NextRequest) {
   const contentType = request.headers.get('content-type') ?? '';
 
   // ── Client-upload token flow (Vercel Blob) ──────────────────────────────
   // @vercel/blob/client sends a JSON body to get an upload token,
   // then uploads the file DIRECTLY to the CDN (bypasses 4.5 MB limit).
-  if (contentType.includes('application/json') && process.env.BLOB_READ_WRITE_TOKEN) {
+  if (contentType.includes('application/json')) {
+    // بدون توکن، درخواست JSON نباید به شاخه FormData بیفتد — آنجا formData() روی بدنه JSON می‌ترکد
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+      return NextResponse.json(
+        { success: false, code: 'BLOB_NOT_CONFIGURED', error: 'آپلود مستقیم پیکربندی نشده است' },
+        { status: 501 },
+      );
+    }
     try {
       const { handleUpload } = await import('@vercel/blob/client');
       const body = await request.json();

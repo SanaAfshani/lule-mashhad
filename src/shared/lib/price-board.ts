@@ -1,0 +1,59 @@
+import { cache } from 'react';
+import { prisma } from '@/shared/lib/prisma';
+import { getSiteSettingsMap } from '@/shared/lib/site-settings-store';
+import { getMarketStatus, parseMarketConfig, type MarketStatus } from '@/shared/lib/market';
+import type { PriceBoard } from '@/shared/lib/price-board-types';
+
+export * from '@/shared/lib/price-board-types';
+
+export const getMarketNow = cache(async (): Promise<MarketStatus> => {
+  return getMarketStatus(parseMarketConfig(await getSiteSettingsMap()));
+});
+
+/** نسخه ارزان برای polling: بدون خواندن همه ردیف‌ها */
+export async function getBoardVersion(): Promise<string> {
+  const [market, agg] = await Promise.all([
+    getMarketNow(),
+    prisma.priceItem.aggregate({ _max: { updatedAt: true }, _count: { _all: true } }),
+  ]);
+  return `${agg._max.updatedAt?.getTime() ?? 0}.${agg._count._all}.${market.open ? 1 : 0}.${market.mode}`;
+}
+
+export const getPriceBoard = cache(async (): Promise<PriceBoard> => {
+  const [market, products, version] = await Promise.all([
+    getMarketNow(),
+    prisma.product.findMany({
+      where: { published: true, category: { published: true }, priceItems: { some: {} } },
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        category: { select: { slug: true, name: true, order: true } },
+        priceItems: { orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }] },
+      },
+    }),
+    getBoardVersion(),
+  ]);
+
+  const lines = products
+    .sort((a, b) => a.category.order - b.category.order || a.name.localeCompare(b.name, 'fa'))
+    .map((p) => ({
+      productId: p.id,
+      productSlug: p.slug,
+      productName: p.name,
+      categorySlug: p.category.slug,
+      categoryName: p.category.name,
+      href: `/products/${p.category.slug}/${p.slug}`,
+      items: p.priceItems.map((i) => ({
+        id: i.id,
+        title: i.title,
+        price: market.open ? i.price : null,
+        previousPrice: market.open ? i.previousPrice : null,
+        weight: i.weight,
+        note: i.note,
+        priceChangedAt: i.priceChangedAt.toISOString(),
+      })),
+    }));
+
+  return { market, version, lines };
+});

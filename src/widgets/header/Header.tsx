@@ -1,431 +1,447 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
+import { usePathname, useRouter } from 'next/navigation';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
-  Menu, X, Search, Sun, Moon, Phone, ChevronDown, MessageCircle,
+  ArrowLeft, Building2, ChartLine, ChevronDown, ChevronLeft, CircleHelp, Clock, Factory, Headphones, House, LayoutGrid, Menu, MessageCircle,
+  Moon, Newspaper, Phone, Search, Sun, Truck, Wrench, X, type LucideIcon,
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { cn } from '@/shared/lib/utils';
+import { cn, faDigits } from '@/shared/lib/utils';
 import { useSiteSettings } from '@/shared/providers/SiteSettingsProvider';
+import { useConsult } from '@/features/consult/ConsultProvider';
+import { siteConfig } from '@/shared/config/site';
+import { phoneHref as toTel } from '@/shared/lib/site-settings';
+import type { NavCategory } from '@/shared/lib/data';
 
-type NavCategory = { href: string; label: string; icon: string };
-
-const defaultCategories: NavCategory[] = [
-  { href: '/products/pvc-pipes', label: 'لوله پلیکا (PVC)', icon: '💧' },
-  { href: '/products/polyethylene-pipes', label: 'لوله پلی‌اتیلن', icon: '🔵' },
-  { href: '/products/cast-iron-pipes', label: 'لوله چدن داکتیل', icon: '⚙️' },
-  { href: '/products/manholes', label: 'منهول و دریچه', icon: '🔩' },
-  { href: '/products/fittings', label: 'اتصالات آب و فاضلاب', icon: '🔧' },
-];
-
-const baseNavItems = [
+const NAV = [
   { href: '/', label: 'خانه' },
-  {
-    href: '/products',
-    label: 'محصولات',
-    mega: true as const,
-  },
+  { href: '/products', label: 'محصولات', mega: true },
+  { href: '/prices', label: 'لیست قیمت' },
   { href: '/services', label: 'خدمات' },
-  { href: '/blog',     label: 'وبلاگ' },
-  // { href: '/about',    label: 'درباره ما' },
+  { href: '/blog', label: 'مجله' },
   { href: '/contact', label: 'تماس با ما' },
+] as const;
+
+/** میانبرهای منوی موبایل — لیست قیمت کارت جدا دارد */
+const DRAWER_LINKS: { href: string; label: string; icon: LucideIcon }[] = [
+  { href: '/', label: 'خانه', icon: House },
+  { href: '/products', label: 'محصولات', icon: LayoutGrid },
+  { href: '/services', label: 'خدمات', icon: Wrench },
+  { href: '/blog', label: 'مجله', icon: Newspaper },
+  { href: '/faq', label: 'سوالات', icon: CircleHelp },
+  { href: '/contact', label: 'تماس', icon: Phone },
 ];
 
-export function Header() {
-  const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [megaOpen, setMegaOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [mounted, setMounted] = useState(false);
-  const [productCategories, setProductCategories] = useState<NavCategory[]>(defaultCategories);
-  const pathname = usePathname();
-  const { theme, setTheme } = useTheme();
-  const { phone, phoneHref, whatsappUrl } = useSiteSettings();
+function isActive(pathname: string, href: string) {
+  return href === '/' ? pathname === '/' : pathname.startsWith(href);
+}
 
-  const navItems = baseNavItems.map((item) =>
-    'mega' in item && item.mega
-      ? { ...item, categories: productCategories }
-      : item,
+function Logo({ compact = false }: { compact?: boolean }) {
+  const { siteName } = useSiteSettings();
+  return (
+    <Link href="/" className="flex items-center gap-2.5 shrink-0" aria-label={`${siteName} — صفحه اصلی`}>
+      <Image src="/images/logo.png" alt="" width={44} height={44} className={cn('object-contain', compact ? 'w-9 h-9' : 'w-11 h-11')} priority />
+      <span className="leading-tight">
+        <span className={cn('block font-black text-[var(--foreground)]', compact ? 'text-[15px]' : 'text-lg')}>{siteName}</span>
+        {!compact && <span className="block text-[11px] text-[var(--muted-foreground)]">فروشگاه تخصصی لوله و اتصالات</span>}
+      </span>
+    </Link>
   );
+}
+
+export function Header({ categories }: { categories: NavCategory[] }) {
+  const pathname = usePathname();
+  const isHome = pathname === '/';
+  const router = useRouter();
+  const { phone, phoneHref, companyPhones, whatsappUrl } = useSiteSettings();
+  const { open: openConsult } = useConsult();
+  const { resolvedTheme, setTheme } = useTheme();
+
+  const [scrolled, setScrolled] = useState(false);
+  const [drawer, setDrawer] = useState(false);
+  const [mega, setMega] = useState(false);
+  const [search, setSearch] = useState(false);
+  const [query, setQuery] = useState('');
+  const [mounted, setMounted] = useState(false);
+  const megaTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const searchInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    setMounted(true);
-    const onScroll = () => setScrolled(window.scrollY > 16);
+    // next-themes فقط سمت کلاینت تم واقعی را می‌داند؛ تا mount آیکن تم رندر نمی‌شود
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    const id = requestAnimationFrame(() => {
+      setMounted(true);
+      onScroll();
+    });
     window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    return () => {
+      cancelAnimationFrame(id);
+      window.removeEventListener('scroll', onScroll);
+    };
   }, []);
 
-  useEffect(() => {
-    fetch('/api/categories')
-      .then((r) => r.json())
-      .then((json) => {
-        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
-          setProductCategories(
-            json.data.map((c: { slug: string; name: string; icon?: string | null }) => ({
-              href: `/products/${c.slug}`,
-              label: c.name,
-              icon: c.icon || '📦',
-            })),
-          );
-        }
-      })
-      .catch(() => {});
-  }, []);
+  // بستن منوها با تغییر صفحه — در رویداد کلیک انجام می‌شود، نه effect
+  const closeAll = () => {
+    setDrawer(false);
+    setMega(false);
+    setSearch(false);
+  };
 
   useEffect(() => {
-    setMobileOpen(false);
-    setMegaOpen(false);
-  }, [pathname]);
+    document.body.style.overflow = drawer || search ? 'hidden' : '';
+    if (search) setTimeout(() => searchInput.current?.focus(), 50);
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [drawer, search]);
+
+  const submitSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = query.trim();
+    if (!q) return;
+    closeAll();
+    router.push(`/search?q=${encodeURIComponent(q)}`);
+  };
+
+  const openMega = () => {
+    if (megaTimer.current) clearTimeout(megaTimer.current);
+    setMega(true);
+  };
+  const closeMega = () => {
+    megaTimer.current = setTimeout(() => setMega(false), 120);
+  };
 
   return (
     <>
-      {/* ─── Main Header ─── */}
-      <motion.header
-        initial={{ y: -80 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        className={cn(
-          'fixed top-0 inset-x-0 z-50 transition-all duration-300',
-          scrolled
-            ? 'bg-[var(--background)]/95 backdrop-blur-xl shadow-sm shadow-black/8 border-b border-[var(--border)]'
-            : 'bg-[var(--background)]/80 backdrop-blur-md'
-        )}
-      >
-        <div className="container-main">
-          <div className="flex items-center justify-between h-[var(--nav-height)] gap-4">
-
-            {/* ── Logo ── */}
-            <Link href="/" className="flex items-center gap-2.5 group flex-shrink-0">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-200 flex-shrink-0">
-                <img src={'/images/logo.png'} />
-              </div>
-              <div className="leading-tight">
-                <div className="font-extrabold text-sm sm:text-base text-[var(--foreground)] group-hover:text-[var(--accent)] transition-colors">
-                  قدیر لوله آنلاین
-                </div>
-                <div className="text-[10px] text-[var(--muted-foreground)] hidden sm:block">
-                  تامین‌کننده لوله آب و فاضلاب
-                </div>
-              </div>
-            </Link>
-
-            {/* ── Desktop Nav ── */}
-            <nav className="hidden lg:flex items-center gap-1 xl:gap-1.5">
-              {navItems.map((item) => (
-                <div key={item.href} className="relative">
-                  {item.mega ? (
-                    <button
-                      onMouseEnter={() => setMegaOpen(true)}
-                      onMouseLeave={() => setMegaOpen(false)}
-                      className={cn(
-                        'flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-all',
-                        'hover:text-[var(--accent)] hover:bg-[var(--accent)]/8',
-                        pathname.startsWith('/products')
-                          ? 'text-[var(--accent)] bg-[var(--accent)]/8'
-                          : 'text-[var(--foreground)]'
-                      )}
-                    >
-                      {item.label}
-                      <ChevronDown className={cn('w-3.5 h-3.5 transition-transform duration-200', megaOpen && 'rotate-180')} />
-                    </button>
-                  ) : (
-                    <Link
-                      href={item.href}
-                      className={cn(
-                        'block px-3.5 py-2 rounded-lg text-sm font-medium transition-all',
-                        'hover:text-[var(--accent)] hover:bg-[var(--accent)]/8',
-                        pathname === item.href
-                          ? 'text-[var(--accent)] bg-[var(--accent)]/8'
-                          : 'text-[var(--foreground)]'
-                      )}
-                    >
-                      {item.label}
-                    </Link>
-                  )}
-
-                  {/* Mega Menu */}
-                  {item.mega && (
-                    <AnimatePresence>
-                      {megaOpen && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 8, scale: 0.97 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0, y: 8, scale: 0.97 }}
-                          transition={{ duration: 0.15 }}
-                          onMouseEnter={() => setMegaOpen(true)}
-                          onMouseLeave={() => setMegaOpen(false)}
-                          className="absolute top-[calc(100%+8px)] right-0 w-72 rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-2xl shadow-black/12 p-3 z-50"
-                        >
-                          <div className="grid grid-cols-2 gap-2">
-                            {item.categories?.map((cat) => (
-                              <Link
-                                key={cat.href}
-                                href={cat.href}
-                                className="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-[var(--accent)]/8 hover:text-[var(--accent)] transition-all group"
-                              >
-                                <span className="text-lg leading-none">{cat.icon}</span>
-                                <span className="text-xs font-medium text-[var(--foreground)] group-hover:text-[var(--accent)] leading-snug">
-                                  {cat.label}
-                                </span>
-                              </Link>
-                            ))}
-                          </div>
-                          <div className="mt-2 pt-2 border-t border-[var(--border)]">
-                            <Link
-                              href="/products"
-                              className="flex items-center justify-center w-full py-2 rounded-xl bg-[var(--accent)] text-[var(--accent-foreground)] text-xs font-semibold hover:opacity-90 transition-opacity"
-                            >
-                              مشاهده همه محصولات
-                            </Link>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  )}
-                </div>
-              ))}
-            </nav>
-
-            {/* ── Actions ── */}
-            <div className="flex items-center gap-2 flex-shrink-0">
-              {/* Phone — lg+ */}
-              <a
-                href={phoneHref}
-                className="hidden lg:flex items-center gap-1.5 h-9 px-3 rounded-lg text-xs text-[var(--muted-foreground)] hover:text-[var(--accent)] hover:bg-[var(--accent)]/8 transition-all font-mono"
-              >
-                <Phone className="w-3.5 h-3.5 flex-shrink-0" />
-                <span className="hidden xl:inline">{phone}</span>
-              </a>
-
-              {/* Search */}
-              <button
-                onClick={() => setSearchOpen(true)}
-                aria-label="جستجو"
-                className="w-9 h-9 rounded-lg flex items-center justify-center text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[var(--accent)] transition-all"
-              >
-                <Search className="w-4 h-4" />
-              </button>
-
-              {/* Theme toggle */}
-              {mounted && (
-                <button
-                  onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                  aria-label="تغییر تم"
-                  className="w-9 h-9 rounded-lg flex items-center justify-center text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[var(--accent)] transition-all"
-                >
-                  {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-                </button>
+      <header className="fixed top-0 inset-x-0 z-50">
+        {/* نوار بالا — فقط دسکتاپ */}
+        <div className="hidden lg:block h-[38px] bg-[var(--ink)] text-[12px] text-slate-300">
+          <div className="container-main h-full flex items-center justify-between">
+            <div className="flex items-center gap-5">
+              <span className="flex items-center gap-1.5"><Factory className="w-3.5 h-3.5 text-[var(--accent)]" />فروش مستقیم از کارخانه {siteConfig.legalName}</span>
+              <span className="flex items-center gap-1.5"><Truck className="w-3.5 h-3.5 text-[var(--accent)]" />ارسال از انبار به سراسر کشور</span>
+              <span className="hidden xl:flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-[var(--accent)]" />{siteConfig.workingHours}</span>
+            </div>
+            <div className="flex items-center gap-5">
+              {companyPhones[0] && (
+                <a href={toTel(companyPhones[0])} className="flex items-center gap-1.5 hover:text-white">
+                  <Building2 className="w-3.5 h-3.5" />دفتر مرکزی: <span dir="ltr" className="num">{faDigits(companyPhones[0])}</span>
+                </a>
               )}
-
-              {/* CTA button — sm+ */}
-              <Link
-                href="/contact"
-                className="hidden sm:flex items-center gap-1.5 h-9 px-4 rounded-lg bg-[var(--accent)] text-[var(--accent-foreground)] text-sm font-semibold hover:opacity-90 transition-all hover:-translate-y-px shadow-md shadow-[var(--accent)]/25"
-              >
-                <MessageCircle className="w-3.5 h-3.5" />
-                <span>استعلام قیمت</span>
-              </Link>
-
-              {/* Mobile hamburger */}
-              <button
-                onClick={() => setMobileOpen(!mobileOpen)}
-                aria-label="منو"
-                className="lg:hidden w-9 h-9 rounded-lg flex items-center justify-center text-[var(--foreground)] hover:bg-[var(--muted)] transition-all"
-              >
-                <AnimatePresence mode="wait">
-                  {mobileOpen ? (
-                    <motion.span key="x" initial={{ rotate: -90 }} animate={{ rotate: 0 }} exit={{ rotate: 90 }}>
-                      <X className="w-5 h-5" />
-                    </motion.span>
-                  ) : (
-                    <motion.span key="m" initial={{ rotate: 90 }} animate={{ rotate: 0 }} exit={{ rotate: -90 }}>
-                      <Menu className="w-5 h-5" />
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-              </button>
+              <a href={phoneHref} className="flex items-center gap-1.5 hover:text-white font-bold"><Phone className="w-3.5 h-3.5 text-[var(--accent)]" /><span dir="ltr" className="num">{faDigits(phone)}</span></a>
             </div>
           </div>
         </div>
-      </motion.header>
 
-      {/* ─── Mobile Menu ─── */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-              onClick={() => setMobileOpen(false)}
-            />
-            <motion.div
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 28, stiffness: 280 }}
-              className="fixed top-0 right-0 bottom-0 w-72 bg-[var(--card)] z-50 lg:hidden border-l border-[var(--border)] flex flex-col shadow-2xl"
-            >
-              {/* Header */}
-              <div className="flex items-center justify-between px-5 h-[var(--nav-height)] border-b border-[var(--border)] flex-shrink-0">
-                <span className="font-bold text-[var(--foreground)]">قدیر لوله آنلاین </span>
-                <button
-                  onClick={() => setMobileOpen(false)}
-                  className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-[var(--muted)] transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
+        {/* نوار اصلی */}
+        <div
+          className={cn(
+            'transition-[background,box-shadow,border-color] duration-300 border-b',
+            scrolled
+              ? 'bg-[var(--background)]/85 backdrop-blur-xl border-[var(--border)] shadow-[0_8px_30px_-12px_rgba(0,0,0,0.18)]'
+              : 'bg-[var(--background)] border-[var(--border)]',
+          )}
+        >
+          <div className="container-main h-[60px] lg:h-[74px] flex items-center gap-3 lg:gap-6">
+            {/* موبایل: منو */}
+            <button onClick={() => setDrawer(true)} aria-label="منو" className="lg:hidden grid place-items-center w-10 h-10 -ms-1.5 rounded-xl hover:bg-[var(--muted)]">
+              <Menu className="w-6 h-6" />
+            </button>
 
-              {/* Nav links */}
-              <nav className="flex-1 overflow-y-auto p-4 space-y-1">
-                {navItems.map((item) => (
-                  <div key={item.href}>
+            <div className="lg:hidden flex-1 flex justify-center"><Logo compact /></div>
+            <div className="hidden lg:block"><Logo /></div>
+
+            {/* دسکتاپ: ناوبری */}
+            <nav className="hidden lg:flex items-center gap-1 mx-auto" aria-label="ناوبری اصلی">
+              {NAV.map((item) =>
+                'mega' in item ? (
+                  <div key={item.href} onMouseEnter={openMega} onMouseLeave={closeMega} className="relative">
                     <Link
                       href={item.href}
+                      onClick={closeAll}
+                      aria-expanded={mega}
                       className={cn(
-                        'flex items-center px-4 py-3.5 rounded-xl text-base sm:text-sm font-medium transition-all min-h-[44px]',
-                        pathname === item.href || (item.mega && pathname.startsWith('/products'))
-                          ? 'bg-[var(--accent)] text-[var(--accent-foreground)]'
-                          : 'text-[var(--foreground)] hover:bg-[var(--muted)]'
+                        'flex items-center gap-1 h-10 px-3.5 rounded-xl text-[15px] font-semibold transition-colors',
+                        isActive(pathname, item.href) ? 'text-[var(--accent)]' : 'text-[var(--foreground)] hover:bg-[var(--muted)]',
                       )}
                     >
                       {item.label}
+                      <ChevronDown className={cn('w-4 h-4 transition-transform', mega && 'rotate-180')} />
                     </Link>
-                    {item.mega && (
-                      <div className="mr-4 mt-0.5 mb-1 space-y-0.5">
-                        {item.categories?.map((cat) => (
-                          <Link
-                            key={cat.href}
-                            href={cat.href}
-                            className="flex items-center gap-3 px-4 py-2 rounded-xl text-sm text-[var(--muted-foreground)] hover:text-[var(--accent)] hover:bg-[var(--muted)] transition-all"
-                          >
-                            <span className="text-base">{cat.icon}</span>
-                            {cat.label}
-                          </Link>
-                        ))}
-                      </div>
+                  </div>
+                ) : (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={closeAll}
+                    className={cn(
+                      'relative h-10 px-3.5 rounded-xl text-[15px] font-semibold flex items-center transition-colors',
+                      isActive(pathname, item.href) ? 'text-[var(--accent)]' : 'text-[var(--foreground)] hover:bg-[var(--muted)]',
                     )}
-                  </div>
-                ))}
-              </nav>
-
-              {/* Bottom actions */}
-              <div className="p-4 border-t border-[var(--border)] space-y-2.5 flex-shrink-0">
-                <a
-                  href={phoneHref}
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[var(--muted)] text-[var(--foreground)] text-sm"
-                >
-                  <Phone className="w-4 h-4 text-[var(--accent)]" />
-                  {phone}
-                </a>
-                <Link
-                  href="/contact"
-                  className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-[var(--accent)] text-[var(--accent-foreground)] text-sm font-semibold"
-                >
-                  <MessageCircle className="w-4 h-4" />
-                  استعلام قیمت
-                </Link>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-
-      {/* ─── Search Overlay ─── */}
-      <AnimatePresence>
-        {searchOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
-              onClick={() => setSearchOpen(false)}
-            />
-            <motion.div
-              initial={{ opacity: 0, y: -16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -16 }}
-              className="fixed top-0 inset-x-0 z-50 bg-[var(--card)] border-b border-[var(--border)] shadow-2xl"
-            >
-              <div className="container-main py-5">
-                <div className="flex items-center gap-3">
-                  <div className="flex-1 relative">
-                    <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--muted-foreground)]" />
-                    <input
-                      autoFocus
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && searchQuery.trim()) {
-                          window.location.href = `/search?q=${encodeURIComponent(searchQuery)}`;
-                        }
-                        if (e.key === 'Escape') setSearchOpen(false);
-                      }}
-                      placeholder="جستجو در محصولات، مقالات و ..."
-                      className="w-full h-13 bg-[var(--muted)] rounded-2xl pr-12 pl-4 text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none text-base"
-                    />
-                  </div>
-                  <button
-                    onClick={() => setSearchOpen(false)}
-                    className="w-13 h-13 rounded-2xl flex items-center justify-center bg-[var(--muted)] hover:bg-[var(--accent)] hover:text-white text-[var(--foreground)] transition-colors flex-shrink-0"
                   >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <span className="text-xs text-[var(--muted-foreground)] ml-1">جستجوهای رایج:</span>
-                  {['لوله پلیکا', 'پلی اتیلن', 'منهول', 'شیرآلات', 'اتصالات'].map((term) => (
-                    <button
-                      key={term}
-                      onClick={() => { window.location.href = `/search?q=${encodeURIComponent(term)}`; }}
-                      className="text-xs px-3 py-1.5 rounded-full bg-[var(--muted)] text-[var(--muted-foreground)] hover:bg-[var(--accent)] hover:text-white transition-colors"
+                    {item.label}
+                    {isActive(pathname, item.href) && (
+                      <motion.span layoutId="nav-underline" className="absolute inset-x-3 -bottom-[15px] h-[3px] bg-[var(--accent)]" />
+                    )}
+                  </Link>
+                ),
+              )}
+            </nav>
+
+            <div className="flex items-center gap-1.5 lg:gap-2">
+              {/* صفحه اصلی جستجوی بزرگ هیرو را دارد؛ در موبایل جای خالی نگه داشته می‌شود تا لوگو وسط بماند */}
+              {isHome ? (
+                <span className="lg:hidden w-10 h-10" aria-hidden />
+              ) : (
+                <button onClick={() => setSearch(true)} aria-label="جستجو" className="grid place-items-center w-10 h-10 rounded-xl hover:bg-[var(--muted)]">
+                  <Search className="w-5 h-5" />
+                </button>
+              )}
+              <button
+                onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+                aria-label="تغییر حالت روشن و تیره"
+                className="hidden lg:grid place-items-center w-10 h-10 rounded-xl hover:bg-[var(--muted)]"
+              >
+                {mounted && (resolvedTheme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />)}
+              </button>
+              <button
+                onClick={() => openConsult()}
+                className="hidden lg:flex items-center gap-2 h-11 px-5 rounded-2xl bg-[var(--accent)] text-[var(--accent-foreground)] font-bold shadow-accent hover:-translate-y-0.5 transition-transform"
+              >
+                <Headphones className="w-4.5 h-4.5" />
+                مشاوره رایگان
+              </button>
+            </div>
+          </div>
+
+          {/* مگامنو محصولات */}
+          <AnimatePresence>
+            {mega && (
+              <motion.div
+                onMouseEnter={openMega}
+                onMouseLeave={closeMega}
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.18 }}
+                className="hidden lg:block absolute inset-x-0 top-full"
+              >
+                <div className="container-main">
+                  <div className="mt-2 rounded-3xl border border-[var(--border)] bg-[var(--background)] shadow-2xl p-6 grid grid-cols-[1fr_280px] gap-6">
+                    <div className="grid grid-cols-3 gap-2">
+                      {categories.map((c) => (
+                        <Link
+                          key={c.slug}
+                          href={`/products/${c.slug}`}
+                          onClick={closeAll}
+                          className="group flex items-center gap-3 p-2.5 rounded-2xl hover:bg-[var(--muted)] transition-colors"
+                        >
+                          <CategoryThumb category={c} className="w-12 h-12 rounded-xl" />
+                          <span className="min-w-0">
+                            <span className="block font-bold text-sm truncate group-hover:text-[var(--accent)]">{c.name}</span>
+                            <span className="block text-xs text-[var(--muted-foreground)] num">{faDigits(c.productCount)} محصول</span>
+                          </span>
+                        </Link>
+                      ))}
+                    </div>
+                    <Link
+                      href="/prices"
+                      onClick={closeAll}
+                      className="relative overflow-hidden rounded-2xl bg-[var(--ink)] text-white p-5 flex flex-col justify-between bp-grid"
                     >
-                      {term}
-                    </button>
-                  ))}
+                      <span className="relative">
+                        <span className="eyebrow">به‌روز</span>
+                        <span className="block mt-2 text-xl font-black leading-snug">لیست قیمت روز لوله و اتصالات</span>
+                      </span>
+                      <span className="relative flex items-center gap-1.5 text-sm font-bold text-[var(--accent)]">
+                        مشاهده قیمت‌ها <ArrowLeft className="w-4 h-4" />
+                      </span>
+                    </Link>
+                  </div>
                 </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </header>
+
+      {/* منوی کشویی موبایل — از سمت راست (شروع در RTL) */}
+      <AnimatePresence>
+        {drawer && (
+          <motion.div className="lg:hidden fixed inset-0 z-[60]" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <button aria-label="بستن منو" onClick={() => setDrawer(false)} className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+            <motion.aside
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 32, stiffness: 320 }}
+              className="absolute inset-y-0 right-0 w-[88%] max-w-[380px] bg-[var(--background)] flex flex-col safe-pb border-s-4 border-[var(--accent)]"
+              aria-label="منوی سایت"
+            >
+              <div className="flex items-center justify-between ps-5 pe-3 h-[60px] border-b border-[var(--border)]">
+                <Logo compact />
+                <button onClick={() => setDrawer(false)} aria-label="بستن" className="grid place-items-center w-10 h-10 rounded-xl border border-[var(--border)]">
+                  <X className="w-5 h-5" />
+                </button>
               </div>
-            </motion.div>
-          </>
+
+              <div className="flex-1 overflow-y-auto overscroll-contain no-scrollbar">
+                <form onSubmit={submitSearch} className="relative px-4 pt-4">
+                  <Search className="absolute right-8 top-[calc(50%+8px)] -translate-y-1/2 w-4.5 h-4.5 text-[var(--muted-foreground)]" />
+                  <input
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="جستجوی لوله، اتصالات، سایز…"
+                    enterKeyHint="search"
+                    aria-label="جستجو"
+                    className="w-full h-12 rounded-xl bg-[var(--muted)] border border-[var(--border)] pr-11 pl-3 text-[15px] focus:border-[var(--accent)]"
+                  />
+                </form>
+
+                <Link
+                  href="/prices"
+                  onClick={closeAll}
+                  className="corner-marks mx-4 mt-3 flex items-center gap-3 p-4 rounded-xl bg-[var(--ink)] bp-grid text-white"
+                >
+                  <span className="grid place-items-center w-11 h-11 rounded-lg bg-[var(--accent)] text-[var(--accent-foreground)] shrink-0">
+                    <ChartLine className="w-5 h-5" />
+                  </span>
+                  <span className="flex-1 min-w-0">
+                    <span className="block font-black">لیست قیمت روز</span>
+                    <span className="block text-xs text-slate-400">قیمت لحظه‌ای و نمودار نوسان</span>
+                  </span>
+                  <ArrowLeft className="w-4 h-4 text-[var(--accent)]" />
+                </Link>
+
+                <nav aria-label="ناوبری موبایل" className="px-4 mt-3 grid grid-cols-3 gap-2">
+                  {DRAWER_LINKS.map(({ href, label, icon: Icon }) => (
+                    <Link
+                      key={href}
+                      href={href}
+                      onClick={closeAll}
+                      aria-current={isActive(pathname, href) ? 'page' : undefined}
+                      className={cn(
+                        'h-[72px] rounded-xl border flex flex-col items-center justify-center gap-1.5 text-[13px] font-bold transition-colors active:scale-[0.97]',
+                        isActive(pathname, href)
+                          ? 'border-[var(--foreground)] bg-[var(--foreground)] text-[var(--background)]'
+                          : 'border-[var(--border)] bg-[var(--card)]',
+                      )}
+                    >
+                      <Icon className={cn('w-5 h-5', !isActive(pathname, href) && 'text-[var(--muted-foreground)]')} />
+                      {label}
+                    </Link>
+                  ))}
+                </nav>
+
+                <div className="mt-6 px-4 flex items-center justify-between">
+                  <p className="tech-label">دسته‌بندی محصولات</p>
+                  <span className="text-[11px] text-[var(--muted-foreground)] num">{faDigits(categories.length)} دسته</span>
+                </div>
+                <ul className="mt-2 mb-4 px-4">
+                  {categories.map((c) => (
+                    <li key={c.slug} className="border-b border-[var(--border)] last:border-b-0">
+                      <Link
+                        href={`/products/${c.slug}`}
+                        onClick={closeAll}
+                        className={cn('flex items-center gap-3 py-2.5 active:bg-[var(--muted)]', pathname.startsWith(`/products/${c.slug}`) && 'text-[var(--accent)]')}
+                      >
+                        <CategoryThumb category={c} className="w-11 h-11 rounded-lg" />
+                        <span className="flex-1 min-w-0">
+                          <span className="block text-[14px] font-bold truncate">{c.name}</span>
+                          <span className="block text-[11px] text-[var(--muted-foreground)] num">{faDigits(c.productCount)} محصول</span>
+                        </span>
+                        <ChevronLeft className="w-4 h-4 text-[var(--muted-foreground)]" />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="p-4 border-t border-[var(--border)] grid grid-cols-[1fr_auto_auto] gap-2">
+                <a href={phoneHref} className="h-12 rounded-xl bg-[var(--accent)] text-[var(--accent-foreground)] font-black flex items-center justify-center gap-2 min-w-0">
+                  <Phone className="w-5 h-5 shrink-0" /><span dir="ltr" className="num truncate">{faDigits(phone)}</span>
+                </a>
+                {whatsappUrl && (
+                  <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" aria-label="واتس‌اپ" className="w-12 h-12 rounded-xl bg-[#25D366] text-white grid place-items-center">
+                    <MessageCircle className="w-5 h-5" />
+                  </a>
+                )}
+                <button
+                  onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+                  aria-label="تغییر حالت روشن و تیره"
+                  className="w-12 h-12 rounded-xl border border-[var(--border)] grid place-items-center"
+                >
+                  {mounted && (resolvedTheme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />)}
+                </button>
+              </div>
+            </motion.aside>
+          </motion.div>
         )}
       </AnimatePresence>
 
-      {/* ─── Floating Action Buttons ─── */}
-      <div className="fixed left-3 sm:left-4 bottom-[max(1rem,env(safe-area-inset-bottom))] sm:bottom-6 z-40 flex flex-col gap-2.5">
-        <motion.a
-          href={whatsappUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 1.2, type: 'spring' }}
-          aria-label="واتساپ"
-          className="w-11 h-11 rounded-full bg-green-500 flex items-center justify-center shadow-lg shadow-green-500/40 hover:scale-110 transition-transform"
-        >
-          <svg viewBox="0 0 24 24" fill="white" className="w-5 h-5">
-            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
-            <path d="M11.999 2C6.477 2 2 6.477 2 12c0 1.759.459 3.411 1.265 4.845L2 22l5.293-1.254A9.937 9.937 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/>
-          </svg>
-        </motion.a>
-        <motion.a
-          href={phoneHref}
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 1.4, type: 'spring' }}
-          aria-label="تماس"
-          className="w-11 h-11 rounded-full bg-[var(--accent)] flex items-center justify-center shadow-lg shadow-[var(--accent)]/40 hover:scale-110 transition-transform"
-        >
-          <Phone className="w-4.5 h-4.5 text-white" />
-        </motion.a>
-      </div>
+      {/* جستجوی تمام‌صفحه */}
+      <AnimatePresence>
+        {search && (
+          <motion.div className="fixed inset-0 z-[60] bg-[var(--background)]/95 backdrop-blur-xl" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <div className="container-main pt-5 lg:pt-24 max-w-3xl">
+              <div className="flex items-center gap-2">
+                <form onSubmit={submitSearch} className="flex-1 relative">
+                  <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--muted-foreground)]" />
+                  <input
+                    ref={searchInput}
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="جستجوی لوله، اتصالات، سایز…"
+                    className="w-full h-14 lg:h-16 rounded-2xl bg-[var(--muted)] border border-[var(--border)] pr-12 pl-4 text-base lg:text-lg focus:border-[var(--accent)]"
+                    enterKeyHint="search"
+                  />
+                </form>
+                <button onClick={() => setSearch(false)} aria-label="بستن جستجو" className="grid place-items-center w-12 h-12 rounded-2xl hover:bg-[var(--muted)]">
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+              <p className="mt-6 text-xs font-bold text-[var(--muted-foreground)]">دسته‌های پرجستجو</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {categories.map((c) => (
+                  <Link key={c.slug} href={`/products/${c.slug}`} onClick={closeAll} className="h-10 px-4 rounded-lg border border-[var(--border)] flex items-center text-sm font-semibold hover:border-[var(--accent)] hover:text-[var(--accent)]">
+                    {c.name}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
+  );
+}
+
+/** تصویر دسته؛ اگر تصویری ثبت نشده، کاشی گرافیکی با طرح لوله نمایش داده می‌شود (به جای عکس ۴۰۴) */
+export function CategoryThumb({ category, className }: { category: Pick<NavCategory, 'name' | 'image'>; className?: string }) {
+  const gradientId = useId();
+  if (category.image) {
+    return (
+      <span className={cn('relative block overflow-hidden bg-[var(--muted)] shrink-0', className)}>
+        <Image src={category.image} alt={category.name} fill sizes="200px" className="object-cover" />
+      </span>
+    );
+  }
+  return (
+    <span className={cn('relative block overflow-hidden shrink-0 bg-[var(--ink-2)] bp-grid', className)} aria-hidden>
+      <svg viewBox="0 0 64 40" className="absolute inset-0 w-full h-full p-[12%]" fill="none">
+        <path d="M4 26 H34 a10 10 0 0 0 10 -10 V4" stroke={`url(#${gradientId})`} strokeWidth="7" strokeLinecap="round" />
+        <rect x="40" y="2" width="8" height="4" rx="1" fill="var(--accent)" />
+        <defs>
+          <linearGradient id={gradientId} x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0" stopColor="#CBD5E1" />
+            <stop offset="1" stopColor="#475569" />
+          </linearGradient>
+        </defs>
+      </svg>
+    </span>
   );
 }

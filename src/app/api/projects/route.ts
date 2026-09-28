@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     const project = await prisma.project.create({
       data: {
         title,
-        slug: String(body.slug || '').trim() || slugify(title),
+        slug: slugify(String(body.slug || '').trim() || title),
         description: body.description || null,
         content: body.content || null,
         images: JSON.stringify(body.images || []),

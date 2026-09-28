@@ -1,85 +1,68 @@
 export const dynamic = 'force-dynamic';
 
-import { HeroSection } from '@/widgets/home/HeroSection';
-import { StatsSection } from '@/widgets/home/StatsSection';
-import { CategoriesSection } from '@/widgets/home/CategoriesSection';
-import { ServicesSection } from '@/widgets/home/ServicesSection';
-import { TestimonialsSection } from '@/widgets/home/TestimonialsSection';
-import { BlogPreview } from '@/widgets/home/BlogPreview';
-import { BrandsSection } from '@/widgets/home/BrandsSection';
-import { CTASection } from '@/widgets/home/CTASection';
-import {
-  getPublishedBlogPosts,
-  getPublishedCategories,
-  getPublishedTestimonials,
-} from '@/shared/lib/data';
 import type { Metadata } from 'next';
+import { HeroSection } from '@/widgets/home/HeroSection';
+import { CategoriesSection } from '@/widgets/home/CategoriesSection';
+import { LatestPrices } from '@/widgets/home/LatestPrices';
+import { FeaturedProducts } from '@/widgets/home/FeaturedProducts';
+import { ServicesSection } from '@/widgets/home/ServicesSection';
+import { BrandsSection } from '@/widgets/home/BrandsSection';
+import { FactorySection } from '@/widgets/home/FactorySection';
+import { BlogPreview } from '@/widgets/home/BlogPreview';
+import { SeoContent } from '@/widgets/home/SeoContent';
+import {
+  getNavCategories,
+  getPublishedBlogPosts,
+  getPublishedProducts,
+  getSiteSettingsMap,
+} from '@/shared/lib/data';
+import { mergeSiteSettings } from '@/shared/lib/site-settings';
+import { getPriceBoard } from '@/shared/lib/price-board';
 import { siteConfig } from '@/shared/config/site';
 import { JsonLd } from '@/shared/ui/JsonLd';
+import { localBusinessSchema, organizationSchema, websiteSchema } from '@/shared/lib/seo';
+
+const HOME_TITLE = 'خرید لوله و اتصالات | لیست قیمت روز | قدیر لوله آنلاین';
+const HOME_DESCRIPTION =
+  'فروش آنلاین مستقیم از کارخانه قدیر لوله پاسارگاد؛ لیست قیمت روز لوله دوجداره پلی اتیلن، پلیکا، چدن داکتیل، منهول و اتصالات. بارگیری از انبار گرمسار و ارسال به سراسر کشور.';
 
 export const metadata: Metadata = {
-  title: 'قدیر لوله آنلاین | تامین کننده لوله و اتصالات صنعتی در مشهد',
-  description: 'تامین کننده معتبر انواع لوله، اتصالات و تجهیزات صنعتی در مشهد. لوله پلیکا، پلی اتیلن، چدن داکتیل، منهول، شیرآلات و فلنج. با بیش از ۲۰ سال تجربه.',
+  // absolute: وگرنه قالب «%s | نام سایت» لایه روت نام سایت را دوباره اضافه می‌کند
+  title: { absolute: HOME_TITLE },
+  description: HOME_DESCRIPTION,
   alternates: { canonical: siteConfig.url },
-};
-
-const organizationSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: siteConfig.name,
-  url: siteConfig.url,
-  logo: `${siteConfig.url}/images/logo.png`,
-  contactPoint: {
-    '@type': 'ContactPoint',
-    telephone: siteConfig.phone,
-    contactType: 'sales',
-    areaServed: 'IR',
-    availableLanguage: 'Persian',
+  openGraph: {
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
+    url: siteConfig.url,
+    type: 'website',
   },
-  address: {
-    '@type': 'PostalAddress',
-    addressLocality: 'مشهد',
-    addressRegion: 'خراسان رضوی',
-    addressCountry: 'IR',
-  },
-  sameAs: [siteConfig.socials.whatsapp],
-};
-
-const localBusinessSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'LocalBusiness',
-  name: siteConfig.name,
-  url: siteConfig.url,
-  telephone: siteConfig.phone,
-  openingHours: 'Sa-Th 08:00-18:00',
-  address: {
-    '@type': 'PostalAddress',
-    addressLocality: 'مشهد',
-    addressRegion: 'خراسان رضوی',
-    addressCountry: 'IR',
-  },
-  priceRange: '﷼﷼﷼',
-  description: siteConfig.description,
 };
 
 export default async function HomePage() {
-  const [categories, posts, testimonials] = await Promise.all([
-    getPublishedCategories(),
+  const [categories, board, products, posts, rawSettings] = await Promise.all([
+    getNavCategories(),
+    getPriceBoard(),
+    getPublishedProducts({ limit: 8 }),
     getPublishedBlogPosts({ limit: 3 }),
-    getPublishedTestimonials(3),
+    getSiteSettingsMap(),
   ]);
+  const settings = mergeSiteSettings(rawSettings);
 
   return (
     <>
-      <JsonLd data={organizationSchema} />
-      <JsonLd data={localBusinessSchema} />
-      <HeroSection />
-      <StatsSection />
+      <JsonLd data={organizationSchema(settings)} />
+      <JsonLd data={localBusinessSchema(settings)} />
+      <JsonLd data={websiteSchema()} />
+      <HeroSection categories={categories} board={board} />
+      <LatestPrices board={board} />
       <CategoriesSection categories={categories} />
+      <FeaturedProducts products={products} />
       <ServicesSection />
-      <BlogPreview posts={posts} />
       <BrandsSection />
-      {/*<CTASection />*/}
+      <BlogPreview posts={posts} />
+      <FactorySection address={settings.address} factoryAddress={settings.factoryAddress} companyPhones={settings.companyPhones} mapUrl={settings.mapUrl} />
+      <SeoContent html={settings.homeSeoContent} />
     </>
   );
 }

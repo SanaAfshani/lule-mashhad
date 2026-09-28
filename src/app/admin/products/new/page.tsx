@@ -8,6 +8,11 @@ import toast from 'react-hot-toast';
 import { slugify } from '@/shared/lib/utils';
 import type { Category } from '@/shared/types';
 import { ImageUploader } from '@/shared/ui/ImageUploader';
+import { HtmlContentEditor } from '@/features/admin/editor/HtmlContentEditor';
+import { SeoPanel } from '@/features/admin/seo/SeoPanel';
+import { FaqEditor } from '@/features/admin/seo/FaqEditor';
+import type { SeoFields } from '@/features/admin/seo/seo';
+import type { FaqItem } from '@/shared/types';
 
 type Spec = { key: string; value: string };
 
@@ -22,6 +27,14 @@ interface FormState {
   featured: boolean;
   published: boolean;
   specs: Spec[];
+  // --- سئو ---
+  slug: string;
+  metaTitle: string;
+  metaDescription: string;
+  focusKeyword: string;
+  ogTitle: string;
+  ogDescription: string;
+  faqs: FaqItem[];
 }
 
 export default function NewProductPage() {
@@ -40,7 +53,24 @@ export default function NewProductPage() {
     featured: false,
     published: true,
     specs: [{ key: '', value: '' }],
+    slug: '',
+    metaTitle: '',
+    metaDescription: '',
+    focusKeyword: '',
+    ogTitle: '',
+    ogDescription: '',
+    faqs: [],
   });
+  const [slugTouched, setSlugTouched] = useState(false);
+
+  /** تغییر دستی اسلاگ، هم‌گام‌سازی خودکار با نام محصول را متوقف می‌کند */
+  const handleSeoChange = (patch: Partial<SeoFields>) => {
+    if (patch.slug !== undefined) setSlugTouched(true);
+    setForm((f) => ({ ...f, ...patch }));
+  };
+
+  const selectedCategorySlug =
+    categories.find((c) => c.id === form.categoryId)?.slug || 'دسته-بندی';
 
   useEffect(() => {
     (async () => {
@@ -72,7 +102,7 @@ export default function NewProductPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: form.name,
-          slug: slugify(form.name),
+          slug: form.slug || slugify(form.name),
           categoryId: form.categoryId,
           shortDescription: form.shortDescription || undefined,
           description: form.description || undefined,
@@ -82,6 +112,12 @@ export default function NewProductPage() {
           inStock: form.inStock,
           featured: form.featured,
           published: form.published,
+          metaTitle: form.metaTitle,
+          metaDescription: form.metaDescription,
+          focusKeyword: form.focusKeyword,
+          ogTitle: form.ogTitle,
+          ogDescription: form.ogDescription,
+          faqs: form.faqs,
         }),
       });
 
@@ -132,7 +168,11 @@ export default function NewProductPage() {
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-1.5">نام محصول *</label>
                 <input type="text" required value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  onChange={(e) => {
+                    const name = e.target.value;
+                    // اسلاگ تا وقتی ادمین دستی تغییرش نداده، با نام محصول هم‌گام می‌ماند
+                    setForm((f) => ({ ...f, name, slug: slugTouched ? f.slug : slugify(name) }));
+                  }}
                   placeholder="مثال: لوله فولادی ۲ اینچ API"
                   className={inputCls} />
               </div>
@@ -161,13 +201,13 @@ export default function NewProductPage() {
                   className={inputCls} />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1.5">توضیحات کامل</label>
-                <textarea value={form.description}
-                  onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  rows={5} placeholder="توضیحات کامل محصول..."
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none resize-none transition-colors" />
-              </div>
+              <HtmlContentEditor
+                label="توضیحات کامل"
+                value={form.description}
+                onChange={(description) => setForm((f) => ({ ...f, description }))}
+                rows={8}
+                placeholder="توضیحات کامل محصول — می‌توانی مستقیم از ابزار تولید محتوا پیست کنی..."
+              />
             </div>
 
             {/* Images */}
@@ -206,6 +246,35 @@ export default function NewProductPage() {
                 ))}
               </div>
             </div>
+
+            <p className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 px-5 py-4 text-xs text-emerald-200/70 leading-6">
+              بعد از ذخیره محصول، جدول قیمت آن را از «تابلوی قیمت» در منوی پنل وارد کنید (امکان پیست از اکسل دارد).
+            </p>
+
+            <SeoPanel
+              value={{
+                slug: form.slug,
+                metaTitle: form.metaTitle,
+                metaDescription: form.metaDescription,
+                focusKeyword: form.focusKeyword,
+                ogTitle: form.ogTitle,
+                ogDescription: form.ogDescription,
+              }}
+              onChange={handleSeoChange}
+              context={{
+                title: form.name,
+                excerpt: form.shortDescription,
+                content: form.description,
+              }}
+              variant="product"
+              previewPath={`products/${selectedCategorySlug}`}
+            />
+
+            <FaqEditor
+              value={form.faqs}
+              onChange={(faqs) => setForm((f) => ({ ...f, faqs }))}
+              entityLabel="محصول"
+            />
           </div>
 
           {/* ── Sidebar ── */}

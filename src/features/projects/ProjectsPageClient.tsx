@@ -1,20 +1,12 @@
 'use client';
 
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { MapPin, Calendar, ArrowLeft } from 'lucide-react';
+import { MapPin, Calendar } from 'lucide-react';
 import { PageHero } from '@/shared/ui/PageHero';
 import type { Project } from '@/shared/types';
 import { formatPersianNumber } from '@/shared/lib/utils';
-
-const gradients = [
-  'from-slate-900 via-blue-950',
-  'from-slate-900 via-orange-950',
-  'from-slate-900 via-teal-950',
-  'from-slate-900 via-purple-950',
-  'from-slate-900 via-green-950',
-  'from-slate-900 via-red-950',
-];
 
 type Props = {
   projects: Project[];
@@ -26,7 +18,7 @@ export function ProjectsPageClient({ projects }: Props) {
       <PageHero
         label="پورتفوی"
         title="پروژه‌های اجرا شده"
-        description="نگاهی به بزرگ‌ترین پروژه‌های تامین لوله آب و فاضلاب در مشهد و خراسان رضوی"
+        description="نگاهی به بزرگ‌ترین پروژه‌های تامین لوله آب و فاضلاب در سراسر کشور"
       />
 
       <section className="section-padding">
@@ -34,69 +26,40 @@ export function ProjectsPageClient({ projects }: Props) {
           {projects.length === 0 ? (
             <p className="text-center text-[var(--muted-foreground)] py-16">پروژه‌ای ثبت نشده است.</p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
               {projects.map((project, i) => (
-                <motion.div
+                <motion.article
                   key={project.id}
-                  initial={{ opacity: 0, y: 24 }}
+                  initial={{ opacity: 0, y: 16 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.08 }}
+                  transition={{ delay: (i % 3) * 0.06 }}
                 >
-                  <Link
-                    href={`/projects/${project.slug}`}
-                    className={`group block rounded-2xl bg-gradient-to-br ${gradients[i % gradients.length]} to-slate-900 overflow-hidden hover:-translate-y-2 transition-all duration-300 shadow-lg`}
-                  >
-                    <div className="h-44 relative flex flex-col justify-between p-5">
-                      <div
-                        className="absolute inset-0 opacity-5"
-                        style={{
-                          backgroundImage:
-                            'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
-                          backgroundSize: '20px 20px',
-                        }}
-                      />
-                      <div className="relative z-10 flex items-start justify-between">
-                        {project.client && (
-                          <span className="text-xs font-bold px-3 py-1 rounded-full bg-slate-700/80 text-slate-300">
-                            {project.client}
-                          </span>
-                        )}
-                        {project.featured && (
-                          <span className="text-xs text-slate-500 bg-slate-900/50 px-2.5 py-1 rounded-full mr-auto">
-                            پروژه ویژه
-                          </span>
-                        )}
-                      </div>
-                      <div className="relative z-10">
-                        <h3 className="text-white font-bold text-base mb-2 group-hover:text-[var(--accent)] transition-colors leading-tight">
-                          {project.title}
-                        </h3>
-                        <div className="flex items-center gap-3 text-xs text-slate-400">
-                          {project.location && (
-                            <span className="flex items-center gap-1">
-                              <MapPin className="w-3.5 h-3.5" />
-                              {project.location}
-                            </span>
-                          )}
-                          <span className="flex items-center gap-1">
-                            <Calendar className="w-3.5 h-3.5" />
-                            {formatPersianNumber(project.year)}
-                          </span>
-                        </div>
-                      </div>
+                  <Link href={`/projects/${project.slug}`} className="group block">
+                    <div className="relative aspect-[16/10] rounded-3xl overflow-hidden bg-[var(--ink-2)]">
+                      {project.images[0] ? (
+                        <Image src={project.images[0]} alt={project.title} fill sizes="(max-width:640px) 100vw, 33vw" className="object-cover transition-transform duration-700 group-hover:scale-[1.03]" />
+                      ) : (
+                        <span className="absolute inset-0 bp-grid" aria-hidden />
+                      )}
+                      {project.client && (
+                        <span className="absolute top-3 right-3 h-7 px-3 rounded-lg bg-white/90 text-[var(--ink)] text-xs font-bold flex items-center">
+                          {project.client}
+                        </span>
+                      )}
                     </div>
-                    <div className="px-5 pb-5">
-                      <p className="text-slate-400 text-sm leading-relaxed mb-3 line-clamp-2">
-                        {project.description}
-                      </p>
-                      <div className="flex items-center gap-2 text-[var(--accent)] text-sm font-medium">
-                        جزئیات بیشتر
-                        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                      </div>
+                    <div className="mt-4 flex items-center gap-3 text-xs text-[var(--muted-foreground)] num">
+                      {project.location && (
+                        <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{project.location}</span>
+                      )}
+                      <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" />{formatPersianNumber(project.year)}</span>
                     </div>
+                    <h3 className="mt-2 font-black text-[17px] leading-8 line-clamp-2 group-hover:text-[var(--accent)] transition-colors">{project.title}</h3>
+                    {project.description && (
+                      <p className="mt-1.5 text-sm leading-7 text-[var(--muted-foreground)] line-clamp-2">{project.description}</p>
+                    )}
                   </Link>
-                </motion.div>
+                </motion.article>
               ))}
             </div>
           )}

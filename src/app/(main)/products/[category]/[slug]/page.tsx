@@ -1,11 +1,14 @@
 export const dynamic = 'force-dynamic';
 
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
+import { findRedirect } from '@/shared/lib/redirects';
 import type { Metadata } from 'next';
 import { ProductDetailView } from '@/features/products/ProductDetailView';
-import { getProductBySlug } from '@/shared/lib/data';
+import { getProductBySlug, getPublishedProducts } from '@/shared/lib/data';
+import { getPriceBoard, summarizeLine } from '@/shared/lib/price-board';
 import { siteConfig } from '@/shared/config/site';
 import { JsonLd } from '@/shared/ui/JsonLd';
+import { absoluteUrl, breadcrumbSchema, faqPageSchema, toMetaDescription } from '@/shared/lib/seo';
 
 type Props = { params: Promise<{ category: string; slug: string }> };
 
@@ -14,25 +17,41 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const category = decodeURIComponent(rawCat);
   const slug = decodeURIComponent(rawSlug);
   const product = await getProductBySlug(slug, category);
-  if (!product) return { title: 'محصول یافت نشد' };
+  if (!product) return { title: 'محصول یافت نشد', robots: { index: false, follow: true } };
 
-  const desc = product.shortDescription || product.description?.slice(0, 160) || '';
-  const images = (() => {
-    try { return JSON.parse(product.images as unknown as string) as string[]; } catch { return [] as string[]; }
-  })();
-  const image = images[0] ? `${siteConfig.url}${images[0]}` : undefined;
+  // مقادیر ست‌شده در پنل ادمین اولویت دارند؛ در صورت خالی بودن از محتوای محصول fallback می‌شود
+  const desc = toMetaDescription(
+    product.metaDescription ||
+      product.shortDescription ||
+      product.description ||
+      `خرید ${product.name} با قیمت مناسب از ${siteConfig.name} با ارسال به سراسر کشور. استعلام قیمت و مشاوره رایگان.`
+  );
+  const ogTitle = product.ogTitle || product.metaTitle || `${product.name} | ${siteConfig.name}`;
+  const ogDescription = toMetaDescription(product.ogDescription || desc);
+  const image = product.images?.[0] ? absoluteUrl(product.images[0]) : undefined;
+  const canonical = `${siteConfig.url}/products/${encodeURIComponent(category)}/${encodeURIComponent(slug)}`;
 
   return {
-    title: `${product.name} | قدیر لوله آنلاین`,
+    // metaTitle دقیقاً همان چیزی است که ادمین در پیش‌نمایش گوگل دیده — پس template سایت روی آن اعمال نمی‌شود
+    // پیش‌فرض: نام محصول + نیت خرید، ترکیبی که کاربر واقعا سرچ می‌کند
+    title: product.metaTitle
+      ? { absolute: product.metaTitle }
+      : `خرید ${product.name} | قیمت و مشخصات`,
     description: desc,
-    alternates: {
-      canonical: `${siteConfig.url}/products/${encodeURIComponent(category)}/${encodeURIComponent(slug)}`,
-    },
+    ...(product.focusKeyword ? { keywords: [product.focusKeyword] } : {}),
+    alternates: { canonical },
     openGraph: {
-      title: `${product.name} | قدیر لوله آنلاین`,
-      description: desc,
-      ...(image ? { images: [image] } : {}),
+      title: ogTitle,
+      description: ogDescription,
+      url: canonical,
       type: 'website',
+      ...(image ? { images: [{ url: image, alt: product.name }] } : {}),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: ogTitle,
+      description: ogDescription,
+      ...(image ? { images: [image] } : {}),
     },
   };
 }
@@ -42,32 +61,93 @@ export default async function ProductDetailPage({ params }: Props) {
   const category = decodeURIComponent(rawCat);
   const slug = decodeURIComponent(rawSlug);
   const product = await getProductBySlug(slug, category);
-  if (!product) notFound();
+  if (!product) {
+    // اسلاگ محصول یکتاست؛ اگر فقط دسته عوض شده، محصول را بدون دسته پیدا و به آدرس درست منتقل کن
+    const elsewhere = await getProductBySlug(slug);
+    if (elsewhere) {
+      permanentRedirect(
+        `/products/${encodeURIComponent(elsewhere.category.slug)}/${encodeURIComponent(elsewhere.slug)}`,
+      );
+    }
+    const moved = await findRedirect(`/products/${category}/${slug}`);
+    if (moved) permanentRedirect(moved);
+    notFound();
+  }
 
-  const images = (() => {
-    try { return JSON.parse(product.images as unknown as string) as string[]; } catch { return [] as string[]; }
-  })();
+  // product.images توسط serializeProduct از قبل به آرایه تبدیل شده است
+  const images = (product.images ?? []).map((src) => absoluteUrl(src));
+  const canonical = `${siteConfig.url}/products/${encodeURIComponent(category)}/${encodeURIComponent(slug)}`;
+
+  const board = await getPriceBoard();
+  // بیرون از ساعت کاری سرور قیمت نمی‌فرستد؛ پس schema هم فقط در ساعت کاری offer دارد
+  const priceSummary = summarizeLine(board.lines.find((l) => l.productId === product.id)?.items ?? []);
+  const related = (await getPublishedProducts({ categorySlug: product.category.slug, limit: 5 }))
+    .filter((p) => p.id !== product.id)
+    .slice(0, 4);
 
   const productSchema = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.name,
-    description: product.shortDescription || product.description || '',
+    description: toMetaDescription(
+      product.metaDescription || product.shortDescription || product.description,
+      400
+    ),
+    ...(product.focusKeyword ? { keywords: product.focusKeyword } : {}),
     sku: product.slug,
+    mpn: product.id,
+    category: product.category?.name,
     brand: { '@type': 'Brand', name: siteConfig.name },
-    ...(images[0] ? { image: `${siteConfig.url}${images[0]}` } : {}),
-    offers: {
-      '@type': 'Offer',
-      priceCurrency: 'IRR',
-      availability: 'https://schema.org/InStock',
-      seller: { '@type': 'Organization', name: siteConfig.name },
-    },
+    ...(images.length ? { image: images } : {}),
+    url: canonical,
+    // جدول قیمت ← AggregateOffer (بازه قیمت در نتایج گوگل)؛ در غیر این صورت قیمت تکی.
+    // offer بدون price در گوگل خطای structured data می‌دهد، پس بدون قیمت offers نمی‌گذاریم
+    ...(priceSummary.minPrice != null
+      ? {
+          offers: {
+            '@type': 'AggregateOffer',
+            url: canonical,
+            priceCurrency: 'IRR',
+            // قیمت‌ها در پنل به تومان ثبت می‌شوند؛ schema.org واحد رسمی ریال را می‌خواهد
+            lowPrice: priceSummary.minPrice * 10,
+            highPrice: (priceSummary.maxPrice ?? priceSummary.minPrice) * 10,
+            offerCount: priceSummary.count,
+            availability: product.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+            seller: { '@type': 'Organization', name: siteConfig.name, url: siteConfig.url },
+          },
+        }
+      : board.market.open && typeof product.price === 'number' && product.price > 0
+        ? {
+            offers: {
+              '@type': 'Offer',
+              url: canonical,
+              price: product.price,
+              priceCurrency: 'IRR',
+              itemCondition: 'https://schema.org/NewCondition',
+              availability: product.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+              seller: { '@type': 'Organization', name: siteConfig.name, url: siteConfig.url },
+              areaServed: siteConfig.serviceArea,
+            },
+          }
+        : {}),
   };
 
   return (
     <>
       <JsonLd data={productSchema} />
-      <ProductDetailView product={product} />
+      {/* سوالات متداول اختصاصی محصول — واجد شرایط rich result آکاردئونی */}
+      {product.faqs.length > 0 && <JsonLd data={faqPageSchema(product.faqs)} />}
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: 'محصولات', path: '/products' },
+          {
+            name: product.category?.name ?? category,
+            path: `/products/${encodeURIComponent(category)}`,
+          },
+          { name: product.name, path: `/products/${encodeURIComponent(category)}/${encodeURIComponent(slug)}` },
+        ])}
+      />
+      <ProductDetailView product={board.market.open ? product : { ...product, price: undefined }} related={related} board={board} />
     </>
   );
 }

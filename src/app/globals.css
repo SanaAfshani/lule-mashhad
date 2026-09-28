@@ -702,3 +702,441 @@ input, textarea, select {
 @media (min-width: 768px) {
   .admin-card { padding: 1.75rem; }
 }
+
+/* ───────────────────────────────────────────────────────────────────────────
+   محتوای مقاله و توضیحات محصول
+   HTML این بخش‌ها از پنل ادمین می‌آید (پیست از ابزار تولید محتوا → تبدیل به
+   HTML). پلاگین @tailwindcss/typography نصب نیست، پس استایل‌ها اینجا تعریف
+   می‌شوند تا تیتر، لیست، جدول و نقل‌قول در صفحه درست دیده شوند.
+   ─────────────────────────────────────────────────────────────────────────── */
+.article-content {
+  color: var(--foreground);
+  line-height: 2;
+  overflow-wrap: break-word;
+}
+
+.article-content > *:first-child { margin-top: 0; }
+.article-content > *:last-child { margin-bottom: 0; }
+
+.article-content h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.5;
+  margin: 2.25rem 0 1rem;
+  color: var(--foreground);
+}
+.article-content h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1.6;
+  margin: 1.75rem 0 0.75rem;
+  color: var(--foreground);
+}
+.article-content h4 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 1.5rem 0 0.5rem;
+  color: var(--foreground);
+}
+
+.article-content p { margin-bottom: 1.1rem; }
+
+.article-content strong { font-weight: 700; color: var(--foreground); }
+.article-content em { font-style: italic; }
+
+.article-content a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.article-content a:hover { opacity: 0.8; }
+
+.article-content ul,
+.article-content ol {
+  margin: 0 0 1.25rem;
+  padding-right: 1.5rem;
+}
+.article-content ul { list-style: disc; }
+.article-content ol { list-style: decimal; }
+.article-content li { margin-bottom: 0.5rem; padding-right: 0.25rem; }
+.article-content li::marker { color: var(--accent); }
+
+.article-content blockquote {
+  margin: 1.5rem 0;
+  padding: 0.85rem 1.1rem;
+  border-right: 3px solid var(--accent);
+  background: var(--muted);
+  border-radius: 0 0.75rem 0.75rem 0;
+  color: var(--muted-foreground);
+}
+.article-content blockquote p:last-child { margin-bottom: 0; }
+
+.article-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.875rem;
+  margin: 1.5rem 0;
+}
+.article-content figure { margin: 1.5rem 0; }
+.article-content figcaption {
+  font-size: 0.85rem;
+  color: var(--muted-foreground);
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+/* جدول در موبایل اسکرول افقی می‌گیرد تا layout نشکند */
+.article-content table {
+  display: block;
+  overflow-x: auto;
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.925rem;
+}
+.article-content th,
+.article-content td {
+  border: 1px solid var(--border);
+  padding: 0.65rem 0.85rem;
+  text-align: right;
+}
+.article-content th {
+  background: var(--muted);
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.article-content code {
+  background: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.875em;
+  direction: ltr;
+  display: inline-block;
+}
+.article-content pre {
+  background: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  direction: ltr;
+}
+.article-content pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  display: block;
+}
+
+.article-content hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2rem 0;
+}
+
+/* ─── بنر تبلیغاتی داخل متن مقاله ───────────────────────────────────────────
+   از پنل ادمین (دکمه «افزودن بنر») به صورت HTML در خود محتوا درج می‌شود.
+   ─────────────────────────────────────────────────────────────────────────── */
+.article-content .article-banner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin: 2rem 0;
+  padding: 1.25rem;
+  border-radius: 1rem;
+  background: var(--muted);
+  border: 1px solid var(--border);
+}
+
+.article-content .article-banner-image {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  border-radius: 0.875rem;
+  object-fit: cover;
+  margin: 0;
+}
+
+.article-content .article-banner-body {
+  flex: 1 1 14rem;
+  min-width: 0;
+}
+
+.article-content .article-banner-title {
+  display: block;
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--foreground);
+  margin-bottom: 0.3rem;
+}
+
+.article-content .article-banner-text {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.8;
+  color: var(--muted-foreground);
+}
+
+.article-content .article-banner-cta {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 2.75rem;
+  padding: 0 1.4rem;
+  border-radius: 0.875rem;
+  background: var(--accent);
+  color: var(--accent-foreground);
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.article-content .article-banner-cta::after { content: '←'; }
+.article-content .article-banner-cta:hover {
+  transform: translateY(-1px);
+  opacity: 1;
+}
+
+@media (max-width: 640px) {
+  .article-content .article-banner { padding: 1rem; }
+  .article-content .article-banner-cta { width: 100%; justify-content: center; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   طراحی ۱۴۰۵ — لایه جدید
+   روی توکن‌های بالا ساخته شده؛ کلاس‌های قبلی دست نخورده‌اند تا صفحات دیگر نشکنند.
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root {
+  /* سطح‌های تیره «صنعتی» — هدر، فوتر، هیرو */
+  --ink:   #0A1120;
+  --ink-2: #111B2E;
+  --ink-3: #1A2740;
+  --steel: #94A3B8;
+  /* رنگ آبی ثابت برای «جریان آب» در صحنه سه‌بعدی، مستقل از رنگ تم */
+  --flow: #38BDF8;
+
+  /* ارتفاع هدر: موبایل ۶۰، دسکتاپ نوار بالا ۳۸ + نوار اصلی ۷۴ */
+  --nav-height: 60px;
+  /* ارتفاع نوار پایین موبایل (بدون safe-area) */
+  --bottom-nav: 64px;
+}
+@media (min-width: 1024px) {
+  :root { --nav-height: 112px; --bottom-nav: 0px; }
+}
+
+/* اعداد هم‌عرض برای جدول قیمت و آمار */
+.num { font-variant-numeric: tabular-nums; }
+
+/* شبکه «نقشه مهندسی» برای پس‌زمینه‌های تیره */
+.bp-grid {
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.07) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+.bp-grid-fade {
+  mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+}
+
+/* جریان آب داخل لوله‌ها (خط‌چین متحرک SVG) */
+@keyframes flow-dash { to { stroke-dashoffset: -120; } }
+.flow-dash {
+  stroke-dasharray: 14 26;
+  animation: flow-dash 2.4s linear infinite;
+}
+
+/* صحنه سه‌بعدی: والد perspective، فرزندان با translateZ */
+.scene-3d { perspective: 1200px; }
+.scene-3d-inner {
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.layer-3d { transform-style: preserve-3d; will-change: transform; }
+
+@keyframes float-y {
+  0%, 100% { transform: translate3d(0, 0, var(--z, 0)); }
+  50%      { transform: translate3d(0, -10px, var(--z, 0)); }
+}
+.float-y { animation: float-y 6s ease-in-out infinite; }
+
+/* کارت با کج‌شدن سه‌بعدی — متغیرهای --rx/--ry از TiltCard ست می‌شوند */
+.tilt-card {
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(0);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
+  transform-style: preserve-3d;
+}
+.tilt-card .tilt-pop { transform: translateZ(30px); }
+
+/* درخشش عبوری روی کارت در هاور */
+.shine { position: relative; overflow: hidden; isolation: isolate; }
+.shine::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.22) 50%, transparent 65%);
+  transform: translateX(120%);
+  transition: transform 0.8s ease;
+}
+.shine:hover::after { transform: translateX(-120%); }
+
+/* ردیف افقی قابل اسکرول با snap — کاروسل‌های موبایل.
+   داخل @layer components تا کلاس‌هایی مثل sm:grid و sm:overflow-visible بتوانند در دسکتاپ آن را بازنویسی کنند
+   (CSS بدون لایه همیشه بر utilityهای تیلویند غلبه می‌کند).
+   overflow-y: hidden — وگرنه overflow-x: auto محور عمودی را هم auto می‌کند و انیمیشن ورود کارت‌ها اسکرول عمودی می‌سازد. */
+@layer components {
+  .snap-row {
+    display: flex;
+    gap: 0.875rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    padding-bottom: 0.25rem;
+  }
+  .snap-row::-webkit-scrollbar { display: none; }
+  .snap-row > * { scroll-snap-align: start; flex-shrink: 0; }
+  .no-scrollbar { scrollbar-width: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+}
+
+/* فضای امن پایین آیفون برای نوار ناوبری */
+.safe-pb { padding-bottom: env(safe-area-inset-bottom, 0px); }
+
+/* فاصله محتوای صفحه از نوار پایین موبایل */
+.pb-bottom-nav { padding-bottom: calc(var(--bottom-nav) + env(safe-area-inset-bottom, 0px)); }
+
+/* نور پس‌زمینه */
+.glow-accent {
+  background: radial-gradient(closest-side, rgba(var(--accent-rgb), 0.35), transparent);
+  filter: blur(40px);
+}
+.glow-flow {
+  background: radial-gradient(closest-side, rgba(56, 189, 248, 0.28), transparent);
+  filter: blur(48px);
+}
+
+/* تیتر بخش‌ها با خط تزئینی */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+.eyebrow::before {
+  content: '';
+  width: 1.5rem;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+}
+
+/* چرخش شیر فلکه و نوسان عقربه فشارسنج در صحنه سه‌بعدی */
+@keyframes pipe-spin { to { transform: rotate(360deg); } }
+@keyframes gauge {
+  0%, 100% { transform: rotate(-38deg); }
+  50%      { transform: rotate(46deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flow-dash, .float-y { animation: none; }
+  [style*="pipe-spin"], [style*="gauge"] { animation: none !important; }
+  .scene-3d-inner, .tilt-card { transition: none; transform: none; }
+  .shine::after { display: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   لایه صنعتی — فقط سایت عمومی (.site روی layout اصلی)؛ پنل ادمین دست نمی‌خورد.
+   گوشه‌های تیز مثل ورق فولاد، پالت گرافیتی/فولادی، جزئیات نقشه مهندسی.
+   کلاس‌های rounded-* تیلویند از همین متغیرها می‌خوانند، پس کل سایت یکجا عوض می‌شود.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.site {
+  --radius-sm: 0.1875rem;
+  --radius-md: 0.3125rem;
+  --radius-lg: 0.375rem;
+  --radius-xl: 0.5rem;
+  --radius-2xl: 0.625rem;
+  --radius-3xl: 0.75rem;
+  /* توکن‌های معنایی برای کامپوننت‌های جدید */
+  --radius-control: 0.5rem;
+  --radius-panel: 0.75rem;
+  --radius-sheet: 1rem;
+
+  --card: #F5F6F8;
+  --muted: #EEF0F3;
+  --border: #DCE0E5;
+  --muted-foreground: #586271;
+  --ink: #0E1217;
+  --ink-2: #161B22;
+  --ink-3: #222933;
+}
+.dark .site {
+  --background: #0B0E12;
+  --card: #11151B;
+  --muted: #1A1F27;
+  --border: #252C36;
+  --muted-foreground: #9AA4B2;
+  --ink: #07090C;
+  --ink-2: #11151B;
+  --ink-3: #1A1F27;
+}
+
+/* تیتر کوچک بخش‌ها: مربع نشانگر به جای خط گرد */
+.site .eyebrow { letter-spacing: 0.01em; }
+.site .eyebrow::before { width: 0.5rem; height: 0.5rem; border-radius: 0; }
+
+/* برچسب فنی (مثل راهنمای نقشه): مربع رنگی + متن کم‌رنگ */
+.tech-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--muted-foreground);
+}
+.tech-label::before {
+  content: '';
+  width: 0.375rem;
+  height: 0.375rem;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+/* نوار هشدار صنعتی — فقط به صورت باریک و کم‌تکرار */
+.hazard {
+  background: repeating-linear-gradient(-45deg, var(--accent) 0 10px, var(--ink) 10px 20px);
+}
+
+/* گوشه‌نمای نقشه مهندسی دور یک باکس */
+.corner-marks { position: relative; }
+.corner-marks::before,
+.corner-marks::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+  z-index: 2;
+  border-color: var(--accent);
+  border-style: solid;
+}
+.corner-marks::before { top: 0; right: 0; border-width: 2px 2px 0 0; }
+.corner-marks::after { bottom: 0; left: 0; border-width: 0 0 2px 2px; }
+/* پس‌زمینه body هم‌رنگ پالت گرافیتی حالت تیره (body بیرون .site است) */
+.dark body:has(.site) { background-color: #0B0E12; }
+
+/* فیلد شماره/ایمیل: مقدار چپ‌به‌راست (ترتیب ارقام درست بماند) ولی تراز راست؛
+   تا خالی است placeholder فارسی راست‌به‌چپ نمایش داده می‌شود */
+.ltr-field { direction: ltr; text-align: right; }
+.ltr-field:placeholder-shown { direction: rtl; }

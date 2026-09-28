@@ -1,0 +1,86 @@
+export const dynamic = 'force-dynamic';
+
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { getPriceBoard } from '@/shared/lib/price-board';
+import { siteConfig } from '@/shared/config/site';
+import { JsonLd } from '@/shared/ui/JsonLd';
+import { PageHero } from '@/shared/ui/PageHero';
+import { LivePriceTable } from '@/features/prices/LivePriceTable';
+import { MarketStatus } from '@/features/prices/MarketStatus';
+import { PricesEmptyState } from '@/features/prices/PricesEmptyState';
+import { breadcrumbSchema } from '@/shared/lib/seo';
+import { faDigits } from '@/shared/lib/utils';
+
+/** سال شمسی جاری در عنوان — مثل «قیمت لوله ۱۴۰۵» که کاربران دقیقاً همین را جستجو می‌کنند */
+function persianYear() {
+  return new Intl.DateTimeFormat('fa-IR-u-ca-persian', { year: 'numeric' }).format(new Date());
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const year = persianYear();
+  const title = `لیست قیمت روز لوله و اتصالات ${year}`;
+  const description = `قیمت روز انواع لوله پلی اتیلن، پلیکا، چدن داکتیل، منهول و اتصالات در سال ${year} با تاریخ به‌روزرسانی هر ردیف. استعلام قیمت عمده و ارسال به سراسر کشور.`;
+  return {
+    title,
+    description,
+    alternates: { canonical: `${siteConfig.url}/prices` },
+    openGraph: { title, description, url: `${siteConfig.url}/prices`, type: 'website' },
+  };
+}
+
+export default async function PricesPage() {
+  const board = await getPriceBoard();
+
+  return (
+    <>
+      <JsonLd data={breadcrumbSchema([{ name: 'لیست قیمت', path: '/prices' }])} />
+      <PageHero
+        label="قیمت لحظه‌ای"
+        title={`لیست قیمت لوله و اتصالات ${persianYear()}`}
+        description="قیمت هر محصول به تفکیک سایز و فشار کاری؛ در ساعت کاری لحظه‌ای به‌روز می‌شود و بعد از آن امکان استعلام قیمت فعال است."
+      />
+
+      <div className="container-main section-padding-sm">
+        {board.lines.length === 0 ? (
+          <PricesEmptyState />
+        ) : (
+          <>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+              <MarketStatus market={board.market} />
+              <p className="text-xs text-[var(--muted-foreground)] num">
+                {faDigits(board.lines.reduce((n, l) => n + l.items.length, 0))} قیمت در {faDigits(board.lines.length)} گروه محصول
+              </p>
+            </div>
+
+            {/* پرش سریع — در موبایل زیر هدر می‌چسبد */}
+            <nav aria-label="گروه‌های قیمت" className="sticky top-[var(--nav-height)] z-20 -mx-4 px-4 sm:mx-0 sm:px-0 py-3 mb-6 bg-[var(--background)]/90 backdrop-blur-xl border-b border-[var(--border)]">
+              <div className="snap-row">
+                {board.lines.map((l) => (
+                  <a key={l.productId} href={`#${l.productSlug}`} className="h-9 px-4 rounded-lg border border-[var(--border)] text-sm font-bold flex items-center whitespace-nowrap hover:border-[var(--foreground)]/40">
+                    {l.productName}
+                  </a>
+                ))}
+              </div>
+            </nav>
+
+            <div className="space-y-14">
+              {board.lines.map((l) => (
+                <section key={l.productId} id={l.productSlug} className="scroll-mt-44" aria-labelledby={`h-${l.productSlug}`}>
+                  <div className="flex items-end justify-between gap-3 mb-4">
+                    <div>
+                      <p className="text-xs text-[var(--muted-foreground)]">{l.categoryName}</p>
+                      <h2 id={`h-${l.productSlug}`} className="text-xl sm:text-2xl font-black">قیمت {l.productName}</h2>
+                    </div>
+                    <Link href={l.href} className="text-sm font-bold text-[var(--accent)] shrink-0">صفحه محصول ←</Link>
+                  </div>
+                  <LivePriceTable initial={board} productIds={[l.productId]} caption={`قیمت ${l.productName}`} toolbar />
+                </section>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+    </>
+  );
+}

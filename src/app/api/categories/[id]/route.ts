@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { prisma } from '@/shared/lib/prisma';
 import { serverErrorResponse } from '@/shared/lib/api-errors';
+import { slugify } from '@/shared/lib/utils';
+import { recordRedirect } from '@/shared/lib/redirects';
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -10,11 +12,13 @@ export async function PUT(request: NextRequest, { params }: Props) {
     const { id } = await params;
     const body = await request.json();
 
+    const before = await prisma.category.findUnique({ where: { id }, select: { slug: true } });
+
     const category = await prisma.category.update({
       where: { id },
       data: {
         ...(body.name != null && { name: String(body.name) }),
-        ...(body.slug != null && { slug: String(body.slug) }),
+        ...(body.slug != null && { slug: slugify(String(body.slug)) }),
         ...(body.description != null && { description: body.description }),
         ...(body.image != null && { image: body.image }),
         ...(body.icon != null && { icon: body.icon }),
@@ -22,6 +26,11 @@ export async function PUT(request: NextRequest, { params }: Props) {
         ...(body.published != null && { published: Boolean(body.published) }),
       },
     });
+
+    // محصولات این دسته ریدایرکت جدا نمی‌خواهند: صفحه محصول با اسلاگ یکتا آدرس درست را پیدا می‌کند
+    if (before && before.slug !== category.slug) {
+      await recordRedirect(`/products/${before.slug}`, `/products/${category.slug}`);
+    }
 
     revalidatePath('/categories');
     revalidatePath('/products', 'layout');

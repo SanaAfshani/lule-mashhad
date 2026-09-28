@@ -7,8 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Package, Layers, FileText, HelpCircle,
   Star, Building2, MessageSquare, Settings, Users, LogOut,
-  Menu, X, Palette, ChevronLeft, Globe,
-} from 'lucide-react';
+  Menu, X, Palette, ChevronLeft, Globe, SearchCheck, CandlestickChart } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import toast from 'react-hot-toast';
 
@@ -22,6 +21,7 @@ const navGroups = [
   {
     label: 'محتوا',
     items: [
+      { href: '/admin/prices', label: 'تابلوی قیمت', icon: CandlestickChart },
       { href: '/admin/products', label: 'محصولات', icon: Package },
       { href: '/admin/categories', label: 'دسته‌بندی‌ها', icon: Layers },
       { href: '/admin/blog', label: 'وبلاگ', icon: FileText },
@@ -40,6 +40,7 @@ const navGroups = [
   {
     label: 'تنظیمات',
     items: [
+      { href: '/admin/seo', label: 'مرکز سئو', icon: SearchCheck },
       { href: '/admin/theme', label: 'رنگ‌بندی سایت', icon: Palette },
       { href: '/admin/settings', label: 'تنظیمات عمومی', icon: Settings },
     ],

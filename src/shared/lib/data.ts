@@ -1,4 +1,7 @@
+import { existsSync } from 'fs';
+import path from 'path';
 import { prisma } from '@/shared/lib/prisma';
+import { getMarketNow } from '@/shared/lib/price-board';
 import {
   serializeBlogPost,
   serializeProduct,
@@ -12,6 +15,28 @@ export async function getPublishedCategories() {
     include: { _count: { select: { products: { where: { published: true } } } } },
     orderBy: { order: 'asc' },
   });
+}
+
+/**
+ * تصویر دسته: اگر در دیتابیس ثبت نشده، فایل هم‌نام اسلاگ در public/images/categories
+ * فقط وقتی استفاده می‌شود که واقعاً وجود داشته باشد (حدس کورکورانه قبلاً ۴۰۴ می‌داد).
+ */
+export function resolveCategoryImage(cat: { slug: string; image: string | null }): string | null {
+  if (cat.image) return cat.image;
+  const file = `/images/categories/${cat.slug}.jpg`;
+  return existsSync(path.join(process.cwd(), 'public', file)) ? file : null;
+}
+
+export type NavCategory = { slug: string; name: string; image: string | null; productCount: number };
+
+export async function getNavCategories(): Promise<NavCategory[]> {
+  const cats = await getPublishedCategories();
+  return cats.map((c) => ({
+    slug: c.slug,
+    name: c.name,
+    image: resolveCategoryImage(c),
+    productCount: c._count?.products ?? 0,
+  }));
 }
 
 export async function getCategoryBySlug(slug: string) {
@@ -45,14 +70,18 @@ export async function getPublishedProducts(options?: {
     ];
   }
 
-  const products = await prisma.product.findMany({
-    where,
-    include: { category: true },
-    orderBy: [{ featured: 'desc' }, { createdAt: 'desc' }],
-    take: options?.limit,
-  });
+  const [products, market] = await Promise.all([
+    prisma.product.findMany({
+      where,
+      include: { category: true, priceItems: { select: { price: true, priceChangedAt: true } } },
+      orderBy: [{ featured: 'desc' }, { createdAt: 'desc' }],
+      take: options?.limit,
+    }),
+    getMarketNow(),
+  ]);
 
-  return products.map(toProductListItem);
+  // بیرون از ساعت کاری قیمت در کارت‌ها هم نمایش داده نمی‌شود
+  return products.map((p) => toProductListItem(p, { showPrices: market.open }));
 }
 
 export async function getProductBySlug(slug: string, categorySlug?: string) {
@@ -142,10 +171,4 @@ export async function getProjectBySlug(slug: string) {
   return project ? serializeProject(project) : null;
 }
 
-export async function getSiteSettingsMap() {
-  const settings = await prisma.siteSettings.findMany();
-  return settings.reduce(
-    (acc, s) => ({ ...acc, [s.key]: s.value }),
-    {} as Record<string, string>,
-  );
-}
+export { getSiteSettingsMap } from '@/shared/lib/site-settings-store';

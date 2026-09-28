@@ -1,11 +1,11 @@
 'use client';
 
-import Image from 'next/image';
-import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { ArrowLeft, Package } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ArrowLeft } from 'lucide-react';
 import { PageHero } from '@/shared/ui/PageHero';
-import { formatPersianNumber } from '@/shared/lib/utils';
+import { CategoryThumb } from '@/widgets/header/Header';
+import { faDigits } from '@/shared/lib/utils';
 
 export type CategoryCard = {
   slug: string;
@@ -16,85 +16,36 @@ export type CategoryCard = {
   productCount: number;
 };
 
-const gradients = [
-  'from-blue-950 to-slate-900',
-  'from-teal-950 to-slate-900',
-  'from-slate-800 to-slate-950',
-  'from-stone-900 to-slate-950',
-  'from-indigo-950 to-slate-900',
-  'from-amber-950 to-slate-900',
-];
-
 export function CategoriesPageClient({ categories }: { categories: CategoryCard[] }) {
   return (
     <>
-      <PageHero
-        label="دسته‌بندی محصولات"
-        title="همه دسته‌های لوله و اتصالات"
-        description="از پلیکا و پلی‌اتیلن تا چدن داکتیل، منهول و شیرآلات — مستقیم به محصولات هر دسته"
-      />
+      <PageHero label="دسته‌بندی محصولات" title="همه دسته‌های لوله و اتصالات" description="دسته مورد نظر را انتخاب کنید تا محصولات، مشخصات فنی و قیمت روز را ببینید." />
 
-      <section className="section-padding">
-        <motion.div className="container-main">
-          {categories.length === 0 ? (
-            <p className="text-center text-[var(--muted-foreground)] py-16">دسته‌بندی‌ای ثبت نشده است.</p>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
-              {categories.map((cat, i) => {
-                const image = cat.image || `/images/categories/${cat.slug}.jpg`;
-                return (
-                  <motion.div
-                    key={cat.slug}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.06 }}
-                  >
-                    <Link
-                      href={`/products/${cat.slug}`}
-                      className="group block rounded-2xl bg-[var(--card)] border border-[var(--border)] overflow-hidden hover:border-[var(--accent)]/40 hover:-translate-y-1 hover:shadow-xl transition-all duration-300"
-                    >
-                      <div className={`relative h-48 bg-gradient-to-br ${gradients[i % gradients.length]}`}>
-                        <Image
-                          src={image}
-                          alt={cat.name}
-                          fill
-                          className="object-cover opacity-90 group-hover:scale-105 transition-transform duration-500"
-                          sizes="(max-width: 768px) 100vw, 33vw"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                        {cat.icon && (
-                          <span className="absolute top-4 right-4 text-2xl">{cat.icon}</span>
-                        )}
-                      </div>
-                      <div className="p-5">
-                        <h2 className="text-lg font-bold text-[var(--foreground)] mb-2 group-hover:text-[var(--accent)] transition-colors">
-                          {cat.name}
-                        </h2>
-                        {cat.description && (
-                          <p className="text-sm text-[var(--muted-foreground)] line-clamp-2 mb-4 leading-relaxed">
-                            {cat.description}
-                          </p>
-                        )}
-                        <div className="flex items-center justify-between">
-                          <span className="flex items-center gap-1.5 text-xs text-[var(--muted-foreground)]">
-                            <Package className="w-3.5 h-3.5" />
-                            {formatPersianNumber(cat.productCount)} محصول
-                          </span>
-                          <span className="flex items-center gap-1 text-sm font-semibold text-[var(--accent)]">
-                            مشاهده
-                            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                          </span>
-                        </div>
-                      </div>
-                    </Link>
-                  </motion.div>
-                );
-              })}
-            </div>
-          )}
-        </motion.div>
-      </section>
+      <div className="container-main section-padding-sm">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
+          {categories.map((cat, i) => (
+            <motion.div key={cat.slug} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+              <div className="h-full rounded-3xl">
+                <Link href={`/products/${cat.slug}`} className="group h-full flex flex-col rounded-3xl border border-[var(--border)] bg-[var(--background)] overflow-hidden hover:border-[var(--accent)]/50 transition-colors">
+                  <div className="relative aspect-[4/3] sm:aspect-[16/10] overflow-hidden">
+                    <CategoryThumb category={cat} className="absolute inset-0 w-full h-full transition-transform duration-700 group-hover:scale-105" />
+                    <span className="absolute top-3 right-3 h-7 px-3 rounded-lg bg-white/90 text-slate-900 text-[11px] font-bold flex items-center num">
+                      {faDigits(cat.productCount)} محصول
+                    </span>
+                  </div>
+                  <div className="flex-1 flex flex-col p-4 sm:p-5">
+                    <h2 className="font-black text-[15px] sm:text-lg group-hover:text-[var(--accent)] transition-colors">{cat.name}</h2>
+                    {cat.description && <p className="mt-1.5 text-xs sm:text-sm text-[var(--muted-foreground)] leading-6 line-clamp-2">{faDigits(cat.description)}</p>}
+                    <span className="mt-auto pt-4 flex items-center gap-1.5 text-sm font-bold text-[var(--accent)]">
+                      مشاهده محصولات <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                    </span>
+                  </div>
+                </Link>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
     </>
   );
 }

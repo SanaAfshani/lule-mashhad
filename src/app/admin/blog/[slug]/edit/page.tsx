@@ -2,10 +2,18 @@
 
 import { use, useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, Save, Loader2, FileText, X } from 'lucide-react';
+import { ArrowRight, Save, FileJson, Loader2, FileText, X } from 'lucide-react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { uploadPdf } from '@/shared/lib/uploadPdf';
+import { ImageUploader } from '@/shared/ui/ImageUploader';
+import { ArticleImportDialog } from '@/features/admin/editor/ArticleImportDialog';
+import type { ImportedArticle, ImportField } from '@/shared/lib/article-import';
+import { HtmlContentEditor } from '@/features/admin/editor/HtmlContentEditor';
+import { SeoPanel } from '@/features/admin/seo/SeoPanel';
+import type { SeoFields } from '@/features/admin/seo/seo';
+import { FaqEditor } from '@/features/admin/seo/FaqEditor';
+import type { FaqItem } from '@/shared/types';
 
 export default function EditBlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
@@ -25,7 +33,45 @@ export default function EditBlogPostPage({ params }: { params: Promise<{ slug: s
     pdfUrl: '',
     featured: false,
     published: true,
+    // فیلدهای سئو — در SeoPanel ویرایش می‌شوند
+    metaTitle: '',
+    metaDescription: '',
+    focusKeyword: '',
+    ogTitle: '',
+    ogDescription: '',
+    faqs: [] as FaqItem[],
   });
+
+
+  const [importOpen, setImportOpen] = useState(false);
+
+  /** فقط فیلدهایی که کاربر در دیالوگ انتخاب کرده نوشته می‌شوند */
+  const applyImport = (data: ImportedArticle, fields: ImportField[]) => {
+    setForm((f) => {
+      const next = { ...f };
+      for (const key of fields) {
+        if (key === 'faqs') next.faqs = data.faqs;
+        else next[key] = data[key];
+      }
+      return next;
+    });
+  };
+
+  const filledFields: Partial<Record<ImportField, boolean>> = {
+    title: Boolean(form.title),
+    slug: Boolean(form.slug),
+    excerpt: Boolean(form.excerpt),
+    content: Boolean(form.content),
+    metaTitle: Boolean(form.metaTitle),
+    metaDescription: Boolean(form.metaDescription),
+    focusKeyword: Boolean(form.focusKeyword),
+    ogTitle: Boolean(form.ogTitle),
+    ogDescription: Boolean(form.ogDescription),
+    faqs: form.faqs.length > 0,
+  };
+
+  const handleSeoChange = (patch: Partial<SeoFields>) =>
+    setForm((f) => ({ ...f, ...patch }));
 
   useEffect(() => {
     (async () => {
@@ -50,6 +96,12 @@ export default function EditBlogPostPage({ params }: { params: Promise<{ slug: s
           pdfUrl: post.pdfUrl || '',
           featured: post.featured,
           published: post.published,
+          metaTitle: post.metaTitle || '',
+          metaDescription: post.metaDescription || '',
+          focusKeyword: post.focusKeyword || '',
+          ogTitle: post.ogTitle || '',
+          ogDescription: post.ogDescription || '',
+          faqs: Array.isArray(post.faqs) ? post.faqs : [],
         });
       } catch {
         toast.error('خطا در ارتباط با سرور');
@@ -91,6 +143,12 @@ export default function EditBlogPostPage({ params }: { params: Promise<{ slug: s
           pdfUrl: form.pdfUrl || null,
           featured: form.featured,
           published: form.published,
+          metaTitle: form.metaTitle,
+          metaDescription: form.metaDescription,
+          focusKeyword: form.focusKeyword,
+          ogTitle: form.ogTitle,
+          ogDescription: form.ogDescription,
+          faqs: form.faqs,
         }),
       });
 
@@ -135,6 +193,14 @@ export default function EditBlogPostPage({ params }: { params: Promise<{ slug: s
           <h1 className="text-2xl font-bold text-white">ویرایش مقاله</h1>
           <p className="text-slate-400 text-sm">اطلاعات مقاله را ویرایش کنید</p>
         </div>
+        <button
+          type="button"
+          onClick={() => setImportOpen(true)}
+          className="mr-auto flex items-center gap-2 h-10 px-4 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-sm font-semibold hover:bg-emerald-500/25 transition-colors"
+        >
+          <FileJson className="w-4 h-4" />
+          ورود از ابزار تولید محتوا
+        </button>
       </div>
 
       <form onSubmit={handleSubmit}>
@@ -155,17 +221,6 @@ export default function EditBlogPostPage({ params }: { params: Promise<{ slug: s
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1.5">آدرس (slug)</label>
-                <input
-                  type="text"
-                  value={form.slug}
-                  onChange={(e) => setForm({ ...form, slug: e.target.value })}
-                  className={inputCls}
-                  dir="ltr"
-                />
-              </div>
-
-              <div>
                 <label className="block text-sm font-medium text-slate-300 mb-1.5">خلاصه</label>
                 <textarea
                   value={form.excerpt}
@@ -175,19 +230,50 @@ export default function EditBlogPostPage({ params }: { params: Promise<{ slug: s
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1.5">متن کامل مقاله</label>
-                <textarea
-                  value={form.content}
-                  onChange={(e) => setForm({ ...form, content: e.target.value })}
-                  rows={12}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none resize-none transition-colors"
-                />
-              </div>
+              <HtmlContentEditor
+                label="متن کامل مقاله"
+                value={form.content}
+                onChange={(content) => setForm((f) => ({ ...f, content }))}
+                rows={14}
+              />
             </div>
+
+            <SeoPanel
+              value={{
+                slug: form.slug,
+                metaTitle: form.metaTitle,
+                metaDescription: form.metaDescription,
+                focusKeyword: form.focusKeyword,
+                ogTitle: form.ogTitle,
+                ogDescription: form.ogDescription,
+              }}
+              onChange={handleSeoChange}
+              context={{ title: form.title, excerpt: form.excerpt, content: form.content }}
+              variant="article"
+              previewPath="blog"
+            />
+
+            <FaqEditor
+              value={form.faqs}
+              onChange={(faqs) => setForm((f) => ({ ...f, faqs }))}
+            />
           </div>
 
           <div className="space-y-6">
+            {/* تصویر شاخص */}
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+              <h2 className="text-white font-bold mb-4">تصویر شاخص</h2>
+              <ImageUploader
+                images={form.coverImage ? [form.coverImage] : []}
+                onChange={(imgs) => setForm((f) => ({ ...f, coverImage: imgs[0] ?? '' }))}
+                max={1}
+              />
+              <p className="text-xs text-slate-500 mt-2.5 leading-relaxed">
+                در بالای صفحه مقاله و در کارت‌های وبلاگ نمایش داده می‌شود. نسبت ۱۶:۹ پیشنهاد
+                می‌شود.
+              </p>
+            </div>
+
             {/* PDF Upload */}
             <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
               <h2 className="text-white font-bold mb-4">فایل PDF مقاله</h2>
@@ -288,6 +374,13 @@ export default function EditBlogPostPage({ params }: { params: Promise<{ slug: s
           </div>
         </div>
       </form>
+
+      <ArticleImportDialog
+        open={importOpen}
+        onClose={() => setImportOpen(false)}
+        filled={filledFields}
+        onImport={applyImport}
+      />
     </div>
   );
 }

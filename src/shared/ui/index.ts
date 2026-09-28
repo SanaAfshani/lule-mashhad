@@ -7,3 +7,4 @@ export { Card, CardHeader, CardBody, CardFooter } from './Card';
 export { Skeleton, SkeletonCard } from './Skeleton';
 export { SectionHeading } from './SectionHeading';
 export { PageHero } from './PageHero';
+export { FaqAccordion } from './FaqAccordion';

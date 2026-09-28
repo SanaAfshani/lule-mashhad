@@ -3,13 +3,26 @@ export const dynamic = 'force-dynamic';
 import type { Metadata } from 'next';
 import { FAQPageClient } from '@/features/faq/FAQPageClient';
 import { getPublishedFaqs } from '@/shared/lib/data';
+import { siteConfig } from '@/shared/config/site';
+import { JsonLd } from '@/shared/ui/JsonLd';
+import { breadcrumbSchema, faqPageSchema } from '@/shared/lib/seo';
 
 export const metadata: Metadata = {
-  title: 'سوالات متداول | قدیر لوله آنلاین ',
-  description: 'پاسخ پرتکرارترین سوالات درباره محصولات، سفارش و تحویل',
+  title: 'سوالات متداول خرید لوله و اتصالات',
+  description:
+    'پاسخ پرتکرارترین سوالات درباره خرید لوله و اتصالات صنعتی، قیمت‌گذاری، نحوه سفارش، ارسال و تحویل در سراسر کشور.',
+  alternates: { canonical: `${siteConfig.url}/faq` },
 };
 
 export default async function FAQPage() {
   const faqs = await getPublishedFaqs();
-  return <FAQPageClient faqs={faqs} />;
+
+  return (
+    <>
+      {/* FAQPage schema — واجد شرایط نمایش آکاردئونی سوالات زیر نتیجه در گوگل */}
+      {faqs.length > 0 && <JsonLd data={faqPageSchema(faqs)} />}
+      <JsonLd data={breadcrumbSchema([{ name: 'سوالات متداول', path: '/faq' }])} />
+      <FAQPageClient faqs={faqs} />
+    </>
+  );
 }

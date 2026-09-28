@@ -3,10 +3,15 @@ export const dynamic = 'force-dynamic';
 import type { Metadata } from 'next';
 import { ProductsPageClient } from '@/features/products/ProductsPageClient';
 import { getPublishedCategories, getPublishedProducts } from '@/shared/lib/data';
+import { siteConfig } from '@/shared/config/site';
+import { JsonLd } from '@/shared/ui/JsonLd';
+import { breadcrumbSchema } from '@/shared/lib/seo';
 
 export const metadata: Metadata = {
-  title: 'محصولات | قدیر لوله آنلاین ',
-  description: 'انواع لوله فولادی، مانیسمان، اتصالات، فلنج و شیرآلات صنعتی',
+  title: 'محصولات | خرید لوله، اتصالات و شیرآلات صنعتی',
+  description:
+    'فهرست کامل محصولات: انواع لوله فولادی، مانیسمان، پلیکا، پلی اتیلن، اتصالات، فلنج و شیرآلات صنعتی با قیمت روز و ارسال سریع به سراسر ایران.',
+  alternates: { canonical: `${siteConfig.url}/products` },
 };
 
 export default async function ProductsPage() {
@@ -20,5 +25,10 @@ export default async function ProductsPage() {
     ...dbCategories.map((c) => ({ slug: c.slug, name: c.name })),
   ];
 
-  return <ProductsPageClient categories={categories} products={products} />;
+  return (
+    <>
+      <JsonLd data={breadcrumbSchema([{ name: 'محصولات', path: '/products' }])} />
+      <ProductsPageClient categories={categories} products={products} />
+    </>
+  );
 }
