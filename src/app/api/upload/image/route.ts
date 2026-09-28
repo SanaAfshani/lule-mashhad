@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
+import { requireAdmin } from '@/shared/lib/admin-auth';
+import { InvalidImageError, saveImage } from '@/shared/lib/media';
 
 export const maxDuration = 30;
 
@@ -13,6 +13,9 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  // آپلود فقط برای ادمین — قبلاً هر کسی می‌توانست روی سرور فایل بنویسد
+  const auth = requireAdmin(request);
+  if (auth instanceof NextResponse) return auth;
   const contentType = request.headers.get('content-type') ?? '';
 
   // ── Client-upload token flow (Vercel Blob) ────────────────────────────────
@@ -63,14 +66,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, url: blob.url });
     }
 
-    const bytes = await file.arrayBuffer();
-    const ext = file.name.split('.').pop() ?? 'jpg';
-    const filename = `${Date.now()}.${ext}`;
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'images');
-    await mkdir(uploadDir, { recursive: true });
-    await writeFile(path.join(uploadDir, filename), Buffer.from(bytes));
-    return NextResponse.json({ success: true, url: `/uploads/images/${filename}` });
+    // ذخیره در دیتابیس مشترک (نه دیسک همین سرور) تا روی همه سرورها و بعد از هر دیپلوی باز شود
+    return NextResponse.json({ success: true, url: await saveImage(file) });
   } catch (err) {
+    if (err instanceof InvalidImageError) {
+      return NextResponse.json({ success: false, error: err.message }, { status: 400 });
+    }
     console.error('Image upload error:', err);
     return NextResponse.json({ success: false, error: 'خطا در آپلود تصویر' }, { status: 500 });
   }

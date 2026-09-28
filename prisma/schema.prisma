@@ -204,3 +204,16 @@ model PriceHistory {
 
   @@index([priceItemId, recordedAt])
 }
+
+/// تصاویر آپلودی — در همان دیتابیس مشترک ذخیره می‌شوند تا روی هر سروری (محلی، سرور اصلی، بعد از هر دیپلوی) در دسترس باشند.
+/// قبلاً روی دیسک همان سروری ذخیره می‌شد که آپلود را گرفته بود و روی سرور دیگر ۴۰۴ می‌شد.
+model Media {
+  id           String   @id @default(cuid())
+  data         Bytes
+  mime         String
+  size         Int
+  width        Int?
+  height       Int?
+  originalName String   @default("")
+  createdAt    DateTime @default(now())
+}
