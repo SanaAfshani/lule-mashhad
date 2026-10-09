@@ -6,6 +6,7 @@ import { getNavCategories, getSiteSettingsMap } from '@/shared/lib/data';
 import { mergeSiteSettings } from '@/shared/lib/site-settings';
 import { SiteSettingsProvider } from '@/shared/providers/SiteSettingsProvider';
 import { ConsultProvider } from '@/features/consult/ConsultProvider';
+import { LeadTracker } from '@/features/leads/LeadTracker';
 
 /** Render at request time — required for Prisma/Postgres on Vercel */
 export const dynamic = 'force-dynamic';
@@ -31,6 +32,7 @@ export default async function MainLayout({
           </div>
           <MobileBottomNav />
           <FloatingContact />
+          <LeadTracker />
         </ConsultProvider>
       </div>
     </SiteSettingsProvider>

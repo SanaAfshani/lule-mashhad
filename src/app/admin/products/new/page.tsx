@@ -143,17 +143,17 @@ export default function NewProductPage() {
     setForm((f) => ({ ...f, [key]: !f[key] }));
 
   const inputCls =
-    'w-full h-11 bg-slate-800 border border-slate-700 rounded-xl px-4 text-white placeholder:text-slate-500 focus:outline-none transition-colors';
+    'w-full h-11 bg-[var(--muted)] border border-[var(--border)] rounded-xl px-4 text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none transition-colors';
 
   return (
     <div className="max-w-4xl space-y-6">
       <div className="flex items-center gap-4">
-        <Link href="/admin/products" className="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white transition-colors">
+        <Link href="/admin/products" className="w-9 h-9 rounded-xl bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors">
           <ArrowRight className="w-5 h-5" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-white">افزودن محصول جدید</h1>
-          <p className="text-slate-400 text-sm">اطلاعات محصول جدید را وارد کنید</p>
+          <h1 className="text-2xl font-bold text-[var(--foreground)]">افزودن محصول جدید</h1>
+          <p className="text-[var(--muted-foreground)] text-sm">اطلاعات محصول جدید را وارد کنید</p>
         </div>
       </div>
 
@@ -162,11 +162,11 @@ export default function NewProductPage() {
 
           {/* ── Main ── */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
-              <h2 className="text-white font-bold">اطلاعات اصلی</h2>
+            <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 space-y-4">
+              <h2 className="text-[var(--foreground)] font-bold">اطلاعات اصلی</h2>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1.5">نام محصول *</label>
+                <label className="block text-sm font-medium text-[var(--foreground)] mb-1.5">نام محصول *</label>
                 <input type="text" required value={form.name}
                   onChange={(e) => {
                     const name = e.target.value;
@@ -178,9 +178,9 @@ export default function NewProductPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1.5">دسته‌بندی *</label>
+                <label className="block text-sm font-medium text-[var(--foreground)] mb-1.5">دسته‌بندی *</label>
                 {categoriesLoading ? (
-                  <div className="flex items-center gap-2 text-slate-400 text-sm py-2">
+                  <div className="flex items-center gap-2 text-[var(--muted-foreground)] text-sm py-2">
                     <Loader2 className="w-4 h-4 animate-spin" /> بارگذاری...
                   </div>
                 ) : (
@@ -194,7 +194,7 @@ export default function NewProductPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1.5">توضیح کوتاه</label>
+                <label className="block text-sm font-medium text-[var(--foreground)] mb-1.5">توضیح کوتاه</label>
                 <input type="text" value={form.shortDescription}
                   onChange={(e) => setForm({ ...form, shortDescription: e.target.value })}
                   placeholder="یک جمله کوتاه درباره محصول..."
@@ -211,8 +211,8 @@ export default function NewProductPage() {
             </div>
 
             {/* Images */}
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-              <h2 className="text-white font-bold mb-4">تصاویر محصول</h2>
+            <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6">
+              <h2 className="text-[var(--foreground)] font-bold mb-4">تصاویر محصول</h2>
               <ImageUploader
                 images={form.images}
                 onChange={(imgs) => setForm((f) => ({ ...f, images: imgs }))}
@@ -220,10 +220,10 @@ export default function NewProductPage() {
             </div>
 
             {/* Specs */}
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+            <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-white font-bold">مشخصات فنی</h2>
-                <button type="button" onClick={addSpec} className="text-amber-400 hover:text-amber-300 text-sm transition-colors">
+                <h2 className="text-[var(--foreground)] font-bold">مشخصات فنی</h2>
+                <button type="button" onClick={addSpec} className="text-[var(--accent)] hover:text-[var(--accent)] text-sm transition-colors">
                   + افزودن ردیف
                 </button>
               </div>
@@ -233,13 +233,13 @@ export default function NewProductPage() {
                     <input type="text" value={spec.key}
                       onChange={(e) => updateSpec(i, 'key', e.target.value)}
                       placeholder="ویژگی (مثال: قطر)"
-                      className="flex-1 h-10 bg-slate-800 border border-slate-700 rounded-xl px-3 text-white placeholder:text-slate-500 focus:outline-none text-sm" />
+                      className="flex-1 h-10 bg-[var(--muted)] border border-[var(--border)] rounded-xl px-3 text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none text-sm" />
                     <input type="text" value={spec.value}
                       onChange={(e) => updateSpec(i, 'value', e.target.value)}
                       placeholder="مقدار (مثال: ۲ اینچ)"
-                      className="flex-1 h-10 bg-slate-800 border border-slate-700 rounded-xl px-3 text-white placeholder:text-slate-500 focus:outline-none text-sm" />
+                      className="flex-1 h-10 bg-[var(--muted)] border border-[var(--border)] rounded-xl px-3 text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none text-sm" />
                     <button type="button" onClick={() => removeSpec(i)}
-                      className="w-10 h-10 rounded-xl bg-slate-800 text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-colors flex items-center justify-center flex-shrink-0">
+                      className="w-10 h-10 rounded-xl bg-[var(--muted)] text-[var(--muted-foreground)] hover:text-red-700 dark:hover:text-red-400 hover:bg-red-500/10 transition-colors flex items-center justify-center flex-shrink-0">
                       ×
                     </button>
                   </div>
@@ -279,11 +279,11 @@ export default function NewProductPage() {
 
           {/* ── Sidebar ── */}
           <div className="space-y-6">
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
-              <h2 className="text-white font-bold">تنظیمات</h2>
+            <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 space-y-4">
+              <h2 className="text-[var(--foreground)] font-bold">تنظیمات</h2>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1.5">قیمت (تومان)</label>
+                <label className="block text-sm font-medium text-[var(--foreground)] mb-1.5">قیمت (تومان)</label>
                 <input type="number" value={form.price}
                   onChange={(e) => setForm({ ...form, price: e.target.value })}
                   placeholder="خالی = استعلام"
@@ -297,16 +297,16 @@ export default function NewProductPage() {
               ] as { key: 'inStock' | 'featured' | 'published'; label: string }[]).map(({ key, label }) => (
                 <label key={key} className="flex items-center gap-3 cursor-pointer">
                   <button type="button" onClick={() => toggleField(key)}
-                    className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${form[key] ? 'bg-amber-500' : 'bg-slate-700'}`}>
+                    className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${form[key] ? 'bg-[var(--accent)]' : 'bg-[var(--border)]'}`}>
                     <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${form[key] ? 'right-1' : 'left-1'}`} />
                   </button>
-                  <span className="text-slate-300 text-sm">{label}</span>
+                  <span className="text-[var(--foreground)] text-sm">{label}</span>
                 </label>
               ))}
             </div>
 
             <button type="submit" disabled={loading || categoriesLoading}
-              className="w-full h-12 rounded-xl bg-amber-500 text-black font-bold hover:bg-amber-400 transition-colors flex items-center justify-center gap-2 disabled:opacity-50">
+              className="w-full h-12 rounded-xl bg-[var(--accent)] text-[var(--accent-foreground)] font-bold hover:bg-[var(--accent)]/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50">
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
               ذخیره محصول
             </button>

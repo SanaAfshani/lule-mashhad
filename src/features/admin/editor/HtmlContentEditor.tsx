@@ -84,13 +84,13 @@ export function HtmlContentEditor({ value, onChange, rows = 14, placeholder, lab
   return (
     <div>
       <div className="flex items-center justify-between gap-3 mb-1.5">
-        {label && <label className="block text-sm font-medium text-slate-300">{label}</label>}
+        {label && <label className="block text-sm font-medium text-[var(--foreground)]">{label}</label>}
         <div className="flex items-center gap-1.5">
           <button
             type="button"
             onClick={() => setBannerOpen(true)}
             title="درج بنر تبلیغاتی با دکمه و لینک در محل مکان‌نما"
-            className="flex items-center gap-1.5 px-2.5 h-8 rounded-lg bg-slate-800 text-slate-300 text-xs hover:bg-slate-700 hover:text-white transition-colors"
+            className="flex items-center gap-1.5 px-2.5 h-8 rounded-lg bg-[var(--muted)] text-[var(--foreground)] text-xs hover:bg-[var(--border)] hover:text-[var(--foreground)] transition-colors"
           >
             <Megaphone className="w-3.5 h-3.5" />
             افزودن بنر
@@ -99,7 +99,7 @@ export function HtmlContentEditor({ value, onChange, rows = 14, placeholder, lab
             type="button"
             onClick={convertExisting}
             title="تبدیل محتوای فعلی از Markdown به HTML"
-            className="flex items-center gap-1.5 px-2.5 h-8 rounded-lg bg-slate-800 text-slate-300 text-xs hover:bg-slate-700 hover:text-white transition-colors"
+            className="flex items-center gap-1.5 px-2.5 h-8 rounded-lg bg-[var(--muted)] text-[var(--foreground)] text-xs hover:bg-[var(--border)] hover:text-[var(--foreground)] transition-colors"
           >
             <Wand2 className="w-3.5 h-3.5" />
             تبدیل Markdown
@@ -108,7 +108,7 @@ export function HtmlContentEditor({ value, onChange, rows = 14, placeholder, lab
             type="button"
             onClick={() => setPreview((p) => !p)}
             className={`flex items-center gap-1.5 px-2.5 h-8 rounded-lg text-xs transition-colors ${
-              preview ? 'bg-amber-500 text-black' : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'
+              preview ? 'bg-[var(--accent)] text-[var(--accent-foreground)]' : 'bg-[var(--muted)] text-[var(--foreground)] hover:bg-[var(--border)] hover:text-[var(--foreground)]'
             }`}
           >
             {preview ? <Code2 className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
@@ -119,9 +119,9 @@ export function HtmlContentEditor({ value, onChange, rows = 14, placeholder, lab
 
       {preview ? (
         <div
-          className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white overflow-auto [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mt-5 [&_h2]:mb-2 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mt-4 [&_h3]:mb-2 [&_p]:mb-3 [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:mr-6 [&_ol]:mr-6 [&_li]:mb-1 [&_a]:text-amber-400 [&_a]:underline [&_strong]:font-bold [&_table]:w-full [&_th]:border [&_td]:border [&_th]:border-slate-600 [&_td]:border-slate-600 [&_th]:p-2 [&_td]:p-2"
+          className="w-full bg-[var(--muted)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--foreground)] overflow-auto [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mt-5 [&_h2]:mb-2 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mt-4 [&_h3]:mb-2 [&_p]:mb-3 [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:mr-6 [&_ol]:mr-6 [&_li]:mb-1 [&_a]:text-[var(--accent)] [&_a]:underline [&_strong]:font-bold [&_table]:w-full [&_th]:border [&_td]:border [&_th]:border-[var(--border)] [&_td]:border-[var(--border)] [&_th]:p-2 [&_td]:p-2"
           style={{ minHeight: rows * 24 }}
-          dangerouslySetInnerHTML={{ __html: value || '<p class="text-slate-500">محتوایی وارد نشده است.</p>' }}
+          dangerouslySetInnerHTML={{ __html: value || '<p class="text-[var(--muted-foreground)]">محتوایی وارد نشده است.</p>' }}
         />
       ) : (
         <textarea
@@ -132,7 +132,7 @@ export function HtmlContentEditor({ value, onChange, rows = 14, placeholder, lab
           rows={rows}
           placeholder={placeholder}
           dir="auto"
-          className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-500 resize-y transition-colors font-mono text-[13px] leading-relaxed"
+          className="w-full bg-[var(--muted)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--accent)] resize-y transition-colors font-mono text-[13px] leading-relaxed"
         />
       )}
 
@@ -142,8 +142,8 @@ export function HtmlContentEditor({ value, onChange, rows = 14, placeholder, lab
         onInsert={(html) => insert(`\n\n${html}\n\n`)}
       />
 
-      <p className="flex items-start gap-1.5 text-xs text-slate-500 mt-1.5 leading-relaxed">
-        <Sparkles className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-amber-500/70" />
+      <p className="flex items-start gap-1.5 text-xs text-[var(--muted-foreground)] mt-1.5 leading-relaxed">
+        <Sparkles className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-[var(--accent)]/70" />
         متن را مستقیم از ابزار تولید محتوا، Word یا Google Docs پیست کن — خودکار به HTML تمیز تبدیل می‌شود.
       </p>
     </div>

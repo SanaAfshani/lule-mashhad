@@ -22,8 +22,8 @@ type ProductRow = {
 };
 type Market = { mode: MarketMode; schedule: MarketSchedule; status: MarketStatus };
 
-const card = 'bg-slate-900 border border-slate-800 rounded-2xl';
-const inputCls = 'h-10 bg-slate-800 border border-slate-700 rounded-xl px-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-500';
+const card = 'bg-[var(--card)] border border-[var(--border)] rounded-2xl';
+const inputCls = 'h-10 bg-[var(--muted)] border border-[var(--border)] rounded-xl px-3 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--accent)]';
 
 async function api<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(url, { ...init, headers: { 'Content-Type': 'application/json', ...init?.headers } });
@@ -68,12 +68,12 @@ function MarketPanel({ market, onChange }: { market: Market; onChange: (m: Marke
     <div className={cn(card, 'overflow-hidden')}>
       <div className="p-5 flex flex-col lg:flex-row lg:items-center gap-4 justify-between">
         <div className="flex items-center gap-4">
-          <span className={cn('grid place-items-center w-12 h-12 rounded-2xl', s.open ? 'bg-emerald-500/15 text-emerald-400' : 'bg-slate-800 text-slate-400')}>
+          <span className={cn('grid place-items-center w-12 h-12 rounded-2xl', s.open ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400' : 'bg-[var(--muted)] text-[var(--muted-foreground)]')}>
             <Power className="w-6 h-6" />
           </span>
           <div>
-            <p className="text-white font-black text-lg">{s.open ? 'فروش باز است' : 'فروش بسته است'}</p>
-            <p className="text-slate-400 text-xs mt-0.5">
+            <p className="text-[var(--foreground)] font-black text-lg">{s.open ? 'فروش باز است' : 'فروش بسته است'}</p>
+            <p className="text-[var(--muted-foreground)] text-xs mt-0.5">
               {s.open
                 ? s.nextChangeLabel ? `قیمت‌ها نمایش داده می‌شوند · بسته شدن خودکار ساعت ${s.nextChangeLabel}` : 'قیمت‌ها نمایش داده می‌شوند'
                 : s.nextOpenDay ? `در سایت «استعلام قیمت» نمایش داده می‌شود · بازگشایی ${s.nextOpenDay} ${s.nextChangeLabel}` : 'در سایت «استعلام قیمت» نمایش داده می‌شود'}
@@ -82,58 +82,58 @@ function MarketPanel({ market, onChange }: { market: Market; onChange: (m: Marke
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="grid grid-cols-3 bg-slate-800 rounded-xl p-1 gap-1">
+          <div className="grid grid-cols-3 bg-[var(--muted)] rounded-xl p-1 gap-1">
             {MODES.map((m) => (
               <button
                 key={m.key}
                 disabled={saving}
                 onClick={() => market.mode !== m.key && save({ mode: m.key })}
-                className={cn('px-4 py-1.5 rounded-lg text-sm font-bold leading-tight', market.mode === m.key ? 'bg-amber-500 text-black' : 'text-slate-300 hover:text-white')}
+                className={cn('px-4 py-1.5 rounded-lg text-sm font-bold leading-tight', market.mode === m.key ? 'bg-[var(--accent)] text-[var(--accent-foreground)]' : 'text-[var(--foreground)] hover:text-white')}
               >
                 {m.label}
-                <span className={cn('block text-[10px] font-normal', market.mode === m.key ? 'text-black/60' : 'text-slate-500')}>{m.hint}</span>
+                <span className={cn('block text-[10px] font-normal', market.mode === m.key ? 'text-[var(--accent-foreground)]/70' : 'text-[var(--muted-foreground)]')}>{m.hint}</span>
               </button>
             ))}
           </div>
-          <button onClick={() => setOpen((o) => !o)} className="h-12 px-3 rounded-xl bg-slate-800 text-slate-300 text-xs hover:text-white flex items-center gap-1">
+          <button onClick={() => setOpen((o) => !o)} className="h-12 px-3 rounded-xl bg-[var(--muted)] text-[var(--foreground)] text-xs hover:text-[var(--foreground)] flex items-center gap-1">
             ساعت کاری <ChevronDown className={cn('w-4 h-4 transition-transform', open && 'rotate-180')} />
           </button>
         </div>
       </div>
 
       {open && (
-        <div className="border-t border-slate-800 p-5">
+        <div className="border-t border-[var(--border)] p-5">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-2">
             {WEEK_ORDER.map((d) => {
               const slot = schedule[d];
               return (
-                <div key={d} className={cn('rounded-xl border p-3', slot ? 'border-slate-700 bg-slate-800/50' : 'border-slate-800')}>
+                <div key={d} className={cn('rounded-xl border p-3', slot ? 'border-[var(--border)] bg-[var(--muted)]/50' : 'border-[var(--border)]')}>
                   <label className="flex items-center justify-between gap-2 cursor-pointer">
-                    <span className="text-sm font-bold text-white">{WEEKDAY_LABEL[d]}</span>
+                    <span className="text-sm font-bold text-[var(--foreground)]">{WEEKDAY_LABEL[d]}</span>
                     <input
                       type="checkbox"
                       checked={!!slot}
                       onChange={(e) => setSchedule((sc) => ({ ...sc, [d]: e.target.checked ? ['09:00', '17:00'] : undefined }))}
-                      className="w-4 h-4 accent-amber-500"
+                      className="w-4 h-4 accent-[var(--accent)]"
                     />
                   </label>
                   {slot ? (
-                    <div className="mt-2 flex items-center gap-1.5 text-xs text-slate-400" dir="ltr">
+                    <div className="mt-2 flex items-center gap-1.5 text-xs text-[var(--muted-foreground)]" dir="ltr">
                       <input type="time" value={slot[0]} onChange={(e) => setSchedule((sc) => ({ ...sc, [d]: [e.target.value, slot[1]] }))} className={cn(inputCls, 'h-9 px-2 flex-1')} />
                       <span>–</span>
                       <input type="time" value={slot[1]} onChange={(e) => setSchedule((sc) => ({ ...sc, [d]: [slot[0], e.target.value] }))} className={cn(inputCls, 'h-9 px-2 flex-1')} />
                     </div>
                   ) : (
-                    <p className="mt-2 text-xs text-slate-500">تعطیل</p>
+                    <p className="mt-2 text-xs text-[var(--muted-foreground)]">تعطیل</p>
                   )}
                 </div>
               );
             })}
           </div>
-          <button disabled={saving} onClick={() => save({ schedule })} className="mt-4 h-10 px-5 rounded-xl bg-amber-500 text-black text-sm font-bold disabled:opacity-50">
+          <button disabled={saving} onClick={() => save({ schedule })} className="mt-4 h-10 px-5 rounded-xl bg-[var(--accent)] text-[var(--accent-foreground)] text-sm font-bold disabled:opacity-50">
             ذخیره ساعت کاری
           </button>
-          <p className="mt-2 text-xs text-slate-500">ساعت‌ها به وقت تهران است. در حالت «خودکار» فروش طبق این برنامه باز و بسته می‌شود.</p>
+          <p className="mt-2 text-xs text-[var(--muted-foreground)]">ساعت‌ها به وقت تهران است. در حالت «خودکار» فروش طبق این برنامه باز و بسته می‌شود.</p>
         </div>
       )}
     </div>
@@ -210,9 +210,9 @@ function PriceInput({ item, onSaved, onEnter, inputRef }: {
         )}
       />
       <span className="absolute left-3 top-1/2 -translate-y-1/2">
-        {state === 'saving' && <Loader2 className="w-4 h-4 animate-spin text-slate-400" />}
-        {state === 'saved' && <Check className="w-4 h-4 text-emerald-400" />}
-        {state === 'error' && <X className="w-4 h-4 text-red-400" />}
+        {state === 'saving' && <Loader2 className="w-4 h-4 animate-spin text-[var(--muted-foreground)]" />}
+        {state === 'saved' && <Check className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />}
+        {state === 'error' && <X className="w-4 h-4 text-red-700 dark:text-red-400" />}
       </span>
     </div>
   );
@@ -323,30 +323,30 @@ function ProductBoard({ product, onChange }: { product: ProductRow; onChange: (i
 
   return (
     <div className={cn(card, 'overflow-hidden')}>
-      <div className="p-5 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
+      <div className="p-5 border-b border-[var(--border)] flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-xs text-slate-500">{product.category.name}</p>
-          <h2 className="text-white font-black text-lg">{product.name}</h2>
+          <p className="text-xs text-[var(--muted-foreground)]">{product.category.name}</p>
+          <h2 className="text-[var(--foreground)] font-black text-lg">{product.name}</h2>
         </div>
         <div className="flex items-center gap-2">
-          <a href={`/products/${product.category.slug}/${product.slug}`} target="_blank" rel="noopener" className="h-9 px-3 rounded-lg bg-slate-800 text-slate-300 text-xs flex items-center gap-1.5 hover:text-white">
+          <a href={`/products/${product.category.slug}/${product.slug}`} target="_blank" rel="noopener" className="h-9 px-3 rounded-lg bg-[var(--muted)] text-[var(--foreground)] text-xs flex items-center gap-1.5 hover:text-[var(--foreground)]">
             <ExternalLink className="w-3.5 h-3.5" /> صفحه محصول
           </a>
-          <button onClick={() => setPaste('')} className="h-9 px-3 rounded-lg bg-slate-800 text-slate-300 text-xs flex items-center gap-1.5 hover:text-white">
+          <button onClick={() => setPaste('')} className="h-9 px-3 rounded-lg bg-[var(--muted)] text-[var(--foreground)] text-xs flex items-center gap-1.5 hover:text-[var(--foreground)]">
             <ClipboardPaste className="w-3.5 h-3.5" /> پیست از اکسل
           </button>
         </div>
       </div>
 
       {/* ابزار گروهی */}
-      <div className="px-5 py-3 border-b border-slate-800 flex flex-wrap items-center gap-2 bg-slate-950/40">
+      <div className="px-5 py-3 border-b border-[var(--border)] flex flex-wrap items-center gap-2 bg-[var(--background)]/40">
         <div className="relative flex-1 min-w-[180px]">
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+          <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)]" />
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="جستجوی ردیف…" className={cn(inputCls, 'w-full pr-9')} />
         </div>
         <div className="flex items-center gap-1.5">
           <div className="relative">
-            <Percent className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500" />
+            <Percent className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--muted-foreground)]" />
             <input value={pct} onChange={(e) => setPct(e.target.value)} dir="ltr" placeholder="+3 / -2" className={cn(inputCls, 'w-24 text-left pl-8')} aria-label="درصد تغییر" />
           </div>
           <select value={roundTo} onChange={(e) => setRoundTo(Number(e.target.value))} className={cn(inputCls, 'w-32')} aria-label="گرد کردن">
@@ -354,25 +354,25 @@ function ProductBoard({ product, onChange }: { product: ProductRow; onChange: (i
             <option value={100}>گرد به ۱۰۰</option>
             <option value={1000}>گرد به ۱٬۰۰۰</option>
           </select>
-          <button disabled={busy || !pct} onClick={bulk} className="h-10 px-4 rounded-xl bg-amber-500 text-black text-sm font-bold disabled:opacity-40">
+          <button disabled={busy || !pct} onClick={bulk} className="h-10 px-4 rounded-xl bg-[var(--accent)] text-[var(--accent-foreground)] text-sm font-bold disabled:opacity-40">
             اعمال روی همه
           </button>
         </div>
       </div>
 
       {paste !== null && (
-        <div className="p-5 border-b border-slate-800 space-y-2">
-          <p className="text-xs text-slate-400 leading-6">در اکسل ستون‌های «عنوان، قیمت، وزن، توضیحات» را انتخاب و کپی کنید و اینجا پیست کنید. هر خط یک ردیف.</p>
-          <textarea value={paste} onChange={(e) => setPaste(e.target.value)} rows={6} dir="auto" autoFocus className="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-xs text-white font-mono focus:outline-none focus:border-amber-500" />
+        <div className="p-5 border-b border-[var(--border)] space-y-2">
+          <p className="text-xs text-[var(--muted-foreground)] leading-6">در اکسل ستون‌های «عنوان، قیمت، وزن، توضیحات» را انتخاب و کپی کنید و اینجا پیست کنید. هر خط یک ردیف.</p>
+          <textarea value={paste} onChange={(e) => setPaste(e.target.value)} rows={6} dir="auto" autoFocus className="w-full bg-[var(--muted)] border border-[var(--border)] rounded-xl p-3 text-xs text-[var(--foreground)] font-mono focus:outline-none focus:border-[var(--accent)]" />
           <div className="flex flex-wrap gap-2">
             <button disabled={busy} onClick={() => importPaste(false)} className="h-9 px-4 rounded-xl bg-emerald-500 text-black text-sm font-bold">افزودن به انتهای جدول</button>
-            <button disabled={busy} onClick={() => importPaste(true)} className="h-9 px-4 rounded-xl bg-slate-800 text-red-300 text-sm">جایگزینی کل جدول</button>
-            <button onClick={() => setPaste(null)} className="h-9 px-4 rounded-xl bg-slate-800 text-slate-300 text-sm">انصراف</button>
+            <button disabled={busy} onClick={() => importPaste(true)} className="h-9 px-4 rounded-xl bg-[var(--muted)] text-red-700 dark:text-red-300 text-sm">جایگزینی کل جدول</button>
+            <button onClick={() => setPaste(null)} className="h-9 px-4 rounded-xl bg-[var(--muted)] text-[var(--foreground)] text-sm">انصراف</button>
           </div>
         </div>
       )}
 
-      <div className="divide-y divide-slate-800">
+      <div className="divide-y divide-[var(--border)]">
         {shown.map((i) => {
           const idx = items.indexOf(i);
           const change = i.price != null && i.previousPrice ? ((i.price - i.previousPrice) / i.previousPrice) * 100 : 0;
@@ -391,9 +391,9 @@ function ProductBoard({ product, onChange }: { product: ProductRow; onChange: (i
                   inputRef={(el) => { refs.current[idx] = el; }}
                   onEnter={() => refs.current[idx + 1]?.focus()}
                 />
-                <p className="mt-1 h-4 text-[11px] text-slate-500 flex items-center gap-1 num">
+                <p className="mt-1 h-4 text-[11px] text-[var(--muted-foreground)] flex items-center gap-1 num">
                   {change !== 0 && (
-                    <span className={cn('flex items-center font-bold', change > 0 ? 'text-emerald-400' : 'text-red-400')}>
+                    <span className={cn('flex items-center font-bold', change > 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-700 dark:text-red-400')}>
                       {change > 0 ? <ArrowUpLeft className="w-3 h-3" /> : <ArrowDownLeft className="w-3 h-3" />}
                       {Math.abs(change).toLocaleString('fa-IR', { maximumFractionDigits: 1 })}٪
                     </span>
@@ -404,17 +404,17 @@ function ProductBoard({ product, onChange }: { product: ProductRow; onChange: (i
               <input defaultValue={i.weight} onBlur={(e) => patchField(i, 'weight', e.target.value.trim())} placeholder="وزن" className={cn(inputCls, 'w-full hidden lg:block')} aria-label="وزن" />
               <input defaultValue={i.note} onBlur={(e) => patchField(i, 'note', e.target.value.trim())} placeholder="توضیحات" className={cn(inputCls, 'w-full hidden lg:block')} aria-label="توضیحات" />
               <div className="flex items-center justify-end">
-                <button onClick={() => move(idx, -1)} disabled={idx === 0 || !!q} aria-label="بالا" className="w-8 h-9 grid place-items-center text-slate-500 hover:text-white disabled:opacity-20"><ChevronUp className="w-4 h-4" /></button>
-                <button onClick={() => move(idx, 1)} disabled={idx === items.length - 1 || !!q} aria-label="پایین" className="w-8 h-9 grid place-items-center text-slate-500 hover:text-white disabled:opacity-20"><ChevronDown className="w-4 h-4" /></button>
-                <button onClick={() => remove(i)} aria-label="حذف" className="w-8 h-9 grid place-items-center text-slate-500 hover:text-red-400"><Trash2 className="w-4 h-4" /></button>
+                <button onClick={() => move(idx, -1)} disabled={idx === 0 || !!q} aria-label="بالا" className="w-8 h-9 grid place-items-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] disabled:opacity-20"><ChevronUp className="w-4 h-4" /></button>
+                <button onClick={() => move(idx, 1)} disabled={idx === items.length - 1 || !!q} aria-label="پایین" className="w-8 h-9 grid place-items-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] disabled:opacity-20"><ChevronDown className="w-4 h-4" /></button>
+                <button onClick={() => remove(i)} aria-label="حذف" className="w-8 h-9 grid place-items-center text-[var(--muted-foreground)] hover:text-red-700 dark:hover:text-red-400"><Trash2 className="w-4 h-4" /></button>
               </div>
             </div>
           );
         })}
-        {!shown.length && <p className="p-8 text-center text-sm text-slate-500">{q ? 'ردیفی پیدا نشد' : 'هنوز ردیفی ندارد — از فرم زیر یا «پیست از اکسل» اضافه کنید'}</p>}
+        {!shown.length && <p className="p-8 text-center text-sm text-[var(--muted-foreground)]">{q ? 'ردیفی پیدا نشد' : 'هنوز ردیفی ندارد — از فرم زیر یا «پیست از اکسل» اضافه کنید'}</p>}
       </div>
 
-      <form onSubmit={add} className="p-3 sm:px-5 border-t border-slate-800 bg-slate-950/40 grid grid-cols-2 lg:grid-cols-[minmax(0,1fr)_200px_110px_minmax(0,220px)_auto] gap-2">
+      <form onSubmit={add} className="p-3 sm:px-5 border-t border-[var(--border)] bg-[var(--background)]/40 grid grid-cols-2 lg:grid-cols-[minmax(0,1fr)_200px_110px_minmax(0,220px)_auto] gap-2">
         <input value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} placeholder="ردیف جدید — عنوان" className={cn(inputCls, 'col-span-2 lg:col-span-1')} />
         <input value={draft.price} onChange={(e) => setDraft({ ...draft, price: fmt(parse(e.target.value)) })} placeholder="قیمت (تومان)" dir="ltr" inputMode="numeric" className={cn(inputCls, 'text-left')} />
         <input value={draft.weight} onChange={(e) => setDraft({ ...draft, weight: e.target.value })} placeholder="وزن" className={inputCls} />
@@ -455,14 +455,14 @@ function PriceBoardPage() {
   const selected = products?.find((p) => p.id === selectedId) ?? products?.find((p) => p.priceItems.length) ?? products?.[0];
 
   if (!products || !market) {
-    return <div className="flex items-center justify-center py-24 text-slate-400 gap-2"><Loader2 className="w-6 h-6 animate-spin" />بارگذاری تابلوی قیمت…</div>;
+    return <div className="flex items-center justify-center py-24 text-[var(--muted-foreground)] gap-2"><Loader2 className="w-6 h-6 animate-spin" />بارگذاری تابلوی قیمت…</div>;
   }
 
   return (
     <div className="max-w-7xl space-y-5">
       <div>
-        <h1 className="text-2xl font-bold text-white">تابلوی قیمت</h1>
-        <p className="text-slate-400 text-sm">هر قیمت با Enter یا خروج از فیلد ذخیره می‌شود و در کمتر از ۱۰ ثانیه روی سایت نمایش داده می‌شود. Enter به قیمت ردیف بعد می‌رود.</p>
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">تابلوی قیمت</h1>
+        <p className="text-[var(--muted-foreground)] text-sm">هر قیمت با Enter یا خروج از فیلد ذخیره می‌شود و در کمتر از ۱۰ ثانیه روی سایت نمایش داده می‌شود. Enter به قیمت ردیف بعد می‌رود.</p>
       </div>
 
       <MarketPanel market={market} onChange={setMarket} />
@@ -477,11 +477,11 @@ function PriceBoardPage() {
                 onClick={() => select(p.id)}
                 className={cn(
                   'shrink-0 text-right rounded-xl px-3 py-2.5 transition-colors',
-                  selected?.id === p.id ? 'bg-amber-500 text-black' : 'text-slate-300 hover:bg-slate-800',
+                  selected?.id === p.id ? 'bg-[var(--accent)] text-[var(--accent-foreground)]' : 'text-[var(--foreground)] hover:bg-[var(--muted)]',
                 )}
               >
                 <span className="block text-sm font-bold whitespace-nowrap lg:whitespace-normal">{p.name}</span>
-                <span className={cn('block text-[11px]', selected?.id === p.id ? 'text-black/60' : 'text-slate-500')}>
+                <span className={cn('block text-[11px]', selected?.id === p.id ? 'text-[var(--accent-foreground)]/70' : 'text-[var(--muted-foreground)]')}>
                   {p.priceItems.length ? `${formatPersianNumber(p.priceItems.length)} قیمت` : 'بدون جدول قیمت'}
                 </span>
               </button>
@@ -498,8 +498,8 @@ function PriceBoardPage() {
         )}
       </div>
 
-      <p className="text-xs text-slate-500">
-        محصول جدید را از <Link href="/admin/products/new" className="text-amber-400">افزودن محصول</Link> بسازید و سپس جدول قیمتش را اینجا وارد کنید.
+      <p className="text-xs text-[var(--muted-foreground)]">
+        محصول جدید را از <Link href="/admin/products/new" className="text-[var(--accent)]">افزودن محصول</Link> بسازید و سپس جدول قیمتش را اینجا وارد کنید.
       </p>
     </div>
   );

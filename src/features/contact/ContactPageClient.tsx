@@ -43,7 +43,7 @@ export function ContactPageClient({ contactInfo, locations, whatsappUrl }: Props
     }
     setLoading(true);
     try {
-      const res = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) });
+      const res = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...form, sourcePath: window.location.pathname }) });
       const data = await res.json();
       if (!res.ok || !data.success) {
         toast.error(data.error || 'ارسال پیام با خطا مواجه شد');

@@ -20,11 +20,11 @@ const FIELD_LABEL: Record<string, string> = {
   excerpt: 'خلاصه',
 };
 
-const card = 'bg-slate-900 border border-slate-800 rounded-2xl';
-const input = 'w-full h-11 bg-slate-800 border border-slate-700 rounded-xl px-4 text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-500';
+const card = 'bg-[var(--card)] border border-[var(--border)] rounded-2xl';
+const input = 'w-full h-11 bg-[var(--muted)] border border-[var(--border)] rounded-xl px-4 text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--accent)]';
 
 function scoreColor(n: number) {
-  return n >= 80 ? 'text-emerald-400' : n >= 55 ? 'text-amber-400' : 'text-red-400';
+  return n >= 80 ? 'text-emerald-700 dark:text-emerald-400' : n >= 55 ? 'text-[var(--accent)]' : 'text-red-700 dark:text-red-400';
 }
 
 async function api<T>(url: string, init?: RequestInit): Promise<T> {
@@ -114,17 +114,17 @@ export default function SeoCenterPage() {
     <div className="max-w-6xl space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-white">مرکز سئو</h1>
-          <p className="text-slate-400 text-sm">بررسی خودکار همه صفحات، اصلاح یک‌کلیکی و مدیریت آدرس‌ها</p>
+          <h1 className="text-2xl font-bold text-[var(--foreground)]">مرکز سئو</h1>
+          <p className="text-[var(--muted-foreground)] text-sm">بررسی خودکار همه صفحات، اصلاح یک‌کلیکی و مدیریت آدرس‌ها</p>
         </div>
-        <button onClick={load} disabled={loading} className="h-10 px-4 rounded-xl bg-slate-800 text-slate-300 text-sm flex items-center gap-2 hover:text-white disabled:opacity-50">
+        <button onClick={load} disabled={loading} className="h-10 px-4 rounded-xl bg-[var(--muted)] text-[var(--foreground)] text-sm flex items-center gap-2 hover:text-[var(--foreground)] disabled:opacity-50">
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} /> بررسی مجدد
         </button>
       </div>
 
       <div className="flex gap-2 overflow-x-auto pb-1">
         {TABS.map(({ key, label, icon: Icon }) => (
-          <button key={key} onClick={() => setTab(key)} className={`h-10 px-4 rounded-xl text-sm font-bold flex items-center gap-2 whitespace-nowrap ${tab === key ? 'bg-amber-500 text-black' : 'bg-slate-900 border border-slate-800 text-slate-300 hover:text-white'}`}>
+          <button key={key} onClick={() => setTab(key)} className={`h-10 px-4 rounded-xl text-sm font-bold flex items-center gap-2 whitespace-nowrap ${tab === key ? 'bg-[var(--accent)] text-[var(--accent-foreground)]' : 'bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)] hover:text-white'}`}>
             <Icon className="w-4 h-4" /> {label}
           </button>
         ))}
@@ -133,50 +133,50 @@ export default function SeoCenterPage() {
       {tab === 'overview' && (
         <div className="space-y-6">
           {loading && !audit ? (
-            <div className="flex items-center justify-center py-20 text-slate-400 gap-2"><Loader2 className="w-6 h-6 animate-spin" />در حال بررسی همه صفحات…</div>
+            <div className="flex items-center justify-center py-20 text-[var(--muted-foreground)] gap-2"><Loader2 className="w-6 h-6 animate-spin" />در حال بررسی همه صفحات…</div>
           ) : audit && (
             <>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                 <div className={`${card} p-5`}>
-                  <p className="text-xs text-slate-400">امتیاز میانگین سئو</p>
+                  <p className="text-xs text-[var(--muted-foreground)]">امتیاز میانگین سئو</p>
                   <p className={`mt-2 text-4xl font-black ${scoreColor(audit.summary.average)}`}>{formatPersianNumber(audit.summary.average)}</p>
                 </div>
-                <div className={`${card} p-5`}><p className="text-xs text-slate-400">صفحات بررسی‌شده</p><p className="mt-2 text-4xl font-black text-white">{formatPersianNumber(audit.summary.pages)}</p></div>
-                <div className={`${card} p-5`}><p className="text-xs text-slate-400">خطا</p><p className="mt-2 text-4xl font-black text-red-400">{formatPersianNumber(audit.summary.errors)}</p></div>
-                <div className={`${card} p-5`}><p className="text-xs text-slate-400">هشدار</p><p className="mt-2 text-4xl font-black text-amber-400">{formatPersianNumber(audit.summary.warnings)}</p></div>
+                <div className={`${card} p-5`}><p className="text-xs text-[var(--muted-foreground)]">صفحات بررسی‌شده</p><p className="mt-2 text-4xl font-black text-[var(--foreground)]">{formatPersianNumber(audit.summary.pages)}</p></div>
+                <div className={`${card} p-5`}><p className="text-xs text-[var(--muted-foreground)]">خطا</p><p className="mt-2 text-4xl font-black text-red-700 dark:text-red-400">{formatPersianNumber(audit.summary.errors)}</p></div>
+                <div className={`${card} p-5`}><p className="text-xs text-[var(--muted-foreground)]">هشدار</p><p className="mt-2 text-4xl font-black text-[var(--accent)]">{formatPersianNumber(audit.summary.warnings)}</p></div>
               </div>
 
-              <div className={`${card} p-6 bg-gradient-to-l from-amber-500/10 to-transparent border-amber-500/30`}>
+              <div className={`${card} p-6 bg-gradient-to-l from-[var(--accent)]/10 to-transparent border-[var(--accent)]/30`}>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="flex items-start gap-3">
-                    <span className="grid place-items-center w-11 h-11 rounded-xl bg-amber-500/20 text-amber-400 shrink-0"><Wand2 className="w-5 h-5" /></span>
+                    <span className="grid place-items-center w-11 h-11 rounded-xl bg-[var(--accent)]/20 text-[var(--accent)] shrink-0"><Wand2 className="w-5 h-5" /></span>
                     <div>
-                      <h2 className="text-white font-bold">بهینه‌سازی خودکار</h2>
-                      <p className="text-slate-400 text-sm mt-1 leading-6">
+                      <h2 className="text-[var(--foreground)] font-bold">بهینه‌سازی خودکار</h2>
+                      <p className="text-[var(--muted-foreground)] text-sm mt-1 leading-6">
                         توضیحات متا و خلاصه خالی (از جمله برای مقاله‌هایی که فقط PDF دارند)، کلمه کلیدی، عنوان‌های بلند و آدرس‌های غیرانگلیسی را خودکار می‌سازد.
                         فقط فیلدهای خالی پر می‌شوند و چیزی که خودتان نوشته‌اید دست نمی‌خورد. قبل از اعمال، فهرست تغییرات را می‌بینید.
                       </p>
                     </div>
                   </div>
-                  <button onClick={previewFix} disabled={fixing} className="h-11 px-5 rounded-xl bg-amber-500 text-black font-bold flex items-center justify-center gap-2 shrink-0 disabled:opacity-50">
+                  <button onClick={previewFix} disabled={fixing} className="h-11 px-5 rounded-xl bg-[var(--accent)] text-[var(--accent-foreground)] font-bold flex items-center justify-center gap-2 shrink-0 disabled:opacity-50">
                     {fixing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />} پیش‌نمایش تغییرات
                   </button>
                 </div>
 
                 {plan && plan.length > 0 && (
-                  <div className="mt-5 border-t border-slate-800 pt-5">
-                    <p className="text-sm text-slate-300 mb-3">{formatPersianNumber(plan.length)} تغییر آماده اعمال است:</p>
+                  <div className="mt-5 border-t border-[var(--border)] pt-5">
+                    <p className="text-sm text-[var(--foreground)] mb-3">{formatPersianNumber(plan.length)} تغییر آماده اعمال است:</p>
                     <div className="max-h-80 overflow-y-auto space-y-2">
                       {plan.map((f, i) => (
-                        <div key={i} className="rounded-xl bg-slate-800/60 p-3 text-sm">
-                          <div className="flex items-center gap-2 text-xs text-slate-400">
-                            <span className="px-2 py-0.5 rounded bg-slate-700 text-slate-200">{TYPE_LABEL[f.type]}</span>
-                            <span className="font-bold text-white">{f.name}</span>
+                        <div key={i} className="rounded-xl bg-[var(--muted)]/60 p-3 text-sm">
+                          <div className="flex items-center gap-2 text-xs text-[var(--muted-foreground)]">
+                            <span className="px-2 py-0.5 rounded bg-[var(--border)] text-[var(--foreground)]">{TYPE_LABEL[f.type]}</span>
+                            <span className="font-bold text-[var(--foreground)]">{f.name}</span>
                             <span>←</span>
-                            <span className="text-amber-400">{FIELD_LABEL[f.field] ?? f.field}</span>
+                            <span className="text-[var(--accent)]">{FIELD_LABEL[f.field] ?? f.field}</span>
                           </div>
                           {f.before && <p className="mt-1.5 text-xs text-red-300/80 line-through" dir="auto">{f.before}</p>}
-                          <p className="mt-1.5 text-slate-200 leading-6" dir="auto">{f.after}</p>
+                          <p className="mt-1.5 text-[var(--foreground)] leading-6" dir="auto">{f.after}</p>
                         </div>
                       ))}
                     </div>
@@ -184,30 +184,30 @@ export default function SeoCenterPage() {
                       <button onClick={applyFix} disabled={fixing} className="h-11 px-5 rounded-xl bg-emerald-500 text-black font-bold flex items-center gap-2 disabled:opacity-50">
                         {fixing && <Loader2 className="w-4 h-4 animate-spin" />} اعمال همه تغییرات
                       </button>
-                      <button onClick={() => setPlan(null)} className="h-11 px-5 rounded-xl bg-slate-800 text-slate-300">انصراف</button>
+                      <button onClick={() => setPlan(null)} className="h-11 px-5 rounded-xl bg-[var(--muted)] text-[var(--foreground)]">انصراف</button>
                     </div>
                   </div>
                 )}
               </div>
 
               <div className={`${card} p-6`}>
-                <h2 className="text-white font-bold mb-4">مشکلات پرتکرار</h2>
+                <h2 className="text-[var(--foreground)] font-bold mb-4">مشکلات پرتکرار</h2>
                 {issueCounts.length === 0 ? (
-                  <p className="text-emerald-400 text-sm flex items-center gap-2"><CheckCircle2 className="w-4 h-4" />مشکلی پیدا نشد</p>
+                  <p className="text-emerald-700 dark:text-emerald-400 text-sm flex items-center gap-2"><CheckCircle2 className="w-4 h-4" />مشکلی پیدا نشد</p>
                 ) : (
                   <ul className="space-y-2">
                     {issueCounts.map((c) => (
                       <li key={c.message} className="flex items-center justify-between gap-3 text-sm">
-                        <span className="flex items-center gap-2 text-slate-300">
-                          {c.level === 'error' ? <XCircle className="w-4 h-4 text-red-400" /> : <AlertTriangle className="w-4 h-4 text-amber-400" />}
+                        <span className="flex items-center gap-2 text-[var(--foreground)]">
+                          {c.level === 'error' ? <XCircle className="w-4 h-4 text-red-700 dark:text-red-400" /> : <AlertTriangle className="w-4 h-4 text-[var(--accent)]" />}
                           {c.message}
                         </span>
-                        <span className="text-slate-400">{formatPersianNumber(c.n)} صفحه</span>
+                        <span className="text-[var(--muted-foreground)]">{formatPersianNumber(c.n)} صفحه</span>
                       </li>
                     ))}
                   </ul>
                 )}
-                <p className="mt-4 text-xs text-slate-500 leading-6">
+                <p className="mt-4 text-xs text-[var(--muted-foreground)] leading-6">
                   مواردی مثل «جدول قیمت ندارد»، «تصویر ندارد» یا «محتوا کم است» خودکار قابل اصلاح نیستند و باید از صفحه ویرایش همان مورد تکمیل شوند.
                 </p>
               </div>
@@ -220,34 +220,34 @@ export default function SeoCenterPage() {
         <div className="space-y-4">
           <div className="flex gap-2 overflow-x-auto">
             {(['all', 'product', 'category', 'blog', 'project'] as const).map((t) => (
-              <button key={t} onClick={() => setTypeFilter(t)} className={`h-9 px-4 rounded-full text-sm whitespace-nowrap ${typeFilter === t ? 'bg-white text-black font-bold' : 'bg-slate-900 border border-slate-800 text-slate-400'}`}>
+              <button key={t} onClick={() => setTypeFilter(t)} className={`h-9 px-4 rounded-full text-sm whitespace-nowrap ${typeFilter === t ? 'bg-[var(--foreground)] text-[var(--background)] font-bold' : 'bg-[var(--card)] border border-[var(--border)] text-[var(--muted-foreground)]'}`}>
                 {t === 'all' ? 'همه' : TYPE_LABEL[t]}
               </button>
             ))}
           </div>
-          <div className={`${card} divide-y divide-slate-800`}>
+          <div className={`${card} divide-y divide-[var(--border)]`}>
             {items.map((it) => (
               <div key={`${it.type}-${it.id}`} className="p-4 flex flex-col sm:flex-row sm:items-center gap-3">
                 <div className={`w-14 shrink-0 text-2xl font-black ${scoreColor(it.score)}`}>{formatPersianNumber(it.score)}</div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">{TYPE_LABEL[it.type]}</span>
-                    <span className="font-bold text-white truncate">{it.name}</span>
+                    <span className="text-[11px] px-2 py-0.5 rounded bg-[var(--muted)] text-[var(--foreground)]">{TYPE_LABEL[it.type]}</span>
+                    <span className="font-bold text-[var(--foreground)] truncate">{it.name}</span>
                   </div>
                   <div className="mt-2 flex flex-wrap gap-1.5">
-                    {it.issues.length === 0 && <span className="text-xs text-emerald-400">بدون مشکل</span>}
+                    {it.issues.length === 0 && <span className="text-xs text-emerald-700 dark:text-emerald-400">بدون مشکل</span>}
                     {it.issues.map((is, i) => (
-                      <span key={i} className={`text-[11px] px-2 py-0.5 rounded-md ${is.level === 'error' ? 'bg-red-500/15 text-red-300' : 'bg-amber-500/10 text-amber-300'}`}>{is.message}</span>
+                      <span key={i} className={`text-[11px] px-2 py-0.5 rounded-md ${is.level === 'error' ? 'bg-red-500/15 text-red-700 dark:text-red-300' : 'bg-[var(--accent)]/10 text-[var(--accent)]'}`}>{is.message}</span>
                     ))}
                   </div>
                 </div>
                 <div className="flex gap-2 shrink-0">
-                  <a href={it.url} target="_blank" rel="noopener" className="h-9 px-3 rounded-lg bg-slate-800 text-slate-300 text-xs flex items-center gap-1.5 hover:text-white"><ExternalLink className="w-3.5 h-3.5" />مشاهده</a>
-                  <Link href={it.adminUrl} className="h-9 px-3 rounded-lg bg-slate-800 text-slate-300 text-xs flex items-center gap-1.5 hover:text-white"><Pencil className="w-3.5 h-3.5" />ویرایش</Link>
+                  <a href={it.url} target="_blank" rel="noopener" className="h-9 px-3 rounded-lg bg-[var(--muted)] text-[var(--foreground)] text-xs flex items-center gap-1.5 hover:text-[var(--foreground)]"><ExternalLink className="w-3.5 h-3.5" />مشاهده</a>
+                  <Link href={it.adminUrl} className="h-9 px-3 rounded-lg bg-[var(--muted)] text-[var(--foreground)] text-xs flex items-center gap-1.5 hover:text-[var(--foreground)]"><Pencil className="w-3.5 h-3.5" />ویرایش</Link>
                 </div>
               </div>
             ))}
-            {!items.length && <p className="p-8 text-center text-slate-500 text-sm">{loading ? 'در حال بررسی…' : 'موردی نیست'}</p>}
+            {!items.length && <p className="p-8 text-center text-[var(--muted-foreground)] text-sm">{loading ? 'در حال بررسی…' : 'موردی نیست'}</p>}
           </div>
         </div>
       )}
@@ -297,27 +297,27 @@ function RedirectsTab() {
   return (
     <div className="space-y-4">
       <div className={`${card} p-5`}>
-        <p className="text-sm text-slate-400 leading-7">
+        <p className="text-sm text-[var(--muted-foreground)] leading-7">
           وقتی آدرس یک صفحه عوض می‌شود، آدرس قبلی اینجا ثبت می‌شود تا لینک‌های قدیمی و رتبه گوگل از بین نرود (ریدایرکت دائمی).
           تغییر اسلاگ در پنل خودکار ثبت می‌شود؛ برای آدرس‌های دیگر (مثلاً صفحات سایت قبلی) دستی اضافه کنید.
         </p>
         <form onSubmit={addRow} className="mt-4 grid sm:grid-cols-[1fr_1fr_auto] gap-2">
           <input className={input} dir="ltr" placeholder="/old-page" value={from} onChange={(e) => setFrom(e.target.value)} />
           <input className={input} dir="ltr" placeholder="/new-page" value={to} onChange={(e) => setTo(e.target.value)} />
-          <button disabled={busy || !from || !to} className="h-11 px-5 rounded-xl bg-amber-500 text-black font-bold flex items-center justify-center gap-2 disabled:opacity-50"><Plus className="w-4 h-4" />افزودن</button>
+          <button disabled={busy || !from || !to} className="h-11 px-5 rounded-xl bg-[var(--accent)] text-[var(--accent-foreground)] font-bold flex items-center justify-center gap-2 disabled:opacity-50"><Plus className="w-4 h-4" />افزودن</button>
         </form>
       </div>
-      <div className={`${card} divide-y divide-slate-800`}>
-        {rows === null && <p className="p-6 text-center text-slate-500 text-sm">در حال بارگذاری…</p>}
-        {rows?.length === 0 && <p className="p-6 text-center text-slate-500 text-sm">ریدایرکتی ثبت نشده</p>}
+      <div className={`${card} divide-y divide-[var(--border)]`}>
+        {rows === null && <p className="p-6 text-center text-[var(--muted-foreground)] text-sm">در حال بارگذاری…</p>}
+        {rows?.length === 0 && <p className="p-6 text-center text-[var(--muted-foreground)] text-sm">ریدایرکتی ثبت نشده</p>}
         {rows?.map((r) => (
           <div key={r.id} className="p-4 flex items-center gap-3 text-sm">
             <div className="flex-1 min-w-0 grid sm:grid-cols-[1fr_auto_1fr] gap-1 sm:gap-3 items-center" dir="ltr">
               <span className="truncate text-red-300/90">{r.fromPath}</span>
-              <span className="text-slate-500 hidden sm:inline">→</span>
-              <span className="truncate text-emerald-300">{r.toPath}</span>
+              <span className="text-[var(--muted-foreground)] hidden sm:inline">→</span>
+              <span className="truncate text-emerald-700 dark:text-emerald-300">{r.toPath}</span>
             </div>
-            <button onClick={() => del(r.id)} aria-label="حذف" className="w-9 h-9 grid place-items-center rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/10 shrink-0"><Trash2 className="w-4 h-4" /></button>
+            <button onClick={() => del(r.id)} aria-label="حذف" className="w-9 h-9 grid place-items-center rounded-lg text-[var(--muted-foreground)] hover:text-red-700 dark:hover:text-red-400 hover:bg-red-500/10 shrink-0"><Trash2 className="w-4 h-4" /></button>
           </div>
         ))}
       </div>
@@ -358,29 +358,29 @@ function SettingsTab() {
     }
   };
 
-  if (!ready) return <div className="py-16 text-center text-slate-400"><Loader2 className="w-6 h-6 animate-spin mx-auto" /></div>;
+  if (!ready) return <div className="py-16 text-center text-[var(--muted-foreground)]"><Loader2 className="w-6 h-6 animate-spin mx-auto" /></div>;
 
   return (
     <div className="space-y-4">
       <div className={`${card} p-5 space-y-3`}>
-        <h2 className="text-white font-bold">اتصال به Google Search Console</h2>
-        <p className="text-sm text-slate-400 leading-7">
+        <h2 className="text-[var(--foreground)] font-bold">اتصال به Google Search Console</h2>
+        <p className="text-sm text-[var(--muted-foreground)] leading-7">
           در Search Console روش تایید «HTML tag» را انتخاب کنید و تگ یا فقط مقدار content را اینجا پیست کنید. بعد از ذخیره، دکمه Verify را در گوگل بزنید و نقشه سایت زیر را ثبت کنید.
         </p>
         <input className={input} dir="ltr" placeholder='<meta name="google-site-verification" content="..." />' value={verification} onChange={(e) => setVerification(e.target.value)} />
         <div className="flex flex-wrap gap-2 text-xs">
-          <a href="/sitemap.xml" target="_blank" className="h-9 px-3 rounded-lg bg-slate-800 text-slate-300 flex items-center gap-1.5 hover:text-white" dir="ltr"><ExternalLink className="w-3.5 h-3.5" />/sitemap.xml</a>
-          <a href="/robots.txt" target="_blank" className="h-9 px-3 rounded-lg bg-slate-800 text-slate-300 flex items-center gap-1.5 hover:text-white" dir="ltr"><ExternalLink className="w-3.5 h-3.5" />/robots.txt</a>
+          <a href="/sitemap.xml" target="_blank" className="h-9 px-3 rounded-lg bg-[var(--muted)] text-[var(--foreground)] flex items-center gap-1.5 hover:text-[var(--foreground)]" dir="ltr"><ExternalLink className="w-3.5 h-3.5" />/sitemap.xml</a>
+          <a href="/robots.txt" target="_blank" className="h-9 px-3 rounded-lg bg-[var(--muted)] text-[var(--foreground)] flex items-center gap-1.5 hover:text-[var(--foreground)]" dir="ltr"><ExternalLink className="w-3.5 h-3.5" />/robots.txt</a>
         </div>
       </div>
 
       <div className={`${card} p-5`}>
-        <h2 className="text-white font-bold mb-1">متن سئوی صفحه اصلی</h2>
-        <p className="text-sm text-slate-400 mb-4 leading-7">متن پایین صفحه اصلی (با «ادامه مطلب»). خالی بگذارید تا نمایش داده نشود.</p>
+        <h2 className="text-[var(--foreground)] font-bold mb-1">متن سئوی صفحه اصلی</h2>
+        <p className="text-sm text-[var(--muted-foreground)] mb-4 leading-7">متن پایین صفحه اصلی (با «ادامه مطلب»). خالی بگذارید تا نمایش داده نشود.</p>
         <HtmlContentEditor value={homeContent} onChange={setHomeContent} rows={12} />
       </div>
 
-      <button onClick={save} disabled={saving} className="h-12 px-8 rounded-xl bg-amber-500 text-black font-bold flex items-center gap-2 disabled:opacity-50">
+      <button onClick={save} disabled={saving} className="h-12 px-8 rounded-xl bg-[var(--accent)] text-[var(--accent-foreground)] font-bold flex items-center gap-2 disabled:opacity-50">
         {saving && <Loader2 className="w-4 h-4 animate-spin" />} ذخیره تنظیمات سئو
       </button>
     </div>

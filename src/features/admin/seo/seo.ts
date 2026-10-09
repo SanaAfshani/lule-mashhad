@@ -45,10 +45,10 @@ export function counterTone(length: number, { min, max }: { min: number; max: nu
 }
 
 export const TONE_CLASS: Record<CounterTone, string> = {
-  empty: 'text-slate-500',
-  short: 'text-amber-400',
-  good: 'text-emerald-400',
-  over: 'text-red-400',
+  empty: 'text-[var(--muted-foreground)]',
+  short: 'text-amber-700 dark:text-amber-400',
+  good: 'text-emerald-700 dark:text-emerald-400',
+  over: 'text-red-700 dark:text-red-400',
 };
 
 export function formatCounter(length: number, max: number): string {

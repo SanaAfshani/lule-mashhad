@@ -1,21 +1,25 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Package, Layers, FileText, HelpCircle,
   Star, Building2, MessageSquare, Settings, Users, LogOut,
-  Menu, X, Palette, ChevronLeft, Globe, SearchCheck, CandlestickChart } from 'lucide-react';
+  Menu, Palette, ChevronLeft, SearchCheck, CandlestickChart, PhoneCall } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import toast from 'react-hot-toast';
+import { useAdminNotifications } from '@/widgets/admin/AdminNotifications';
+import { faDigits } from '@/shared/lib/utils';
 
 const navGroups = [
   {
     label: 'داشبورد',
     items: [
       { href: '/admin', label: 'داشبورد', icon: LayoutDashboard, exact: true },
+      { href: '/admin/leads', label: 'گزارش تماس‌ها', icon: PhoneCall },
     ],
   },
   {
@@ -61,6 +65,8 @@ function NavItem({
   collapsed: boolean;
 }) {
   const pathname = usePathname();
+  const { unread } = useAdminNotifications();
+  const badge = href === '/admin/messages' && unread > 0 ? unread : 0;
   const active = exact ? pathname === href : pathname.startsWith(href);
 
   return (
@@ -71,80 +77,78 @@ function NavItem({
         'group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200',
         collapsed ? 'justify-center px-2' : '',
         active
-          ? 'bg-amber-500/15 text-amber-400'
-          : 'text-slate-400 hover:bg-slate-800 hover:text-white',
+          ? 'bg-[var(--accent)]/15 text-[var(--accent)]'
+          : 'text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[var(--foreground)]',
       )}
     >
       {active && (
         <motion.span
           layoutId="activeNav"
-          className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-l-full bg-amber-400"
+          className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-l-full bg-[var(--accent)]"
         />
       )}
       <Icon
         className={cn(
           'flex-shrink-0 transition-colors',
-          active ? 'text-amber-400' : 'text-slate-500 group-hover:text-white',
+          active ? 'text-[var(--accent)]' : 'text-[var(--muted-foreground)] group-hover:text-[var(--foreground)]',
           collapsed ? 'w-5 h-5' : 'w-4 h-4',
         )}
       />
       {!collapsed && <span className="truncate">{label}</span>}
-      {!collapsed && active && (
-        <ChevronLeft className="w-3.5 h-3.5 mr-auto text-amber-400/60" />
+      {badge > 0 && (
+        <span className={cn('min-w-5 h-5 px-1 rounded-full bg-red-600 text-white text-[11px] font-bold grid place-items-center num', collapsed ? 'absolute top-0.5 left-0.5' : 'mr-auto')}>
+          {faDigits(badge)}
+        </span>
+      )}
+      {!collapsed && active && !badge && (
+        <ChevronLeft className="w-3.5 h-3.5 mr-auto text-[var(--accent)]/60" />
       )}
 
       {collapsed && (
-        <div className="absolute right-full mr-3 px-2.5 py-1.5 rounded-lg bg-slate-800 text-white text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none border border-slate-700 shadow-lg z-50">
+        <div className="absolute right-full mr-3 px-2.5 py-1.5 rounded-lg bg-[var(--muted)] text-[var(--foreground)] text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none border border-[var(--border)] shadow-lg z-50">
           {label}
-          <div className="absolute left-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-slate-800" />
+          <div className="absolute left-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-[var(--muted)]" />
         </div>
       )}
     </Link>
   );
 }
 
-export function AdminSidebar() {
-  const [collapsed, setCollapsed] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const pathname = usePathname();
-  const router = useRouter();
+type SidebarProps = {
+  collapsed: boolean;
+  onToggleCollapse: () => void;
+  mobileOpen: boolean;
+  onMobileClose: () => void;
+};
 
-  useEffect(() => {
-    setMobileOpen(false);
-  }, [pathname]);
-
-  const handleLogout = () => {
-    document.cookie = 'admin_token=; path=/; max-age=0';
-    toast.success('با موفقیت خارج شدید');
-    router.push('/admin/login');
-  };
-
-  const SidebarContent = () => (
-    <div className="flex flex-col h-full bg-slate-950 border-l border-slate-800/80">
+function SidebarContent({ collapsed, onToggleCollapse, onLogout }: { collapsed: boolean; onToggleCollapse?: () => void; onLogout: () => void }) {
+  return (
+    <div className="flex flex-col h-full bg-[var(--background)] border-l border-[var(--border)]/80">
       {/* Logo + Toggle */}
       <div
         className={cn(
-          'flex items-center h-16 px-4 border-b border-slate-800/80 flex-shrink-0',
+          'flex items-center h-16 px-4 border-b border-[var(--border)]/80 flex-shrink-0',
           collapsed ? 'justify-center' : 'justify-between',
         )}
       >
         {!collapsed && (
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-8 h-8 rounded-lg bg-amber-500 flex items-center justify-center flex-shrink-0">
-              <Globe className="w-4 h-4 text-white" />
-            </div>
+            <Image src="/images/logo.png" alt="" width={36} height={36} className="w-9 h-9 object-contain flex-shrink-0" />
             <div className="min-w-0">
-              <div className="font-bold text-white text-sm truncate">قدیر لوله آنلاین </div>
-              <div className="text-slate-500 text-xs">پنل مدیریت</div>
+              <div className="font-bold text-[var(--foreground)] text-sm truncate">قدیر لوله آنلاین</div>
+              <div className="text-[var(--muted-foreground)] text-xs">پنل مدیریت</div>
             </div>
           </div>
         )}
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className="hidden lg:flex w-8 h-8 rounded-lg items-center justify-center text-slate-500 hover:bg-slate-800 hover:text-white transition-all flex-shrink-0"
-        >
-          <Menu className="w-4 h-4" />
-        </button>
+        {onToggleCollapse && (
+          <button
+            onClick={onToggleCollapse}
+            aria-label={collapsed ? 'باز کردن منو' : 'جمع کردن منو'}
+            className="flex w-8 h-8 rounded-lg items-center justify-center text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[var(--foreground)] transition-all flex-shrink-0"
+          >
+            <Menu className="w-4 h-4" />
+          </button>
+        )}
       </div>
 
       {/* Nav */}
@@ -152,7 +156,7 @@ export function AdminSidebar() {
         {navGroups.map((group) => (
           <div key={group.label}>
             {!collapsed && (
-              <div className="text-slate-600 text-[10px] font-semibold uppercase tracking-widest px-3 mb-2">
+              <div className="text-[var(--muted-foreground)] text-[10px] font-semibold uppercase tracking-widest px-3 mb-2">
                 {group.label}
               </div>
             )}
@@ -168,14 +172,14 @@ export function AdminSidebar() {
       {/* Bottom actions */}
       <div
         className={cn(
-          'p-3 border-t border-slate-800/80 space-y-0.5',
+          'p-3 border-t border-[var(--border)]/80 space-y-0.5',
           collapsed && 'flex flex-col items-center',
         )}
       >
         <button
-          onClick={handleLogout}
+          onClick={onLogout}
           className={cn(
-            'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-slate-400 hover:bg-red-950/60 hover:text-red-400 transition-all w-full',
+            'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-[var(--muted-foreground)] hover:bg-red-500/10 hover:text-red-700 dark:hover:text-red-400 transition-all w-full',
             collapsed && 'justify-center px-2 w-auto',
           )}
           title={collapsed ? 'خروج' : undefined}
@@ -186,6 +190,22 @@ export function AdminSidebar() {
       </div>
     </div>
   );
+}
+
+/** وضعیت باز/بسته در layout است تا دکمه منوی موبایل داخل هدر باشد و فاصله محتوا با عرض واقعی منو هماهنگ بماند */
+export function AdminSidebar({ collapsed, onToggleCollapse, mobileOpen, onMobileClose }: SidebarProps) {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  useEffect(() => {
+    onMobileClose();
+  }, [pathname, onMobileClose]);
+
+  const handleLogout = () => {
+    document.cookie = 'admin_token=; path=/; max-age=0';
+    toast.success('با موفقیت خارج شدید');
+    router.push('/admin/login');
+  };
 
   return (
     <>
@@ -195,38 +215,10 @@ export function AdminSidebar() {
         transition={{ duration: 0.25, ease: 'easeInOut' }}
         className="hidden lg:block fixed right-0 top-0 bottom-0 z-30 overflow-hidden"
       >
-        <SidebarContent />
+        <SidebarContent collapsed={collapsed} onToggleCollapse={onToggleCollapse} onLogout={handleLogout} />
       </motion.div>
 
-      {/* Mobile toggle */}
-      <button
-        onClick={() => setMobileOpen(!mobileOpen)}
-        className="lg:hidden fixed top-4 right-4 z-50 w-10 h-10 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-center text-white shadow-lg"
-      >
-        <AnimatePresence mode="wait">
-          {mobileOpen ? (
-            <motion.div
-              key="x"
-              initial={{ rotate: -90 }}
-              animate={{ rotate: 0 }}
-              exit={{ rotate: 90 }}
-            >
-              <X className="w-5 h-5" />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="m"
-              initial={{ rotate: 90 }}
-              animate={{ rotate: 0 }}
-              exit={{ rotate: -90 }}
-            >
-              <Menu className="w-5 h-5" />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </button>
-
-      {/* Mobile overlay */}
+      {/* Mobile drawer — حالت جمع‌شده در موبایل معنا ندارد */}
       <AnimatePresence>
         {mobileOpen && (
           <>
@@ -235,16 +227,16 @@ export function AdminSidebar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="lg:hidden fixed inset-0 bg-black/60 z-40"
-              onClick={() => setMobileOpen(false)}
+              onClick={onMobileClose}
             />
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="lg:hidden fixed top-0 right-0 bottom-0 w-64 z-50"
+              className="lg:hidden fixed top-0 right-0 bottom-0 w-72 max-w-[85vw] z-50"
             >
-              <SidebarContent />
+              <SidebarContent collapsed={false} onLogout={handleLogout} />
             </motion.div>
           </>
         )}

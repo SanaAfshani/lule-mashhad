@@ -16,18 +16,18 @@ export default function AdminThemePage() {
   return (
     <div className="max-w-3xl space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+        <h1 className="text-2xl font-bold text-[var(--foreground)] flex items-center gap-3">
           <Palette className="w-7 h-7 text-[var(--accent)]" />
           مدیریت رنگ‌بندی سایت
         </h1>
-        <p className="text-slate-400 text-sm mt-2">
+        <p className="text-[var(--muted-foreground)] text-sm mt-2">
           رنگ اصلی سایت را از اینجا تغییر دهید. تغییر فوری روی تمام صفحات اعمال می‌شود.
         </p>
       </div>
 
       {/* Color Presets */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-        <h2 className="text-white font-semibold mb-5">انتخاب رنگ اصلی</h2>
+      <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6">
+        <h2 className="text-[var(--foreground)] font-semibold mb-5">انتخاب رنگ اصلی</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {themeColors.map((c) => (
             <motion.button
@@ -37,17 +37,17 @@ export default function AdminThemePage() {
               whileTap={{ scale: 0.96 }}
               className={`relative flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all ${
                 color === c.id
-                  ? 'border-white/50 bg-white/5'
-                  : 'border-slate-700 hover:border-slate-600'
+                  ? 'border-[var(--foreground)]/40 bg-[var(--muted)]'
+                  : 'border-[var(--border)] hover:border-[var(--border)]'
               }`}
             >
               <div
                 className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg"
                 style={{ backgroundColor: c.hex, boxShadow: `0 4px 16px ${c.hex}60` }}
               >
-                {color === c.id && <Check className="w-5 h-5 text-white" strokeWidth={3} />}
+                {color === c.id && <Check className="w-5 h-5 text-[var(--foreground)]" strokeWidth={3} />}
               </div>
-              <span className="text-xs font-medium text-slate-300 text-center">{c.label}</span>
+              <span className="text-xs font-medium text-[var(--foreground)] text-center">{c.label}</span>
               {color === c.id && (
                 <div className="absolute top-2 left-2 w-2 h-2 rounded-full bg-green-400" />
               )}
@@ -57,8 +57,8 @@ export default function AdminThemePage() {
       </div>
 
       {/* Preview */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-        <h2 className="text-white font-semibold mb-5">پیش‌نمایش</h2>
+      <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6">
+        <h2 className="text-[var(--foreground)] font-semibold mb-5">پیش‌نمایش</h2>
         <div className="space-y-4">
           <div className="flex flex-wrap gap-3">
             <button
@@ -90,7 +90,7 @@ export default function AdminThemePage() {
         </div>
       </div>
 
-      <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 text-amber-400 text-sm">
+      <div className="bg-[var(--accent)]/10 border border-[var(--accent)]/20 rounded-xl p-4 text-[var(--accent)] text-sm">
         💡 تغییر رنگ بلافاصله روی تمام صفحات سایت اعمال می‌شود و در مرورگر ذخیره می‌شود.
       </div>
     </div>

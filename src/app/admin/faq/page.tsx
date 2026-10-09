@@ -116,21 +116,21 @@ export default function AdminFaqPage() {
   };
 
   const inputCls =
-    'w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white placeholder:text-slate-500 focus:outline-none';
+    'w-full bg-[var(--muted)] border border-[var(--border)] rounded-xl px-4 py-2.5 text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none';
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">مدیریت سوالات متداول</h1>
-          <p className="text-slate-400 text-sm mt-1">
+          <h1 className="text-2xl font-bold text-[var(--foreground)]">مدیریت سوالات متداول</h1>
+          <p className="text-[var(--muted-foreground)] text-sm mt-1">
             {loading ? 'در حال بارگذاری...' : `${faqs.length} سوال در سیستم`}
           </p>
         </div>
         <button
           type="button"
           onClick={openCreate}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 text-black font-semibold hover:bg-amber-400 transition-colors text-sm"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--accent)] text-[var(--accent-foreground)] font-semibold hover:bg-[var(--accent)]/90 transition-colors text-sm"
         >
           <Plus className="w-4 h-4" />
           سوال جدید
@@ -138,7 +138,7 @@ export default function AdminFaqPage() {
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-16 text-slate-400 gap-2">
+        <div className="flex items-center justify-center py-16 text-[var(--muted-foreground)] gap-2">
           <Loader2 className="w-5 h-5 animate-spin" />
           بارگذاری سوالات...
         </div>
@@ -150,27 +150,27 @@ export default function AdminFaqPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.06 }}
-              className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden"
+              className="bg-[var(--card)] border border-[var(--border)] rounded-2xl overflow-hidden"
             >
               <button
                 type="button"
                 onClick={() => setExpanded(expanded === faq.id ? null : faq.id)}
-                className="w-full flex items-center gap-4 px-6 py-4 text-right hover:bg-slate-800/40 transition-colors"
+                className="w-full flex items-center gap-4 px-6 py-4 text-right hover:bg-[var(--muted)]/40 transition-colors"
               >
-                <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center flex-shrink-0">
-                  <HelpCircle className="w-4 h-4 text-amber-400" />
+                <div className="w-8 h-8 rounded-lg bg-[var(--accent)]/10 flex items-center justify-center flex-shrink-0">
+                  <HelpCircle className="w-4 h-4 text-[var(--accent)]" />
                 </div>
-                <span className="flex-1 text-white font-medium">{faq.question}</span>
+                <span className="flex-1 text-[var(--foreground)] font-medium">{faq.question}</span>
                 <div className="flex items-center gap-3">
                   <span
                     className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
-                      faq.published ? 'bg-blue-500/10 text-blue-400' : 'bg-slate-700 text-slate-500'
+                      faq.published ? 'bg-blue-500/10 text-blue-700 dark:text-blue-400' : 'bg-[var(--border)] text-[var(--muted-foreground)]'
                     }`}
                   >
                     {faq.published ? 'فعال' : 'غیرفعال'}
                   </span>
                   <ChevronDown
-                    className={`w-4 h-4 text-slate-500 transition-transform ${expanded === faq.id ? 'rotate-180' : ''}`}
+                    className={`w-4 h-4 text-[var(--muted-foreground)] transition-transform ${expanded === faq.id ? 'rotate-180' : ''}`}
                   />
                 </div>
               </button>
@@ -184,13 +184,13 @@ export default function AdminFaqPage() {
                     transition={{ duration: 0.2 }}
                     className="overflow-hidden"
                   >
-                    <div className="px-6 pb-4 border-t border-slate-800">
-                      <p className="text-slate-400 text-sm leading-relaxed py-3">{faq.answer}</p>
+                    <div className="px-6 pb-4 border-t border-[var(--border)]">
+                      <p className="text-[var(--muted-foreground)] text-sm leading-relaxed py-3">{faq.answer}</p>
                       <div className="flex items-center gap-2 pt-2">
                         <button
                           type="button"
                           onClick={() => openEdit(faq)}
-                          className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-amber-400 hover:bg-amber-500/10 transition-all text-xs"
+                          className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[var(--muted)] text-[var(--muted-foreground)] hover:text-[var(--accent)] hover:bg-[var(--accent)]/10 transition-all text-xs"
                         >
                           <Pencil className="w-3.5 h-3.5" />
                           ویرایش
@@ -199,7 +199,7 @@ export default function AdminFaqPage() {
                           type="button"
                           disabled={deletingId === faq.id}
                           onClick={() => handleDelete(faq.id)}
-                          className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all text-xs disabled:opacity-50"
+                          className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[var(--muted)] text-[var(--muted-foreground)] hover:text-red-700 dark:hover:text-red-400 hover:bg-red-500/10 transition-all text-xs disabled:opacity-50"
                         >
                           {deletingId === faq.id ? (
                             <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -233,17 +233,17 @@ export default function AdminFaqPage() {
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
               onSubmit={handleSave}
-              className="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4"
+              className="w-full max-w-lg bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 space-y-4"
             >
               <div className="flex items-center justify-between">
-                <h2 className="text-white font-bold">{editingId ? 'ویرایش سوال' : 'سوال جدید'}</h2>
-                <button type="button" onClick={() => setModalOpen(false)} className="text-slate-400 hover:text-white">
+                <h2 className="text-[var(--foreground)] font-bold">{editingId ? 'ویرایش سوال' : 'سوال جدید'}</h2>
+                <button type="button" onClick={() => setModalOpen(false)} className="text-[var(--muted-foreground)] hover:text-[var(--foreground)]">
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
               <div>
-                <label className="block text-sm text-slate-300 mb-1.5">سوال *</label>
+                <label className="block text-sm text-[var(--foreground)] mb-1.5">سوال *</label>
                 <input
                   type="text"
                   required
@@ -254,7 +254,7 @@ export default function AdminFaqPage() {
               </div>
 
               <div>
-                <label className="block text-sm text-slate-300 mb-1.5">پاسخ *</label>
+                <label className="block text-sm text-[var(--foreground)] mb-1.5">پاسخ *</label>
                 <textarea
                   required
                   value={form.answer}
@@ -265,7 +265,7 @@ export default function AdminFaqPage() {
               </div>
 
               <div className="flex items-center gap-4">
-                <label className="flex items-center gap-2 text-slate-300 text-sm cursor-pointer">
+                <label className="flex items-center gap-2 text-[var(--foreground)] text-sm cursor-pointer">
                   <input
                     type="checkbox"
                     checked={form.published}
@@ -275,12 +275,12 @@ export default function AdminFaqPage() {
                   منتشر شده
                 </label>
                 <div className="flex items-center gap-2">
-                  <label className="text-slate-400 text-sm">ترتیب</label>
+                  <label className="text-[var(--muted-foreground)] text-sm">ترتیب</label>
                   <input
                     type="number"
                     value={form.order}
                     onChange={(e) => setForm({ ...form, order: Number(e.target.value) })}
-                    className="w-20 h-9 bg-slate-800 border border-slate-700 rounded-lg px-2 text-white text-sm"
+                    className="w-20 h-9 bg-[var(--muted)] border border-[var(--border)] rounded-lg px-2 text-[var(--foreground)] text-sm"
                   />
                 </div>
               </div>
@@ -288,7 +288,7 @@ export default function AdminFaqPage() {
               <button
                 type="submit"
                 disabled={saving}
-                className="w-full h-11 rounded-xl bg-amber-500 text-black font-semibold hover:bg-amber-400 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full h-11 rounded-xl bg-[var(--accent)] text-[var(--accent-foreground)] font-semibold hover:bg-[var(--accent)]/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {saving && <Loader2 className="w-4 h-4 animate-spin" />}
                 ذخیره

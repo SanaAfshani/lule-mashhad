@@ -137,15 +137,15 @@ export default function AdminCategoriesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">مدیریت دسته‌بندی‌ها</h1>
-          <p className="text-slate-400 text-sm mt-1">
+          <h1 className="text-2xl font-bold text-[var(--foreground)]">مدیریت دسته‌بندی‌ها</h1>
+          <p className="text-[var(--muted-foreground)] text-sm mt-1">
             {loading ? 'در حال بارگذاری...' : `${categories.length} دسته‌بندی در سیستم`}
           </p>
         </div>
         <button
           type="button"
           onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 text-black font-semibold hover:bg-amber-400 transition-colors text-sm"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--accent)] text-[var(--accent-foreground)] font-semibold hover:bg-[var(--accent)]/90 transition-colors text-sm"
         >
           <Plus className="w-4 h-4" />
           دسته‌بندی جدید
@@ -157,10 +157,10 @@ export default function AdminCategoriesPage() {
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           onSubmit={handleAdd}
-          className="bg-slate-900 border border-amber-500/30 rounded-2xl p-6 flex items-end gap-4"
+          className="bg-[var(--card)] border border-[var(--accent)]/30 rounded-2xl p-6 flex items-end gap-4"
         >
           <div className="flex-1">
-            <label className="block text-sm font-medium text-slate-300 mb-1.5">نام دسته‌بندی جدید</label>
+            <label className="block text-sm font-medium text-[var(--foreground)] mb-1.5">نام دسته‌بندی جدید</label>
             <input
               type="text"
               value={newName}
@@ -168,13 +168,13 @@ export default function AdminCategoriesPage() {
               placeholder="مثال: لوله پلی‌اتیلن"
               required
               autoFocus
-              className="w-full h-11 bg-slate-800 border border-slate-700 rounded-xl px-4 text-white placeholder:text-slate-500 focus:outline-none"
+              className="w-full h-11 bg-[var(--muted)] border border-[var(--border)] rounded-xl px-4 text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none"
             />
           </div>
           <button
             type="submit"
             disabled={saving}
-            className="h-11 px-6 rounded-xl bg-amber-500 text-black font-semibold hover:bg-amber-400 transition-colors text-sm disabled:opacity-50 flex items-center gap-2"
+            className="h-11 px-6 rounded-xl bg-[var(--accent)] text-[var(--accent-foreground)] font-semibold hover:bg-[var(--accent)]/90 transition-colors text-sm disabled:opacity-50 flex items-center gap-2"
           >
             {saving && <Loader2 className="w-4 h-4 animate-spin" />}
             ذخیره
@@ -182,7 +182,7 @@ export default function AdminCategoriesPage() {
           <button
             type="button"
             onClick={() => setShowForm(false)}
-            className="h-11 px-4 rounded-xl bg-slate-800 text-slate-400 hover:text-white transition-colors text-sm"
+            className="h-11 px-4 rounded-xl bg-[var(--muted)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors text-sm"
           >
             انصراف
           </button>
@@ -190,29 +190,29 @@ export default function AdminCategoriesPage() {
       )}
 
       <div className="relative">
-        <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+        <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--muted-foreground)]" />
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="جستجو در دسته‌بندی‌ها..."
-          className="w-full h-11 bg-slate-900 border border-slate-800 rounded-xl pr-12 pl-4 text-white placeholder:text-slate-500 focus:outline-none"
+          className="w-full h-11 bg-[var(--card)] border border-[var(--border)] rounded-xl pr-12 pl-4 text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none"
         />
       </div>
 
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+      <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl overflow-hidden">
         {loading ? (
-          <div className="flex items-center justify-center py-16 text-slate-400 gap-2">
+          <div className="flex items-center justify-center py-16 text-[var(--muted-foreground)] gap-2">
             <Loader2 className="w-5 h-5 animate-spin" />
             بارگذاری دسته‌بندی‌ها...
           </div>
         ) : filtered.length === 0 ? (
-          <div className="text-center py-16 text-slate-500">دسته‌بندی‌ای یافت نشد.</div>
+          <div className="text-center py-16 text-[var(--muted-foreground)]">دسته‌بندی‌ای یافت نشد.</div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full min-w-[44rem] text-sm">
               <thead>
-                <tr className="border-b border-slate-800 text-slate-400 text-right">
+                <tr className="border-b border-[var(--border)] text-[var(--muted-foreground)] text-right">
                   <th className="px-6 py-4 font-medium">دسته‌بندی</th>
                   <th className="px-6 py-4 font-medium">شناسه URL</th>
                   <th className="px-6 py-4 font-medium">تعداد محصولات</th>
@@ -227,25 +227,25 @@ export default function AdminCategoriesPage() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: i * 0.05 }}
-                    className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors"
+                    className="border-b border-[var(--border)]/50 hover:bg-[var(--muted)]/30 transition-colors"
                   >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                          <Layers className="w-4 h-4 text-amber-400" />
+                        <div className="w-9 h-9 rounded-xl bg-[var(--accent)]/10 flex items-center justify-center">
+                          <Layers className="w-4 h-4 text-[var(--accent)]" />
                         </div>
-                        <span className="text-white font-medium">{cat.name}</span>
+                        <span className="text-[var(--foreground)] font-medium">{cat.name}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-slate-500 font-mono text-xs">{cat.slug}</td>
-                    <td className="px-6 py-4 text-slate-400">{cat._count?.products ?? 0} محصول</td>
+                    <td className="px-6 py-4 text-[var(--muted-foreground)] font-mono text-xs">{cat.slug}</td>
+                    <td className="px-6 py-4 text-[var(--muted-foreground)]">{cat._count?.products ?? 0} محصول</td>
                     <td className="px-6 py-4">
                       <button
                         type="button"
                         disabled={togglingId === cat.id}
                         onClick={() => togglePublished(cat)}
                         className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
-                          cat.published ? 'bg-blue-500/10 text-blue-400 hover:bg-blue-500/20' : 'bg-slate-700 text-slate-500 hover:bg-slate-600'
+                          cat.published ? 'bg-blue-500/10 text-blue-700 dark:text-blue-400 hover:bg-blue-500/20' : 'bg-[var(--border)] text-[var(--muted-foreground)] hover:bg-[var(--border)]'
                         } disabled:opacity-50`}
                       >
                         {togglingId === cat.id ? (
@@ -262,7 +262,7 @@ export default function AdminCategoriesPage() {
                         type="button"
                         disabled={deletingId === cat.id}
                         onClick={() => handleDelete(cat)}
-                        className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all disabled:opacity-50"
+                        className="w-8 h-8 rounded-lg bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)] hover:text-red-700 dark:hover:text-red-400 hover:bg-red-500/10 transition-all disabled:opacity-50"
                       >
                         {deletingId === cat.id ? (
                           <Loader2 className="w-4 h-4 animate-spin" />

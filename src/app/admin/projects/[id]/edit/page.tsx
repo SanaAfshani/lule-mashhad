@@ -74,11 +74,11 @@ export default function EditProjectPage() {
   };
 
   const inputCls =
-    'w-full h-11 bg-slate-800 border border-slate-700 rounded-xl px-4 text-white placeholder:text-slate-500 focus:outline-none';
+    'w-full h-11 bg-[var(--muted)] border border-[var(--border)] rounded-xl px-4 text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none';
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-24 text-slate-400 gap-2">
+      <div className="flex items-center justify-center py-24 text-[var(--muted-foreground)] gap-2">
         <Loader2 className="w-6 h-6 animate-spin" />
         بارگذاری پروژه...
       </div>
@@ -90,18 +90,18 @@ export default function EditProjectPage() {
       <div className="flex items-center gap-4">
         <Link
           href="/admin/projects"
-          className="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white"
+          className="w-9 h-9 rounded-xl bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
         >
           <ArrowRight className="w-5 h-5" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-white">ویرایش پروژه</h1>
+          <h1 className="text-2xl font-bold text-[var(--foreground)]">ویرایش پروژه</h1>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+      <form onSubmit={handleSubmit} className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 space-y-4">
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-1.5">عنوان *</label>
+          <label className="block text-sm font-medium text-[var(--foreground)] mb-1.5">عنوان *</label>
           <input
             type="text"
             required
@@ -111,7 +111,7 @@ export default function EditProjectPage() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-1.5">موقعیت</label>
+          <label className="block text-sm font-medium text-[var(--foreground)] mb-1.5">موقعیت</label>
           <input
             type="text"
             value={form.location}
@@ -120,16 +120,16 @@ export default function EditProjectPage() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-1.5">توضیحات</label>
+          <label className="block text-sm font-medium text-[var(--foreground)] mb-1.5">توضیحات</label>
           <textarea
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
             rows={4}
-            className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none resize-none"
+            className="w-full bg-[var(--muted)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--foreground)] focus:outline-none resize-none"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-1.5">سال</label>
+          <label className="block text-sm font-medium text-[var(--foreground)] mb-1.5">سال</label>
           <input
             type="number"
             value={form.year}
@@ -137,7 +137,7 @@ export default function EditProjectPage() {
             className={inputCls}
           />
         </div>
-        <label className="flex items-center gap-2 text-slate-300 text-sm">
+        <label className="flex items-center gap-2 text-[var(--foreground)] text-sm">
           <input
             type="checkbox"
             checked={form.published}
@@ -145,7 +145,7 @@ export default function EditProjectPage() {
           />
           منتشر شده
         </label>
-        <label className="flex items-center gap-2 text-slate-300 text-sm">
+        <label className="flex items-center gap-2 text-[var(--foreground)] text-sm">
           <input
             type="checkbox"
             checked={form.featured}
@@ -156,7 +156,7 @@ export default function EditProjectPage() {
         <button
           type="submit"
           disabled={saving}
-          className="w-full h-12 rounded-xl bg-amber-500 text-black font-bold flex items-center justify-center gap-2 disabled:opacity-50"
+          className="w-full h-12 rounded-xl bg-[var(--accent)] text-[var(--accent-foreground)] font-bold flex items-center justify-center gap-2 disabled:opacity-50"
         >
           {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
           ذخیره تغییرات

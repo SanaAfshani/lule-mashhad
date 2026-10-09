@@ -50,7 +50,7 @@ type Props = {
 };
 
 const inputCls =
-  'w-full h-11 bg-slate-800 border border-slate-700 rounded-xl px-4 text-white placeholder:text-slate-600 focus:outline-none focus:border-amber-500 transition-colors';
+  'w-full h-11 bg-[var(--muted)] border border-[var(--border)] rounded-xl px-4 text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--accent)] transition-colors';
 
 export function BannerDialog({ open, onClose, onInsert }: Props) {
   const [data, setData] = useState<BannerData>(EMPTY);
@@ -93,16 +93,16 @@ export function BannerDialog({ open, onClose, onInsert }: Props) {
       onClick={onClose}
     >
       <div
-        className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
+        className="bg-[var(--card)] border border-[var(--border)] rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800">
-          <h3 className="text-white font-bold">افزودن بنر تبلیغاتی</h3>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)]">
+          <h3 className="text-[var(--foreground)] font-bold">افزودن بنر تبلیغاتی</h3>
           <button
             type="button"
             onClick={onClose}
             aria-label="بستن"
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -110,7 +110,7 @@ export function BannerDialog({ open, onClose, onInsert }: Props) {
 
         <div className="p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-1.5">عنوان بنر</label>
+            <label className="block text-sm font-medium text-[var(--foreground)] mb-1.5">عنوان بنر</label>
             <input
               type="text"
               value={data.title}
@@ -121,19 +121,19 @@ export function BannerDialog({ open, onClose, onInsert }: Props) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-1.5">توضیح</label>
+            <label className="block text-sm font-medium text-[var(--foreground)] mb-1.5">توضیح</label>
             <textarea
               value={data.description}
               onChange={(e) => set({ description: e.target.value })}
               rows={3}
               placeholder="تامین‌کننده انواع لوله و اتصالات صنعتی با ارسال به سراسر کشور..."
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:border-amber-500 resize-none transition-colors"
+              className="w-full bg-[var(--muted)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--accent)] resize-none transition-colors"
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">متن دکمه</label>
+              <label className="block text-sm font-medium text-[var(--foreground)] mb-1.5">متن دکمه</label>
               <input
                 type="text"
                 value={data.buttonText}
@@ -143,7 +143,7 @@ export function BannerDialog({ open, onClose, onInsert }: Props) {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">لینک دکمه</label>
+              <label className="block text-sm font-medium text-[var(--foreground)] mb-1.5">لینک دکمه</label>
               <input
                 type="text"
                 value={data.buttonUrl}
@@ -156,8 +156,8 @@ export function BannerDialog({ open, onClose, onInsert }: Props) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-1.5">
-              تصویر بنر <span className="text-slate-600 text-xs">(اختیاری)</span>
+            <label className="block text-sm font-medium text-[var(--foreground)] mb-1.5">
+              تصویر بنر <span className="text-[var(--muted-foreground)] text-xs">(اختیاری)</span>
             </label>
             <input
               ref={fileRef}
@@ -170,16 +170,16 @@ export function BannerDialog({ open, onClose, onInsert }: Props) {
               }}
             />
             {data.image ? (
-              <div className="flex items-center gap-3 bg-slate-800 rounded-xl p-2">
+              <div className="flex items-center gap-3 bg-[var(--muted)] rounded-xl p-2">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={data.image} alt="" className="w-14 h-14 rounded-lg object-cover" />
-                <span className="text-xs text-slate-400 flex-1 truncate" dir="ltr">
+                <span className="text-xs text-[var(--muted-foreground)] flex-1 truncate" dir="ltr">
                   {data.image}
                 </span>
                 <button
                   type="button"
                   onClick={() => set({ image: '' })}
-                  className="text-slate-500 hover:text-red-400 transition-colors"
+                  className="text-[var(--muted-foreground)] hover:text-red-700 dark:hover:text-red-400 transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -189,10 +189,10 @@ export function BannerDialog({ open, onClose, onInsert }: Props) {
                 type="button"
                 onClick={() => fileRef.current?.click()}
                 disabled={uploading}
-                className="w-full border-2 border-dashed border-slate-700 rounded-xl p-5 flex flex-col items-center gap-2 text-slate-500 hover:border-amber-500 hover:text-amber-400 transition-colors disabled:opacity-50"
+                className="w-full border-2 border-dashed border-[var(--border)] rounded-xl p-5 flex flex-col items-center gap-2 text-[var(--muted-foreground)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition-colors disabled:opacity-50"
               >
                 {uploading ? (
-                  <Loader2 className="w-6 h-6 animate-spin text-amber-400" />
+                  <Loader2 className="w-6 h-6 animate-spin text-[var(--accent)]" />
                 ) : (
                   <ImagePlus className="w-6 h-6" />
                 )}
@@ -203,7 +203,7 @@ export function BannerDialog({ open, onClose, onInsert }: Props) {
 
           {/* پیش‌نمایش زنده */}
           <div>
-            <div className="text-xs text-slate-400 mb-2">پیش‌نمایش</div>
+            <div className="text-xs text-[var(--muted-foreground)] mb-2">پیش‌نمایش</div>
             <div className="bg-[var(--background)] rounded-xl p-4">
               <div
                 className="article-content"
@@ -213,18 +213,18 @@ export function BannerDialog({ open, onClose, onInsert }: Props) {
           </div>
         </div>
 
-        <div className="flex items-center gap-3 px-6 py-4 border-t border-slate-800">
+        <div className="flex items-center gap-3 px-6 py-4 border-t border-[var(--border)]">
           <button
             type="button"
             onClick={submit}
-            className="flex-1 h-11 rounded-xl bg-amber-500 text-black font-bold hover:bg-amber-400 transition-colors"
+            className="flex-1 h-11 rounded-xl bg-[var(--accent)] text-[var(--accent-foreground)] font-bold hover:bg-[var(--accent)]/90 transition-colors"
           >
             درج بنر در متن
           </button>
           <button
             type="button"
             onClick={onClose}
-            className="h-11 px-5 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors"
+            className="h-11 px-5 rounded-xl bg-[var(--muted)] text-[var(--foreground)] hover:bg-[var(--border)] transition-colors"
           >
             انصراف
           </button>

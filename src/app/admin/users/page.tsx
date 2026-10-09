@@ -16,9 +16,9 @@ type UserRow = {
 };
 
 const roleMap: Record<UserRow['role'], { label: string; cls: string }> = {
-  ADMIN: { label: 'مدیر', cls: 'bg-amber-500/10 text-amber-400' },
-  EDITOR: { label: 'ویرایشگر', cls: 'bg-blue-500/10 text-blue-400' },
-  VIEWER: { label: 'بازدیدکننده', cls: 'bg-purple-500/10 text-purple-400' },
+  ADMIN: { label: 'مدیر', cls: 'bg-[var(--accent)]/10 text-[var(--accent)]' },
+  EDITOR: { label: 'ویرایشگر', cls: 'bg-blue-500/10 text-blue-700 dark:text-blue-400' },
+  VIEWER: { label: 'بازدیدکننده', cls: 'bg-purple-500/10 text-purple-700 dark:text-purple-400' },
 };
 
 const emptyForm = {
@@ -133,21 +133,21 @@ export default function AdminUsersPage() {
   };
 
   const inputCls =
-    'w-full h-11 bg-slate-800 border border-slate-700 rounded-xl px-4 text-white placeholder:text-slate-500 focus:outline-none';
+    'w-full h-11 bg-[var(--muted)] border border-[var(--border)] rounded-xl px-4 text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none';
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">مدیریت کاربران</h1>
-          <p className="text-slate-400 text-sm mt-1">
+          <h1 className="text-2xl font-bold text-[var(--foreground)]">مدیریت کاربران</h1>
+          <p className="text-[var(--muted-foreground)] text-sm mt-1">
             {loading ? 'در حال بارگذاری...' : `${users.length} کاربر`}
           </p>
         </div>
         <button
           type="button"
           onClick={openCreate}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 text-black font-semibold hover:bg-amber-400 text-sm"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--accent)] text-[var(--accent-foreground)] font-semibold hover:bg-[var(--accent)]/90 text-sm"
         >
           <Plus className="w-4 h-4" />
           کاربر جدید
@@ -155,27 +155,27 @@ export default function AdminUsersPage() {
       </div>
 
       <div className="relative">
-        <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+        <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--muted-foreground)]" />
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="جستجو در کاربران..."
-          className="w-full h-11 bg-slate-900 border border-slate-800 rounded-xl pr-12 pl-4 text-white placeholder:text-slate-500 focus:outline-none"
+          className="w-full h-11 bg-[var(--card)] border border-[var(--border)] rounded-xl pr-12 pl-4 text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none"
         />
       </div>
 
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+      <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl overflow-hidden">
         {loading ? (
-          <div className="flex items-center justify-center py-16 text-slate-400 gap-2">
+          <div className="flex items-center justify-center py-16 text-[var(--muted-foreground)] gap-2">
             <Loader2 className="w-5 h-5 animate-spin" />
             بارگذاری...
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full min-w-[44rem] text-sm">
               <thead>
-                <tr className="border-b border-slate-800 text-slate-400 text-right">
+                <tr className="border-b border-[var(--border)] text-[var(--muted-foreground)] text-right">
                   <th className="px-6 py-4 font-medium">کاربر</th>
                   <th className="px-6 py-4 font-medium">نقش</th>
                   <th className="px-6 py-4 font-medium">آخرین به‌روزرسانی</th>
@@ -189,20 +189,20 @@ export default function AdminUsersPage() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: i * 0.05 }}
-                    className="border-b border-slate-800/50 hover:bg-slate-800/30"
+                    className="border-b border-[var(--border)]/50 hover:bg-[var(--muted)]/30"
                   >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-xl bg-[var(--muted)] flex items-center justify-center">
                           {user.role === 'ADMIN' ? (
-                            <Shield className="w-5 h-5 text-amber-400" />
+                            <Shield className="w-5 h-5 text-[var(--accent)]" />
                           ) : (
-                            <User className="w-5 h-5 text-slate-500" />
+                            <User className="w-5 h-5 text-[var(--muted-foreground)]" />
                           )}
                         </div>
                         <div>
-                          <div className="text-white font-medium">{user.name}</div>
-                          <div className="text-slate-500 text-xs">{user.email}</div>
+                          <div className="text-[var(--foreground)] font-medium">{user.name}</div>
+                          <div className="text-[var(--muted-foreground)] text-xs">{user.email}</div>
                         </div>
                       </div>
                     </td>
@@ -211,13 +211,13 @@ export default function AdminUsersPage() {
                         {roleMap[user.role].label}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-slate-400">{formatDate(user.updatedAt)}</td>
+                    <td className="px-6 py-4 text-[var(--muted-foreground)]">{formatDate(user.updatedAt)}</td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <button
                           type="button"
                           onClick={() => openEdit(user)}
-                          className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 hover:text-amber-400"
+                          className="w-8 h-8 rounded-lg bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--accent)]"
                         >
                           <Pencil className="w-4 h-4" />
                         </button>
@@ -225,7 +225,7 @@ export default function AdminUsersPage() {
                           type="button"
                           disabled={deletingId === user.id}
                           onClick={() => handleDelete(user)}
-                          className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 hover:text-red-400 disabled:opacity-50"
+                          className="w-8 h-8 rounded-lg bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)] hover:text-red-700 dark:hover:text-red-400 disabled:opacity-50"
                         >
                           {deletingId === user.id ? (
                             <Loader2 className="w-4 h-4 animate-spin" />
@@ -245,10 +245,10 @@ export default function AdminUsersPage() {
 
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-md space-y-4">
+          <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 w-full max-w-md space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold text-white">{editing ? 'ویرایش کاربر' : 'کاربر جدید'}</h2>
-              <button type="button" onClick={() => setModalOpen(false)} className="text-slate-400 hover:text-white">
+              <h2 className="text-lg font-bold text-[var(--foreground)]">{editing ? 'ویرایش کاربر' : 'کاربر جدید'}</h2>
+              <button type="button" onClick={() => setModalOpen(false)} className="text-[var(--muted-foreground)] hover:text-[var(--foreground)]">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -290,7 +290,7 @@ export default function AdminUsersPage() {
               <button
                 type="submit"
                 disabled={saving}
-                className="w-full h-11 rounded-xl bg-amber-500 text-black font-bold disabled:opacity-50"
+                className="w-full h-11 rounded-xl bg-[var(--accent)] text-[var(--accent-foreground)] font-bold disabled:opacity-50"
               >
                 {saving ? 'در حال ذخیره...' : 'ذخیره'}
               </button>

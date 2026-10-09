@@ -48,7 +48,7 @@ const emptySettings: SettingsForm = {
 };
 
 const inputCls =
-  'w-full h-11 bg-slate-800 border border-slate-700 rounded-xl px-4 text-white placeholder:text-slate-500 focus:outline-none transition-colors';
+  'w-full h-11 bg-[var(--muted)] border border-[var(--border)] rounded-xl px-4 text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none transition-colors';
 
 function SettingsField({
   label,
@@ -69,10 +69,10 @@ function SettingsField({
 }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-slate-300 mb-1.5">{label}</label>
+      <label className="block text-sm font-medium text-[var(--foreground)] mb-1.5">{label}</label>
       <div className="relative">
         {icon && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500">{icon}</div>
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]">{icon}</div>
         )}
         <input
           type={type}
@@ -82,7 +82,7 @@ function SettingsField({
           className={`${inputCls} ${icon ? 'pr-10' : ''}`}
         />
       </div>
-      {hint && <p className="mt-1 text-xs text-slate-500">{hint}</p>}
+      {hint && <p className="mt-1 text-xs text-[var(--muted-foreground)]">{hint}</p>}
     </div>
   );
 }
@@ -157,7 +157,7 @@ export default function AdminSettingsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-24 text-slate-400 gap-2">
+      <div className="flex items-center justify-center py-24 text-[var(--muted-foreground)] gap-2">
         <Loader2 className="w-6 h-6 animate-spin" />
         بارگذاری تنظیمات...
       </div>
@@ -167,18 +167,18 @@ export default function AdminSettingsPage() {
   return (
     <div className="max-w-3xl space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white">تنظیمات سایت</h1>
-        <p className="text-slate-400 text-sm mt-1">اطلاعات عمومی سایت را ویرایش کنید</p>
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">تنظیمات سایت</h1>
+        <p className="text-[var(--muted-foreground)] text-sm mt-1">اطلاعات عمومی سایت را ویرایش کنید</p>
       </div>
 
       <div className="grid gap-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4"
+          className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 space-y-4"
         >
-          <h2 className="text-white font-bold flex items-center gap-2">
-            <Globe className="w-5 h-5 text-amber-400" />
+          <h2 className="text-[var(--foreground)] font-bold flex items-center gap-2">
+            <Globe className="w-5 h-5 text-[var(--accent)]" />
             اطلاعات عمومی
           </h2>
           <SettingsField label="نام سایت" value={settings.siteName} onChange={updateField('siteName')} />
@@ -191,10 +191,10 @@ export default function AdminSettingsPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4"
+          className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 space-y-4"
         >
-          <h2 className="text-white font-bold flex items-center gap-2">
-            <Phone className="w-5 h-5 text-amber-400" />
+          <h2 className="text-[var(--foreground)] font-bold flex items-center gap-2">
+            <Phone className="w-5 h-5 text-[var(--accent)]" />
             اطلاعات تماس
           </h2>
           <SettingsField label="تلفن فروش (هدر و دکمه تماس)" type="tel" icon={<Phone className="w-4 h-4" />} value={settings.phone} onChange={updateField('phone')} />
@@ -217,7 +217,7 @@ export default function AdminSettingsPage() {
           type="button"
           onClick={handleSave}
           disabled={saving}
-          className="flex items-center justify-center gap-2 h-12 px-8 rounded-xl bg-amber-500 text-black font-bold hover:bg-amber-400 transition-colors disabled:opacity-50"
+          className="flex items-center justify-center gap-2 h-12 px-8 rounded-xl bg-[var(--accent)] text-[var(--accent-foreground)] font-bold hover:bg-[var(--accent)]/90 transition-colors disabled:opacity-50"
         >
           {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
           ذخیره تنظیمات

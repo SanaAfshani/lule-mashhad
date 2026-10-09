@@ -159,7 +159,27 @@ model ContactMessage {
   subject   String?
   message   String
   read      Boolean  @default(false)
+  /// صفحه‌ای که فرم از آن ارسال شد — برای اینکه بدانیم کدام صفحه مشتری می‌آورد
+  sourcePath String?
   createdAt DateTime @default(now())
+
+  @@index([read, createdAt])
+}
+
+/// تماس‌ها و درخواست‌های مشتری برای گزارش «کدام صفحه مشتری می‌آورد»:
+/// کلیک روی تلفن یا واتس‌اپ (از مرورگر) و ارسال فرم مشاوره/تماس (از سرور)
+model LeadEvent {
+  id        String   @id @default(cuid())
+  /// phone | whatsapp | form
+  type      String
+  /// صفحه‌ای که اقدام در آن انجام شد
+  path      String
+  /// شماره یا لینک کلیک‌شده؛ برای فرم، موضوع آن
+  target    String   @default("")
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([type, createdAt])
 }
 
 /// آدرس‌های قدیمی که به آدرس جدید منتقل شده‌اند (ریدایرکت دائمی).

@@ -129,25 +129,25 @@ export default function NewBlogPostPage() {
   };
 
   const inputCls =
-    'w-full h-11 bg-slate-800 border border-slate-700 rounded-xl px-4 text-white placeholder:text-slate-500 focus:outline-none transition-colors';
+    'w-full h-11 bg-[var(--muted)] border border-[var(--border)] rounded-xl px-4 text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none transition-colors';
 
   return (
     <div className="max-w-4xl space-y-6">
       <div className="flex items-center gap-4">
         <Link
           href="/admin/blog"
-          className="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+          className="w-9 h-9 rounded-xl bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
         >
           <ArrowRight className="w-5 h-5" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-white">نوشتن مقاله جدید</h1>
-          <p className="text-slate-400 text-sm">اطلاعات مقاله جدید را وارد کنید</p>
+          <h1 className="text-2xl font-bold text-[var(--foreground)]">نوشتن مقاله جدید</h1>
+          <p className="text-[var(--muted-foreground)] text-sm">اطلاعات مقاله جدید را وارد کنید</p>
         </div>
         <button
           type="button"
           onClick={() => setImportOpen(true)}
-          className="mr-auto flex items-center gap-2 h-10 px-4 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-sm font-semibold hover:bg-emerald-500/25 transition-colors"
+          className="mr-auto flex items-center gap-2 h-10 px-4 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 text-sm font-semibold hover:bg-emerald-500/25 transition-colors"
         >
           <FileJson className="w-4 h-4" />
           ورود از ابزار تولید محتوا
@@ -158,11 +158,11 @@ export default function NewBlogPostPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
-              <h2 className="text-white font-bold">محتوای مقاله</h2>
+            <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 space-y-4">
+              <h2 className="text-[var(--foreground)] font-bold">محتوای مقاله</h2>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1.5">عنوان *</label>
+                <label className="block text-sm font-medium text-[var(--foreground)] mb-1.5">عنوان *</label>
                 <input
                   type="text" required value={form.title}
                   onChange={(e) => {
@@ -179,13 +179,13 @@ export default function NewBlogPostPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1.5">خلاصه</label>
+                <label className="block text-sm font-medium text-[var(--foreground)] mb-1.5">خلاصه</label>
                 <textarea
                   value={form.excerpt}
                   onChange={(e) => setForm({ ...form, excerpt: e.target.value })}
                   rows={3}
                   placeholder="خلاصه‌ای کوتاه از مقاله..."
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none resize-none transition-colors"
+                  className="w-full bg-[var(--muted)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none resize-none transition-colors"
                 />
               </div>
 
@@ -222,22 +222,22 @@ export default function NewBlogPostPage() {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* تصویر شاخص */}
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-              <h2 className="text-white font-bold mb-4">تصویر شاخص</h2>
+            <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6">
+              <h2 className="text-[var(--foreground)] font-bold mb-4">تصویر شاخص</h2>
               <ImageUploader
                 images={form.coverImage ? [form.coverImage] : []}
                 onChange={(imgs) => setForm((f) => ({ ...f, coverImage: imgs[0] ?? '' }))}
                 max={1}
               />
-              <p className="text-xs text-slate-500 mt-2.5 leading-relaxed">
+              <p className="text-xs text-[var(--muted-foreground)] mt-2.5 leading-relaxed">
                 در بالای صفحه مقاله و در کارت‌های وبلاگ نمایش داده می‌شود. نسبت ۱۶:۹ پیشنهاد
                 می‌شود.
               </p>
             </div>
 
             {/* PDF Upload */}
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-              <h2 className="text-white font-bold mb-4">فایل PDF مقاله</h2>
+            <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6">
+              <h2 className="text-[var(--foreground)] font-bold mb-4">فایل PDF مقاله</h2>
               <input
                 ref={pdfInputRef}
                 type="file"
@@ -249,15 +249,15 @@ export default function NewBlogPostPage() {
                 }}
               />
               {form.pdfUrl ? (
-                <div className="flex items-center gap-3 bg-slate-800 rounded-xl px-4 py-3">
-                  <FileText className="w-5 h-5 text-amber-400 flex-shrink-0" />
-                  <span className="text-sm text-slate-300 flex-1 truncate" dir="ltr">
+                <div className="flex items-center gap-3 bg-[var(--muted)] rounded-xl px-4 py-3">
+                  <FileText className="w-5 h-5 text-[var(--accent)] flex-shrink-0" />
+                  <span className="text-sm text-[var(--foreground)] flex-1 truncate" dir="ltr">
                     {form.pdfUrl.split('/').pop()}
                   </span>
                   <button
                     type="button"
                     onClick={() => setForm((f) => ({ ...f, pdfUrl: '' }))}
-                    className="text-slate-500 hover:text-red-400 transition-colors"
+                    className="text-[var(--muted-foreground)] hover:text-red-700 dark:hover:text-red-400 transition-colors"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -267,20 +267,20 @@ export default function NewBlogPostPage() {
                   type="button"
                   onClick={() => pdfInputRef.current?.click()}
                   disabled={pdfUploading}
-                  className="w-full border-2 border-dashed border-slate-700 rounded-xl p-6 flex flex-col items-center justify-center gap-3 text-slate-500 hover:border-amber-500 hover:text-amber-400 transition-colors disabled:opacity-50"
+                  className="w-full border-2 border-dashed border-[var(--border)] rounded-xl p-6 flex flex-col items-center justify-center gap-3 text-[var(--muted-foreground)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition-colors disabled:opacity-50"
                 >
                   {pdfUploading ? (
-                    <Loader2 className="w-7 h-7 animate-spin text-amber-400" />
+                    <Loader2 className="w-7 h-7 animate-spin text-[var(--accent)]" />
                   ) : (
                     <FileText className="w-7 h-7" />
                   )}
                   <div className="text-sm text-center w-full">
                     <div>{pdfUploading ? `در حال آپلود... ${uploadProgress}%` : 'آپلود فایل PDF'}</div>
-                    <div className="text-xs mt-1 text-slate-600">حداکثر ۱۰۰ مگابایت</div>
+                    <div className="text-xs mt-1 text-[var(--muted-foreground)]">حداکثر ۱۰۰ مگابایت</div>
                     {pdfUploading && (
-                      <div className="mt-2 w-full bg-slate-700 rounded-full h-1.5">
+                      <div className="mt-2 w-full bg-[var(--border)] rounded-full h-1.5">
                         <div
-                          className="bg-amber-500 h-1.5 rounded-full transition-all duration-300"
+                          className="bg-[var(--accent)] h-1.5 rounded-full transition-all duration-300"
                           style={{ width: `${uploadProgress}%` }}
                         />
                       </div>
@@ -291,8 +291,8 @@ export default function NewBlogPostPage() {
             </div>
 
             {/* Settings */}
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
-              <h2 className="text-white font-bold">تنظیمات</h2>
+            <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 space-y-4">
+              <h2 className="text-[var(--foreground)] font-bold">تنظیمات</h2>
 
               {(
                 [
@@ -304,11 +304,11 @@ export default function NewBlogPostPage() {
                   <button
                     type="button"
                     onClick={() => setForm((f) => ({ ...f, [key]: !f[key] }))}
-                    className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${form[key] ? 'bg-amber-500' : 'bg-slate-700'}`}
+                    className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${form[key] ? 'bg-[var(--accent)]' : 'bg-[var(--border)]'}`}
                   >
                     <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${form[key] ? 'right-1' : 'left-1'}`} />
                   </button>
-                  <span className="text-slate-300 text-sm">{label}</span>
+                  <span className="text-[var(--foreground)] text-sm">{label}</span>
                 </label>
               ))}
             </div>
@@ -316,7 +316,7 @@ export default function NewBlogPostPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full h-12 rounded-xl bg-amber-500 text-black font-bold hover:bg-amber-400 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full h-12 rounded-xl bg-[var(--accent)] text-[var(--accent-foreground)] font-bold hover:bg-[var(--accent)]/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {loading ? (
                 <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">

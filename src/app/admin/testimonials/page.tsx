@@ -12,7 +12,7 @@ function StarRating({ rating }: { rating: number }) {
       {Array.from({ length: 5 }).map((_, i) => (
         <Star
           key={i}
-          className={`w-4 h-4 ${i < rating ? 'text-amber-400 fill-amber-400' : 'text-slate-700'}`}
+          className={`w-4 h-4 ${i < rating ? 'text-[var(--accent)] fill-[var(--accent)]' : 'text-[var(--muted-foreground)]'}`}
         />
       ))}
     </div>
@@ -130,21 +130,21 @@ export default function AdminTestimonialsPage() {
   };
 
   const inputCls =
-    'w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white placeholder:text-slate-500 focus:outline-none';
+    'w-full bg-[var(--muted)] border border-[var(--border)] rounded-xl px-4 py-2.5 text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none';
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">مدیریت نظرات</h1>
-          <p className="text-slate-400 text-sm mt-1">
+          <h1 className="text-2xl font-bold text-[var(--foreground)]">مدیریت نظرات</h1>
+          <p className="text-[var(--muted-foreground)] text-sm mt-1">
             {loading ? 'در حال بارگذاری...' : `${items.length} نظر در سیستم`}
           </p>
         </div>
         <button
           type="button"
           onClick={() => setModalOpen(true)}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 text-black font-semibold hover:bg-amber-400 transition-colors text-sm"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--accent)] text-[var(--accent-foreground)] font-semibold hover:bg-[var(--accent)]/90 transition-colors text-sm"
         >
           <Plus className="w-4 h-4" />
           نظر جدید
@@ -152,7 +152,7 @@ export default function AdminTestimonialsPage() {
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-16 text-slate-400 gap-2">
+        <div className="flex items-center justify-center py-16 text-[var(--muted-foreground)] gap-2">
           <Loader2 className="w-5 h-5 animate-spin" />
           بارگذاری نظرات...
         </div>
@@ -164,19 +164,19 @@ export default function AdminTestimonialsPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.07 }}
-              className="bg-slate-900 border border-slate-800 rounded-2xl p-6"
+              className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6"
             >
               <div className="flex items-start justify-between mb-3">
                 <div>
-                  <div className="text-white font-semibold">{item.name}</div>
-                  <div className="text-slate-500 text-xs mt-0.5">{item.company}</div>
+                  <div className="text-[var(--foreground)] font-semibold">{item.name}</div>
+                  <div className="text-[var(--muted-foreground)] text-xs mt-0.5">{item.company}</div>
                 </div>
                 <button
                   type="button"
                   disabled={togglingId === item.id}
                   onClick={() => togglePublished(item)}
                   className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
-                    item.published ? 'bg-blue-500/10 text-blue-400' : 'bg-slate-700 text-slate-500'
+                    item.published ? 'bg-blue-500/10 text-blue-700 dark:text-blue-400' : 'bg-[var(--border)] text-[var(--muted-foreground)]'
                   } disabled:opacity-50`}
                 >
                   {togglingId === item.id ? (
@@ -191,14 +191,14 @@ export default function AdminTestimonialsPage() {
 
               <StarRating rating={item.rating} />
 
-              <p className="text-slate-400 text-sm leading-relaxed mt-3 line-clamp-3">{item.content}</p>
+              <p className="text-[var(--muted-foreground)] text-sm leading-relaxed mt-3 line-clamp-3">{item.content}</p>
 
-              <div className="flex items-center gap-2 mt-4 pt-4 border-t border-slate-800">
+              <div className="flex items-center gap-2 mt-4 pt-4 border-t border-[var(--border)]">
                 <button
                   type="button"
                   disabled={deletingId === item.id}
                   onClick={() => handleDelete(item.id)}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all text-xs disabled:opacity-50"
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[var(--muted)] text-[var(--muted-foreground)] hover:text-red-700 dark:hover:text-red-400 hover:bg-red-500/10 transition-all text-xs disabled:opacity-50"
                 >
                   {deletingId === item.id ? (
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -221,17 +221,17 @@ export default function AdminTestimonialsPage() {
           <form
             onClick={(e) => e.stopPropagation()}
             onSubmit={handleAdd}
-            className="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4"
+            className="w-full max-w-lg bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 space-y-4"
           >
             <div className="flex items-center justify-between">
-              <h2 className="text-white font-bold">نظر جدید</h2>
-              <button type="button" onClick={() => setModalOpen(false)} className="text-slate-400 hover:text-white">
+              <h2 className="text-[var(--foreground)] font-bold">نظر جدید</h2>
+              <button type="button" onClick={() => setModalOpen(false)} className="text-[var(--muted-foreground)] hover:text-[var(--foreground)]">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <div>
-              <label className="block text-sm text-slate-300 mb-1.5">نام *</label>
+              <label className="block text-sm text-[var(--foreground)] mb-1.5">نام *</label>
               <input
                 type="text"
                 required
@@ -242,7 +242,7 @@ export default function AdminTestimonialsPage() {
             </div>
 
             <div>
-              <label className="block text-sm text-slate-300 mb-1.5">شرکت</label>
+              <label className="block text-sm text-[var(--foreground)] mb-1.5">شرکت</label>
               <input
                 type="text"
                 value={form.company}
@@ -252,7 +252,7 @@ export default function AdminTestimonialsPage() {
             </div>
 
             <div>
-              <label className="block text-sm text-slate-300 mb-1.5">متن نظر *</label>
+              <label className="block text-sm text-[var(--foreground)] mb-1.5">متن نظر *</label>
               <textarea
                 required
                 value={form.content}
@@ -263,7 +263,7 @@ export default function AdminTestimonialsPage() {
             </div>
 
             <div>
-              <label className="block text-sm text-slate-300 mb-1.5">امتیاز (۱–۵)</label>
+              <label className="block text-sm text-[var(--foreground)] mb-1.5">امتیاز (۱–۵)</label>
               <input
                 type="number"
                 min={1}
@@ -274,7 +274,7 @@ export default function AdminTestimonialsPage() {
               />
             </div>
 
-            <label className="flex items-center gap-2 text-slate-300 text-sm cursor-pointer">
+            <label className="flex items-center gap-2 text-[var(--foreground)] text-sm cursor-pointer">
               <input
                 type="checkbox"
                 checked={form.published}
@@ -286,7 +286,7 @@ export default function AdminTestimonialsPage() {
             <button
               type="submit"
               disabled={saving}
-              className="w-full h-11 rounded-xl bg-amber-500 text-black font-semibold hover:bg-amber-400 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full h-11 rounded-xl bg-[var(--accent)] text-[var(--accent-foreground)] font-semibold hover:bg-[var(--accent)]/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {saving && <Loader2 className="w-4 h-4 animate-spin" />}
               ذخیره

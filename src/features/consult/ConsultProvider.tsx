@@ -73,6 +73,7 @@ function ConsultSheet({ open, product, onClose }: { open: boolean; product: stri
           phone: digits,
           subject: product ? `مشاوره خرید: ${product}` : 'درخواست مشاوره',
           message: message.trim() || 'درخواست تماس برای مشاوره',
+          sourcePath: window.location.pathname,
         }),
       });
       const json = await res.json().catch(() => ({}));
