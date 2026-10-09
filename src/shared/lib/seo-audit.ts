@@ -164,8 +164,20 @@ export async function runAutofix(dryRun: boolean): Promise<Fix[]> {
   }
 
   for (const b of posts) {
-    if (!b.metaDescription && !b.excerpt && b.content) {
-      add({ type: 'blog', id: b.id, name: b.title, field: 'metaDescription', before: '', after: clip(b.content, DESC_MAX) });
+    // متن واقعی مقاله؛ مقاله‌ای که فقط PDF دارد content آن «<p></p>» است و قبلاً توضیحات خالی برایش ساخته می‌شد
+    const text = stripHtml(b.content);
+    // PDFهای فعلی یا اسکن‌اند یا انگلیسی، پس متنی برای خلاصه‌کردن ندارند — متن کلی ولی درست درباره همان فایل
+    const pdfOnly = !text && Boolean(b.pdfUrl);
+    if (!b.metaDescription && !b.excerpt && (text || pdfOnly)) {
+      const after = text
+        ? clip(text, DESC_MAX)
+        : clip(`مشاهده فایل PDF «${b.title.trim()}» از ${siteConfig.legalName}؛ برای استعلام قیمت و مشاوره خرید با ${siteConfig.name} تماس بگیرید.`, DESC_MAX);
+      add({ type: 'blog', id: b.id, name: b.title, field: 'metaDescription', before: '', after });
+    }
+    // خلاصه در فهرست مقالات و کارت‌ها نمایش داده می‌شود
+    if (!b.excerpt && (text || pdfOnly)) {
+      const after = text ? clip(text, 200) : `فایل PDF «${b.title.trim()}» از ${siteConfig.legalName} را به صورت آنلاین مشاهده کنید.`;
+      add({ type: 'blog', id: b.id, name: b.title, field: 'excerpt', before: '', after });
     }
     if (!b.focusKeyword) {
       const kw = b.title.replace(/[؟?!:،.|].*$/, '').trim();

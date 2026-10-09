@@ -17,6 +17,7 @@ type Redirect = { id: string; fromPath: string; toPath: string; createdAt: strin
 const TYPE_LABEL: Record<AuditType, string> = { product: 'محصول', category: 'دسته', blog: 'مقاله', project: 'پروژه' };
 const FIELD_LABEL: Record<string, string> = {
   metaDescription: 'توضیحات متا', metaTitle: 'عنوان سئو', focusKeyword: 'کلمه کلیدی', description: 'توضیحات', slug: 'آدرس',
+  excerpt: 'خلاصه',
 };
 
 const card = 'bg-slate-900 border border-slate-800 rounded-2xl';
@@ -152,7 +153,7 @@ export default function SeoCenterPage() {
                     <div>
                       <h2 className="text-white font-bold">بهینه‌سازی خودکار</h2>
                       <p className="text-slate-400 text-sm mt-1 leading-6">
-                        توضیحات متای خالی، کلمه کلیدی، عنوان‌های بلند و آدرس‌های غیرانگلیسی را خودکار می‌سازد.
+                        توضیحات متا و خلاصه خالی (از جمله برای مقاله‌هایی که فقط PDF دارند)، کلمه کلیدی، عنوان‌های بلند و آدرس‌های غیرانگلیسی را خودکار می‌سازد.
                         فقط فیلدهای خالی پر می‌شوند و چیزی که خودتان نوشته‌اید دست نمی‌خورد. قبل از اعمال، فهرست تغییرات را می‌بینید.
                       </p>
                     </div>
