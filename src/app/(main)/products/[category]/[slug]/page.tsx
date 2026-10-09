@@ -90,7 +90,38 @@ export default async function ProductDetailPage({ params }: Props) {
     .filter((p) => p.id !== product.id)
     .slice(0, 4);
 
-  const productSchema = {
+  // جدول قیمت ← AggregateOffer (بازه قیمت در نتایج گوگل)؛ در غیر این صورت قیمت تکی.
+  // قیمت‌ها در پنل به تومان ثبت می‌شوند؛ schema.org واحد رسمی ریال را می‌خواهد (×۱۰)
+  const seller = { '@type': 'Organization', name: siteConfig.name, url: siteConfig.url };
+  const availability = product.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock';
+  const offers =
+    priceSummary.minPrice != null
+      ? {
+          '@type': 'AggregateOffer',
+          url: canonical,
+          priceCurrency: 'IRR',
+          lowPrice: priceSummary.minPrice * 10,
+          highPrice: (priceSummary.maxPrice ?? priceSummary.minPrice) * 10,
+          offerCount: priceSummary.count,
+          availability,
+          seller,
+        }
+      : showPrice && typeof product.price === 'number' && product.price > 0
+        ? {
+            '@type': 'Offer',
+            url: canonical,
+            price: product.price * 10,
+            priceCurrency: 'IRR',
+            itemCondition: 'https://schema.org/NewCondition',
+            availability,
+            seller,
+            areaServed: siteConfig.serviceArea,
+          }
+        : null;
+
+  // گوگل Product بدون offers/review/aggregateRating را خطا می‌داند. بیرون از ساعت فروش و برای دسته «به زودی»
+  // قیمتی در صفحه نیست و قیمت schema باید با صفحه یکی باشد — پس آن موقع Product schema اصلاً نمی‌گذاریم
+  const productSchema = offers && {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.name,
@@ -105,41 +136,12 @@ export default async function ProductDetailPage({ params }: Props) {
     category: product.category?.name,
     ...(images.length ? { image: images } : {}),
     url: canonical,
-    // جدول قیمت ← AggregateOffer (بازه قیمت در نتایج گوگل)؛ در غیر این صورت قیمت تکی.
-    // offer بدون price در گوگل خطای structured data می‌دهد، پس بدون قیمت offers نمی‌گذاریم
-    ...(priceSummary.minPrice != null
-      ? {
-          offers: {
-            '@type': 'AggregateOffer',
-            url: canonical,
-            priceCurrency: 'IRR',
-            // قیمت‌ها در پنل به تومان ثبت می‌شوند؛ schema.org واحد رسمی ریال را می‌خواهد
-            lowPrice: priceSummary.minPrice * 10,
-            highPrice: (priceSummary.maxPrice ?? priceSummary.minPrice) * 10,
-            offerCount: priceSummary.count,
-            availability: product.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-            seller: { '@type': 'Organization', name: siteConfig.name, url: siteConfig.url },
-          },
-        }
-      : showPrice && typeof product.price === 'number' && product.price > 0
-        ? {
-            offers: {
-              '@type': 'Offer',
-              url: canonical,
-              price: product.price,
-              priceCurrency: 'IRR',
-              itemCondition: 'https://schema.org/NewCondition',
-              availability: product.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-              seller: { '@type': 'Organization', name: siteConfig.name, url: siteConfig.url },
-              areaServed: siteConfig.serviceArea,
-            },
-          }
-        : {}),
+    offers,
   };
 
   return (
     <>
-      <JsonLd data={productSchema} />
+      {productSchema && <JsonLd data={productSchema} />}
       {/* سوالات متداول اختصاصی محصول — واجد شرایط rich result آکاردئونی */}
       {product.faqs.length > 0 && <JsonLd data={faqPageSchema(product.faqs)} />}
       <JsonLd
