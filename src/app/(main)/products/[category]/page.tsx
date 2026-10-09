@@ -25,7 +25,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const canonical = `${siteConfig.url}/products/${encodeURIComponent(slug)}`;
   const image = category.image ? absoluteUrl(category.image) : undefined;
   return {
-    title: `خرید ${category.name} | قیمت روز و مشخصات`,
+    // دسته = نیت «قیمت و انتخاب سایز»؛ صفحه محصول = «مشخصات یک مدل» — عنوان‌ها هم‌پوشانی نکنند
+    title: `قیمت ${category.name} | جدول سایز و خرید عمده`,
     description: desc,
     alternates: { canonical },
     openGraph: {

@@ -93,17 +93,20 @@ export function ContactPageClient({ contactInfo, locations, whatsappUrl }: Props
                   <span className="grid place-items-center w-11 h-11 rounded-2xl bg-[var(--muted)] shrink-0"><Icon className="w-5 h-5" /></span>
                   <div className="min-w-0">
                     <p className="text-xs text-[var(--muted-foreground)]">{title}</p>
-                    <div className={cn(icon === 'phone' && 'mt-0.5 flex flex-wrap gap-x-4 gap-y-0.5')}>
-                      {items.filter((it) => it.text).map((it) =>
-                        it.href ? (
-                          <a key={it.text} href={it.href} dir={it.ltr ? 'ltr' : undefined} className="block mt-0.5 font-bold hover:text-[var(--accent)] transition-colors text-right num break-all">
-                            {icon === 'phone' ? faDigits(it.text) : it.text}
-                          </a>
-                        ) : (
-                          <p key={it.text} className="mt-0.5 font-semibold text-sm leading-7">{it.text}</p>
-                        ),
-                      )}
-                    </div>
+                    {/* هر مورد در li جدا — در متن قابل خزش شماره‌ها به هم نمی‌چسبند */}
+                    <ul className={cn(icon === 'phone' && 'mt-0.5 flex flex-wrap gap-x-4 gap-y-0.5')}>
+                      {items.filter((it) => it.text).map((it) => (
+                        <li key={it.text}>
+                          {it.href ? (
+                            <a href={it.href} dir={it.ltr ? 'ltr' : undefined} className="block mt-0.5 font-bold hover:text-[var(--accent)] transition-colors text-right num break-all">
+                              {icon === 'phone' ? faDigits(it.text) : it.text}
+                            </a>
+                          ) : (
+                            <p className="mt-0.5 font-semibold text-sm leading-7">{it.text}</p>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </motion.div>
               );

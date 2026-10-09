@@ -122,7 +122,8 @@ export async function getBlogPostBySlug(slug: string) {
 
   prisma.blogPost.update({
     where: { id: post.id },
-    data: { viewCount: { increment: 1 } },
+    // updatedAt صریح: وگرنه @updatedAt با هر بازدید عوض می‌شد و dateModified/lastmod مقاله بی‌معنا می‌شد
+    data: { viewCount: { increment: 1 }, updatedAt: post.updatedAt },
   }).catch(() => {});
 
   return serializeBlogPost(post);
@@ -167,6 +168,40 @@ export async function getProjectBySlug(slug: string) {
   });
 
   return project ? serializeProject(project) : null;
+}
+
+/**
+ * فقط داده لازم سایت‌مپ با تاریخ آخرین تغییر واقعی هر آدرس.
+ * lastmod همیشه «اکنون» برای گوگل بی‌معناست و نادیده گرفته می‌شود.
+ */
+export async function getSitemapData() {
+  const [products, projects, prices] = await Promise.all([
+    prisma.product.findMany({
+      where: { published: true },
+      select: {
+        slug: true,
+        updatedAt: true,
+        category: { select: { slug: true } },
+        priceItems: { select: { updatedAt: true }, orderBy: { updatedAt: 'desc' }, take: 1 },
+      },
+    }),
+    prisma.project.findMany({ where: { published: true }, select: { slug: true, updatedAt: true } }),
+    prisma.priceItem.aggregate({ _max: { updatedAt: true } }),
+  ]);
+
+  return {
+    // تغییر جدول قیمت هم محتوای صفحه محصول را عوض می‌کند
+    products: products.map((p) => {
+      const priced = p.priceItems[0]?.updatedAt;
+      return {
+        slug: p.slug,
+        categorySlug: p.category.slug,
+        lastModified: priced && priced > p.updatedAt ? priced : p.updatedAt,
+      };
+    }),
+    projects,
+    pricesUpdatedAt: prices._max.updatedAt,
+  };
 }
 
 export { getSiteSettingsMap } from '@/shared/lib/site-settings-store';

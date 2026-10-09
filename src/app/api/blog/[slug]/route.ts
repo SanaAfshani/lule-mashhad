@@ -43,7 +43,8 @@ export async function GET(request: NextRequest, context: RouteContext) {
     if (!admin) {
       await prisma.blogPost.update({
         where: { id: post.id },
-        data: { viewCount: { increment: 1 } },
+        // updatedAt صریح تا شمارش بازدید تاریخ ویرایش مقاله را عوض نکند
+        data: { viewCount: { increment: 1 }, updatedAt: post.updatedAt },
       });
     }
 

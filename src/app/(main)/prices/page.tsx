@@ -20,7 +20,7 @@ function persianYear() {
 export async function generateMetadata(): Promise<Metadata> {
   const year = persianYear();
   const title = `لیست قیمت روز لوله و اتصالات ${year}`;
-  const description = `قیمت روز انواع لوله پلی اتیلن، پلیکا، چدن داکتیل، منهول و اتصالات در سال ${year} با تاریخ به‌روزرسانی هر ردیف. استعلام قیمت عمده و ارسال به سراسر کشور.`;
+  const description = `قیمت روز انواع لوله پلی اتیلن، پلیکا، چدن داکتیل، منهول و اتصالات در سال ${year} با تاریخ آخرین تغییر هر ردیف. استعلام قیمت عمده و ارسال به سراسر کشور.`;
   return {
     title,
     description,
@@ -35,10 +35,11 @@ export default async function PricesPage() {
   return (
     <>
       <JsonLd data={breadcrumbSchema([{ name: 'لیست قیمت', path: '/prices' }])} />
+      {/* تاریخ کنار هر ردیف «آخرین تغییر قیمت» است، نه تایید امروز — پس قیمت نباید مبلغ نهایی خرید به نظر برسد (همان متن قوانین خرید) */}
       <PageHero
         label="قیمت لحظه‌ای"
         title={`لیست قیمت لوله و اتصالات ${persianYear()}`}
-        description="قیمت هر محصول به تفکیک سایز و فشار کاری؛ در ساعت کاری لحظه‌ای به‌روز می‌شود و بعد از آن امکان استعلام قیمت فعال است."
+        description="قیمت هر محصول به تفکیک سایز و فشار کاری، با تاریخ آخرین تغییر هر ردیف. قیمت نهایی، موجودی و هزینه حمل هنگام ثبت سفارش توسط کارشناس فروش تایید و در پیش‌فاکتور اعلام می‌شود."
       />
 
       <div className="container-main section-padding-sm">

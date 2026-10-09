@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Building2, ChevronDown, Clock, Factory, Mail, MapPin, MessageCircle, Phone } from 'lucide-react';
@@ -17,23 +18,24 @@ const QUICK_LINKS = [
   { href: '/contact', label: 'تماس با ما' },
 ];
 
+/** هر ستون یک‌بار رندر می‌شود — موبایل: تاشو با دکمه؛ دسکتاپ: همیشه باز (قبلاً محتوا دو بار در HTML تکرار می‌شد) */
 function Column({ title, children }: { title: string; children: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
   return (
-    <>
-      {/* موبایل: تاشو */}
-      <details className="lg:hidden group border-b border-white/10">
-        <summary className="flex items-center justify-between h-14 cursor-pointer list-none font-bold text-white">
+    <div className="border-b border-white/10 lg:border-0">
+      <h3 className="font-bold text-white lg:mb-5">
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+          className="flex items-center justify-between w-full h-14 text-right lg:h-auto lg:pointer-events-none"
+        >
           {title}
-          <ChevronDown className="w-5 h-5 text-slate-400 transition-transform group-open:rotate-180" />
-        </summary>
-        <div className="pb-4">{children}</div>
-      </details>
-      {/* دسکتاپ */}
-      <div className="hidden lg:block">
-        <h3 className="font-bold text-white mb-5">{title}</h3>
-        {children}
-      </div>
-    </>
+          <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform lg:hidden ${open ? 'rotate-180' : ''}`} />
+        </button>
+      </h3>
+      <div className={open ? 'pb-4 lg:pb-0' : 'hidden lg:block'}>{children}</div>
+    </div>
   );
 }
 
@@ -103,16 +105,15 @@ export function Footer({ categories }: { categories: NavCategory[] }) {
                 <span className="grid place-items-center w-9 h-9 rounded-xl bg-white/5"><Clock className="w-4 h-4 text-[var(--accent)]" /></span>
                 {siteConfig.workingHours}
               </li>
-              {companyPhones.length > 0 && (
-                <li className="flex items-start gap-3">
-                  <span className="grid place-items-center w-9 h-9 rounded-xl bg-white/5 shrink-0"><Phone className="w-4 h-4 text-[var(--accent)]" /></span>
-                  <span className="flex flex-wrap gap-x-3 gap-y-1 pt-1.5">
-                    {companyPhones.map((p) => (
-                      <a key={p} href={toTel(p)} dir="ltr" className="num font-bold hover:text-white">{faDigits(p)}</a>
-                    ))}
-                  </span>
+              {/* هر شماره در li و لینک tel: جدا — قبلاً در متن صفحه به هم چسبیده خوانده می‌شدند */}
+              {companyPhones.map((p) => (
+                <li key={p}>
+                  <a href={toTel(p)} className="flex items-center gap-3 hover:text-white">
+                    <span className="grid place-items-center w-9 h-9 rounded-xl bg-white/5"><Phone className="w-4 h-4 text-[var(--accent)]" /></span>
+                    <span dir="ltr" className="num font-bold">{faDigits(p)}</span>
+                  </a>
                 </li>
-              )}
+              ))}
               {address?.trim() && (
                 <li className="flex items-start gap-3">
                   <span className="grid place-items-center w-9 h-9 rounded-xl bg-white/5 shrink-0"><Building2 className="w-4 h-4 text-[var(--accent)]" /></span>

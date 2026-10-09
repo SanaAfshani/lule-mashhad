@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import path from "path";
+import { siteConfig } from "./src/shared/config/site";
 
 const nextConfig: NextConfig = {
   images: {
@@ -20,6 +21,17 @@ const nextConfig: NextConfig = {
   },
   turbopack: {
     root: __dirname,
+  },
+  // نسخه www همان محتوا را با ۲۰۰ برمی‌گرداند و برای گوگل محتوای تکراری است — ریدایرکت دائمی به دامنه اصلی
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: `www.${new URL(siteConfig.url).host}` }],
+        destination: `${siteConfig.url}/:path*`,
+        permanent: true,
+      },
+    ];
   },
 };
 

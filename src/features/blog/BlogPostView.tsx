@@ -3,13 +3,15 @@
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { Clock, Calendar, ArrowRight, BookOpen } from 'lucide-react';
+import { Clock, Calendar, ArrowRight, ArrowLeft, BookOpen, Tag } from 'lucide-react';
 import type { BlogPost } from '@/shared/types';
 import { faDigits, formatDate } from '@/shared/lib/utils';
 import { PdfViewer } from '@/shared/ui/PdfViewer';
 import { FaqAccordion } from '@/shared/ui/FaqAccordion';
 
-export function BlogPostView({ post }: { post: BlogPost }) {
+type RelatedCategory = { slug: string; name: string };
+
+export function BlogPostView({ post, relatedCategories = [] }: { post: BlogPost; relatedCategories?: RelatedCategory[] }) {
   const tag = post.tags[0] || 'مقاله';
   const isPdfOnly = !post.content || post.content === '<p></p>' || post.content.trim() === '';
 
@@ -81,6 +83,27 @@ export function BlogPostView({ post }: { post: BlogPost }) {
 
             {/* سوالات متداول اختصاصی مقاله — در انتهای محتوا */}
             <FaqAccordion faqs={post.faqs ?? []} />
+
+            {/* مسیر از مقاله به صفحات خرید: دسته‌های نام‌برده در مقاله + لیست قیمت */}
+            <section className="mt-12 pt-8 border-t border-[var(--border)]" aria-labelledby="related-products">
+              <h2 id="related-products" className="text-xl font-black text-[var(--foreground)] mb-4">قیمت و خرید محصولات مرتبط</h2>
+              <ul className="flex flex-wrap gap-2">
+                {relatedCategories.map((c) => (
+                  <li key={c.slug}>
+                    <Link href={`/products/${c.slug}`} className="h-10 px-4 rounded-xl border border-[var(--border)] text-sm font-bold inline-flex items-center gap-1.5 hover:border-[var(--accent)] hover:text-[var(--accent)] transition-colors">
+                      <Tag className="w-4 h-4" />
+                      قیمت {c.name}
+                    </Link>
+                  </li>
+                ))}
+                <li>
+                  <Link href="/prices" className="h-10 px-4 rounded-xl bg-[var(--foreground)] text-[var(--background)] text-sm font-bold inline-flex items-center gap-1.5">
+                    لیست قیمت روز همه محصولات
+                    <ArrowLeft className="w-4 h-4" />
+                  </Link>
+                </li>
+              </ul>
+            </section>
 
             <div className="mt-12 pt-8 border-t border-[var(--border)]">
               <Link

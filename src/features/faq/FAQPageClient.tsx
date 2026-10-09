@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Minus, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { PageHero } from '@/shared/ui/PageHero';
@@ -111,19 +110,15 @@ export function FAQPageClient({ faqs }: Props) {
                         {isOpen ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
                       </span>
                     </button>
-                    <AnimatePresence initial={false}>
-                      {isOpen && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 'auto', opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.25 }}
-                          className="overflow-hidden"
-                        >
-                          <p className="px-5 sm:px-7 pb-6 -mt-1 text-[15px] leading-8 text-[var(--muted-foreground)]">{faDigits(faq.a)}</p>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                    {/* پاسخ همیشه در HTML است (برای خزنده گوگل)؛ فقط با grid-rows جمع/باز می‌شود */}
+                    <div
+                      inert={!isOpen}
+                      className={`grid transition-[grid-template-rows,opacity] duration-300 ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
+                    >
+                      <div className="overflow-hidden">
+                        <p className="px-5 sm:px-7 pb-6 -mt-1 text-[15px] leading-8 text-[var(--muted-foreground)]">{faDigits(faq.a)}</p>
+                      </div>
+                    </div>
                   </div>
                 );
               })}

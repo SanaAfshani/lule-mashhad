@@ -34,10 +34,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     // metaTitle دقیقاً همان چیزی است که ادمین در پیش‌نمایش گوگل دیده — پس template سایت روی آن اعمال نمی‌شود
-    // پیش‌فرض: نام محصول + نیت خرید، ترکیبی که کاربر واقعا سرچ می‌کند
+    // پیش‌فرض: نام دقیق مدل + مشخصات — عنوان صفحه دسته («قیمت … | جدول سایز») با آن رقابت نکند
     title: product.metaTitle
       ? { absolute: product.metaTitle }
-      : `خرید ${product.name} | قیمت و مشخصات`,
+      : `${product.name} | مشخصات و قیمت`,
     description: desc,
     ...(product.focusKeyword ? { keywords: [product.focusKeyword] } : {}),
     alternates: { canonical },
@@ -96,9 +96,9 @@ export default async function ProductDetailPage({ params }: Props) {
     ),
     ...(product.focusKeyword ? { keywords: product.focusKeyword } : {}),
     sku: product.slug,
-    mpn: product.id,
+    // mpn و brand عمداً نیست: شناسه دیتابیس شماره قطعه سازنده نیست و نام فروشگاه برند همه کالاها نیست —
+    // داده ساختاریافته باید با واقعیت و محتوای صفحه یکی باشد (فروشنده در offers.seller آمده)
     category: product.category?.name,
-    brand: { '@type': 'Brand', name: siteConfig.name },
     ...(images.length ? { image: images } : {}),
     url: canonical,
     // جدول قیمت ← AggregateOffer (بازه قیمت در نتایج گوگل)؛ در غیر این صورت قیمت تکی.

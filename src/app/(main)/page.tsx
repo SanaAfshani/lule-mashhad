@@ -22,9 +22,9 @@ import { siteConfig } from '@/shared/config/site';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { localBusinessSchema, organizationSchema, websiteSchema } from '@/shared/lib/seo';
 
-const HOME_TITLE = 'خرید لوله و اتصالات | لیست قیمت روز | قدیر لوله آنلاین';
+const HOME_TITLE = 'خرید لوله و اتصالات با قیمت روز | قدیر لوله آنلاین';
 const HOME_DESCRIPTION =
-  'فروش آنلاین مستقیم از کارخانه قدیر لوله پاسارگاد؛ لیست قیمت روز لوله دوجداره پلی اتیلن، پلیکا، چدن داکتیل، منهول و اتصالات. بارگیری از انبار گرمسار و ارسال به سراسر کشور.';
+  'قیمت و مشخصات لوله پلیکا، پلی اتیلن، کاروگیت، چدن داکتیل، منهول و اتصالات را بررسی کنید. تامین پروژه‌ای، مشاوره فنی و ارسال از گرمسار به سراسر ایران.';
 
 export const metadata: Metadata = {
   // absolute: وگرنه قالب «%s | نام سایت» لایه روت نام سایت را دوباره اضافه می‌کند

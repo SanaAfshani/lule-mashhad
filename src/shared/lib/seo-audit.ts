@@ -53,7 +53,7 @@ export async function runAudit(): Promise<{ items: AuditItem[]; summary: Record<
 
   for (const p of products) {
     const issues: Issue[] = [];
-    const title = p.metaTitle || `خرید ${p.name} | قیمت و مشخصات | ${siteConfig.name}`;
+    const title = p.metaTitle || `${p.name} | مشخصات و قیمت | ${siteConfig.name}`;
     const desc = stripHtml(p.metaDescription || p.shortDescription || p.description || '');
     if (!isAscii(p.slug)) issues.push({ code: 'slug', level: 'error', message: 'آدرس صفحه انگلیسی نیست' });
     if (!desc) issues.push({ code: 'desc-missing', level: 'error', message: 'توضیحات متا ندارد' });

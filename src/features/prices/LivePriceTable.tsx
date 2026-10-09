@@ -19,7 +19,7 @@ type Props = {
   /** فیلتر جستجو از این تعداد ردیف به بعد */
   searchFrom?: number;
   caption?: string;
-  /** نوار بالای جدول: آخرین به‌روزرسانی + خروجی اکسل */
+  /** نوار بالای جدول: آخرین تغییر قیمت + خروجی اکسل */
   toolbar?: boolean;
 };
 
@@ -149,7 +149,7 @@ export function LivePriceTable({ initial, productIds, limit, showProduct = false
               {updatedAt && (
                 <span className="flex items-center gap-1.5 text-xs text-[var(--muted-foreground)] num">
                   <Clock className="w-3.5 h-3.5" />
-                  آخرین به‌روزرسانی: {priceTime(updatedAt)}
+                  آخرین تغییر قیمت: {priceTime(updatedAt)}
                 </span>
               )}
               {open && (

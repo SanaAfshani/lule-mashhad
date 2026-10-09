@@ -3,10 +3,11 @@ import { safeDecode } from '@/shared/lib/utils';
 import { findRedirect } from '@/shared/lib/redirects';
 import type { Metadata } from 'next';
 import { BlogPostView } from '@/features/blog/BlogPostView';
-import { getBlogPostBySlug } from '@/shared/lib/data';
+import { getBlogPostBySlug, getNavCategories } from '@/shared/lib/data';
 import { siteConfig } from '@/shared/config/site';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { absoluteUrl, breadcrumbSchema, faqPageSchema, toMetaDescription } from '@/shared/lib/seo';
+import { stripHtml } from '@/shared/lib/utils';
 
 export const dynamic = 'force-dynamic';
 
@@ -60,6 +61,14 @@ export default async function BlogPostPage({ params }: Props) {
     notFound();
   }
 
+  // مقاله اطلاعاتی بن‌بست نباشد: دسته‌هایی که نامشان در مقاله آمده، به صفحه خرید همان دسته لینک می‌شوند
+  const norm = (s: string) => s.replace(/[\u200c\s]+/g, ' ');
+  const text = norm(`${post.title} ${post.tags.join(' ')} ${stripHtml(post.content)}`);
+  const relatedCategories = (await getNavCategories())
+    .filter((c) => text.includes(norm(c.name)))
+    .slice(0, 4)
+    .map((c) => ({ slug: c.slug, name: c.name }));
+
   const articleSchema = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
@@ -102,7 +111,7 @@ export default async function BlogPostPage({ params }: Props) {
           { name: post.title, path: `/blog/${encodeURIComponent(slug)}` },
         ])}
       />
-      <BlogPostView post={post} />
+      <BlogPostView post={post} relatedCategories={relatedCategories} />
     </>
   );
 }

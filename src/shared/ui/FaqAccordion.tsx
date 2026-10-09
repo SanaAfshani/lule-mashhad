@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ChevronDown, HelpCircle } from 'lucide-react';
 import type { FaqItem } from '@/shared/types';
 
@@ -41,21 +41,17 @@ export function FaqAccordion({ faqs }: { faqs: FaqItem[] }) {
                   <ChevronDown className="w-5 h-5 text-[var(--accent)]" />
                 </motion.div>
               </button>
-              <AnimatePresence initial={false}>
-                {isOpen && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.25 }}
-                    className="overflow-hidden"
-                  >
-                    <div className="px-5 pb-5 text-[var(--muted-foreground)] text-sm leading-relaxed border-t border-[var(--border)] pt-4 whitespace-pre-line">
-                      {faq.answer}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              {/* پاسخ همیشه در HTML است (برای خزنده گوگل)؛ فقط با grid-rows جمع/باز می‌شود */}
+              <div
+                inert={!isOpen}
+                className={`grid transition-[grid-template-rows,opacity] duration-300 ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
+              >
+                <div className="overflow-hidden">
+                  <div className="px-5 pb-5 text-[var(--muted-foreground)] text-sm leading-relaxed border-t border-[var(--border)] pt-4 whitespace-pre-line">
+                    {faq.answer}
+                  </div>
+                </div>
+              </div>
             </div>
           );
         })}
