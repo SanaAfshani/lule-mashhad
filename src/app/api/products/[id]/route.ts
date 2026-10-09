@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAdmin, isAdmin } from '@/shared/lib/admin-auth';
 import { prisma } from '@/shared/lib/prisma';
 import { serializeProduct } from '@/shared/lib/serializers';
 import { serializeFaqs } from '@/shared/lib/page-faqs';
@@ -17,7 +18,7 @@ function optionalText(value: unknown): string | null {
 export async function GET(request: NextRequest, { params }: Props) {
   try {
     const { id } = await params;
-    const admin = new URL(request.url).searchParams.get('admin') === 'true';
+    const admin = new URL(request.url).searchParams.get('admin') === 'true' && isAdmin(request);
 
     const product = await prisma.product.findFirst({
       where: {
@@ -39,6 +40,8 @@ export async function GET(request: NextRequest, { params }: Props) {
 }
 
 export async function PUT(request: NextRequest, { params }: Props) {
+  const auth = requireAdmin(request);
+  if (auth instanceof NextResponse) return auth;
   try {
     const { id } = await params;
     const body = await request.json();
@@ -92,6 +95,8 @@ export async function PUT(request: NextRequest, { params }: Props) {
 }
 
 export async function DELETE(request: NextRequest, { params }: Props) {
+  const auth = requireAdmin(request);
+  if (auth instanceof NextResponse) return auth;
   try {
     const { id } = await params;
     await prisma.product.delete({ where: { id } });

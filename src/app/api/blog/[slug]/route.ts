@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAdmin, isAdmin } from '@/shared/lib/admin-auth';
 import { prisma } from '@/shared/lib/prisma';
 import { slugify } from '@/shared/lib/utils';
 import { recordRedirect } from '@/shared/lib/redirects';
@@ -22,7 +23,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
   try {
     const { slug: rawSlug } = await context.params;
     const slug = decodeSlug(rawSlug);
-    const admin = new URL(request.url).searchParams.get('admin') === 'true';
+    const admin = new URL(request.url).searchParams.get('admin') === 'true' && isAdmin(request);
 
     const post = await prisma.blogPost.findFirst({
       where: { slug },
@@ -56,6 +57,8 @@ export async function GET(request: NextRequest, context: RouteContext) {
 }
 
 export async function PUT(request: NextRequest, context: RouteContext) {
+  const auth = requireAdmin(request);
+  if (auth instanceof NextResponse) return auth;
   try {
     const { slug: rawSlug } = await context.params;
     const slug = decodeSlug(rawSlug);
@@ -112,7 +115,9 @@ export async function PUT(request: NextRequest, context: RouteContext) {
   }
 }
 
-export async function DELETE(_request: NextRequest, context: RouteContext) {
+export async function DELETE(request: NextRequest, context: RouteContext) {
+  const auth = requireAdmin(request);
+  if (auth instanceof NextResponse) return auth;
   try {
     const { slug: rawSlug } = await context.params;
     const slug = decodeSlug(rawSlug);

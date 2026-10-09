@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAdmin, isAdmin } from '@/shared/lib/admin-auth';
 import { prisma } from '@/shared/lib/prisma';
 import { parseFaqs } from '@/shared/lib/serializers';
 import { estimateReadTimeMinutes, slugify } from '@/shared/lib/utils';
@@ -27,7 +28,7 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = parseInt(searchParams.get('limit') || '9', 10);
     const featured = searchParams.get('featured') === 'true';
-    const admin = searchParams.get('admin') === 'true';
+    const admin = searchParams.get('admin') === 'true' && isAdmin(request);
 
     const where: { published?: boolean; featured?: boolean } = {};
     if (!admin) where.published = true;
@@ -56,6 +57,8 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const auth = requireAdmin(request);
+  if (auth instanceof NextResponse) return auth;
   try {
     const body = await request.json();
     const title = String(body.title || '').trim();

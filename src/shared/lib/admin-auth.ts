@@ -15,3 +15,8 @@ export function requireAdmin(request: NextRequest): JWTPayload | NextResponse {
   }
   return payload;
 }
+
+/** برای GETهای عمومی که با ?admin=true موارد منتشرنشده را هم برمی‌گردانند — فقط برای ادمین واقعی، نه هر کسی که پارامتر را بفرستد */
+export function isAdmin(request: NextRequest): boolean {
+  return !(requireAdmin(request) instanceof NextResponse);
+}

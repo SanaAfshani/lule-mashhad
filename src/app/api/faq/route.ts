@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAdmin, isAdmin } from '@/shared/lib/admin-auth';
 import { prisma } from '@/shared/lib/prisma';
 
 export async function GET(request: NextRequest) {
   try {
-    const admin = new URL(request.url).searchParams.get('admin') === 'true';
+    const admin = new URL(request.url).searchParams.get('admin') === 'true' && isAdmin(request);
     const faqs = await prisma.fAQ.findMany({
       where: admin ? {} : { published: true },
       orderBy: { order: 'asc' },
@@ -16,6 +17,8 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const auth = requireAdmin(request);
+  if (auth instanceof NextResponse) return auth;
   try {
     const body = await request.json();
     const faq = await prisma.fAQ.create({ data: body });

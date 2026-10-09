@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
+import { isAdmin, requireAdmin } from '@/shared/lib/admin-auth';
 
 export const maxDuration = 60;
 
@@ -30,10 +31,14 @@ export async function POST(request: NextRequest) {
       const jsonResponse = await handleUpload({
         body,
         request,
-        onBeforeGenerateToken: async () => ({
+        // توکن آپلود فقط برای ادمین واردشده؛ فراخوانی برگشتی Vercel (upload-completed) امضای خودش را دارد و از این مسیر نمی‌گذرد
+        onBeforeGenerateToken: async () => {
+          if (!isAdmin(request)) throw new Error('دسترسی غیرمجاز');
+          return {
           allowedContentTypes: ['application/pdf'],
           maximumSizeInBytes: 100 * 1024 * 1024, // 100 MB
-        }),
+          };
+        },
         onUploadCompleted: async ({ blob }) => {
           console.log('PDF uploaded to blob:', blob.url);
         },
@@ -47,6 +52,8 @@ export async function POST(request: NextRequest) {
   }
 
   // ── Server-side FormData fallback (local dev / no BLOB token) ───────────
+  const auth = requireAdmin(request);
+  if (auth instanceof NextResponse) return auth;
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File | null;

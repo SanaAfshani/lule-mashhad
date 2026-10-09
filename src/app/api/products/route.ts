@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAdmin, isAdmin } from '@/shared/lib/admin-auth';
 import { prisma } from '@/shared/lib/prisma';
 import { serializeProduct, toProductListItem } from '@/shared/lib/serializers';
 import { slugify } from '@/shared/lib/utils';
@@ -20,7 +21,7 @@ export async function GET(request: NextRequest) {
     const categorySlug = searchParams.get('category');
     const featured = searchParams.get('featured') === 'true';
     const search = searchParams.get('search');
-    const admin = searchParams.get('admin') === 'true';
+    const admin = searchParams.get('admin') === 'true' && isAdmin(request);
 
     const where: Record<string, unknown> = {};
     if (!admin) where.published = true;
@@ -61,6 +62,8 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const auth = requireAdmin(request);
+  if (auth instanceof NextResponse) return auth;
   try {
     const body = await request.json();
     const name = String(body.name || '').trim();

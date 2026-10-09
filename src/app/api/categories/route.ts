@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAdmin, isAdmin } from '@/shared/lib/admin-auth';
 import { revalidatePath } from 'next/cache';
 import { prisma } from '@/shared/lib/prisma';
 import { slugify } from '@/shared/lib/utils';
@@ -6,7 +7,7 @@ import { serverErrorResponse } from '@/shared/lib/api-errors';
 
 export async function GET(request: NextRequest) {
   try {
-    const admin = new URL(request.url).searchParams.get('admin') === 'true';
+    const admin = new URL(request.url).searchParams.get('admin') === 'true' && isAdmin(request);
     const categories = await prisma.category.findMany({
       where: admin ? {} : { published: true },
       include: { _count: { select: { products: true } } },
@@ -20,6 +21,8 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const auth = requireAdmin(request);
+  if (auth instanceof NextResponse) return auth;
   try {
     const body = await request.json();
     const category = await prisma.category.create({

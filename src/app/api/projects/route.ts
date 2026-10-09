@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAdmin, isAdmin } from '@/shared/lib/admin-auth';
 import { prisma } from '@/shared/lib/prisma';
 import { serializeProject } from '@/shared/lib/serializers';
 import { slugify } from '@/shared/lib/utils';
 
 export async function GET(request: NextRequest) {
   try {
-    const admin = new URL(request.url).searchParams.get('admin') === 'true';
+    const admin = new URL(request.url).searchParams.get('admin') === 'true' && isAdmin(request);
     const projects = await prisma.project.findMany({
       where: admin ? {} : { published: true },
       orderBy: [{ featured: 'desc' }, { year: 'desc' }],
@@ -21,6 +22,8 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const auth = requireAdmin(request);
+  if (auth instanceof NextResponse) return auth;
   try {
     const body = await request.json();
     const title = String(body.title || '').trim();
