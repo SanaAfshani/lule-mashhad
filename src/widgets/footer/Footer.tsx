@@ -52,7 +52,7 @@ export function Footer({ categories }: { categories: NavCategory[] }) {
       <div className="relative h-1.5 hazard opacity-90" aria-hidden />
 
       <div className="relative container-main pt-14 lg:pt-20">
-        <div className="grid lg:grid-cols-[1.4fr_1fr_1fr_1.2fr] gap-2 lg:gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr] gap-2 lg:gap-12">
           <div className="pb-6 lg:pb-0">
             <Link href="/" className="flex items-center gap-3">
               <Image src="/images/logo.png" alt="" width={52} height={52} className="w-12 h-12 object-contain" />

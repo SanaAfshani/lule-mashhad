@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import Link from 'next/link';
 import {
   Package, FileText, MessageSquare, Building2, Eye, ArrowLeft,
@@ -245,7 +245,7 @@ export function AdminDashboardClient({ data }: { data: DashboardData }) {
           className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6"
         >
           <h2 className="font-semibold text-[var(--foreground)] mb-4">آخرین افزوده‌ها</h2>
-          <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
             {recentActivity.map((item, i) => (
               <div key={i} className="flex items-start gap-3 p-3 rounded-xl bg-[var(--muted)]/40">
                 <div className="mt-1.5 flex-shrink-0">

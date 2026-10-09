@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { LivePriceTable } from '@/features/prices/LivePriceTable';
 import { MarketStatus } from '@/features/prices/MarketStatus';

@@ -1,10 +1,17 @@
 import type { Metadata } from 'next';
+import { Vazirmatn } from 'next/font/google';
 import './globals.css';
 import { siteConfig } from '@/shared/config/site';
 import { getSiteSettingsMap } from '@/shared/lib/data';
 import { ThemeProvider } from '@/shared/providers/ThemeProvider';
 import { Toaster } from 'react-hot-toast';
 import { NavigationProgress } from '@/shared/ui/NavigationProgress';
+
+/**
+ * فونت سلف‌هاست با next/font: فایل از همین دامنه و با preload می‌آید و stylesheet خارجی گوگل
+ * (که رندر را تا دانلودش متوقف می‌کرد و هر ۹ وزن را می‌گرفت) حذف شد. Vazirmatn متغیر است؛ یک فایل همه وزن‌ها.
+ */
+const vazirmatn = Vazirmatn({ subsets: ['arabic', 'latin'], display: 'swap', variable: '--font-vazirmatn' });
 
 const baseMetadata: Metadata = {
   title: {
@@ -60,16 +67,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fa" dir="rtl" suppressHydrationWarning>
+    <html lang="fa" dir="rtl" className={vazirmatn.variable} suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var c=localStorage.getItem('site-theme-color');if(c)document.documentElement.setAttribute('data-theme-color',c);}catch(e){}})();`,
           }}
         />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
       </head>
       <body className="min-h-screen antialiased">
         <ThemeProvider>
@@ -82,7 +86,7 @@ export default function RootLayout({
                 background: 'var(--card)',
                 color: 'var(--foreground)',
                 border: '1px solid var(--border)',
-                fontFamily: 'Vazirmatn, sans-serif',
+                fontFamily: 'var(--font-sans)',
                 direction: 'rtl',
               },
               duration: 4000,

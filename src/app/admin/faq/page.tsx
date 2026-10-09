@@ -1,10 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m as motion, AnimatePresence } from 'framer-motion';
 import { Plus, Pencil, Trash2, HelpCircle, ChevronDown, Loader2, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import type { FAQ } from '@/shared/types';
+import { useConfirm } from '@/shared/ui/ConfirmDialog';
 
 type FaqForm = {
   question: string;
@@ -16,6 +17,8 @@ type FaqForm = {
 const emptyForm: FaqForm = { question: '', answer: '', published: true, order: 0 };
 
 export default function AdminFaqPage() {
+  const confirm = useConfirm();
+
   const [faqs, setFaqs] = useState<FAQ[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -93,7 +96,7 @@ export default function AdminFaqPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('این سوال حذف شود؟')) return;
+    if (!(await confirm({ title: 'این سوال حذف شود؟' }))) return;
 
     setDeletingId(id);
     try {

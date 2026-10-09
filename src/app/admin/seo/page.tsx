@@ -301,7 +301,7 @@ function RedirectsTab() {
           وقتی آدرس یک صفحه عوض می‌شود، آدرس قبلی اینجا ثبت می‌شود تا لینک‌های قدیمی و رتبه گوگل از بین نرود (ریدایرکت دائمی).
           تغییر اسلاگ در پنل خودکار ثبت می‌شود؛ برای آدرس‌های دیگر (مثلاً صفحات سایت قبلی) دستی اضافه کنید.
         </p>
-        <form onSubmit={addRow} className="mt-4 grid sm:grid-cols-[1fr_1fr_auto] gap-2">
+        <form onSubmit={addRow} className="mt-4 grid grid-cols-1 sm:grid-cols-[1fr_1fr_auto] gap-2">
           <input className={input} dir="ltr" placeholder="/old-page" value={from} onChange={(e) => setFrom(e.target.value)} />
           <input className={input} dir="ltr" placeholder="/new-page" value={to} onChange={(e) => setTo(e.target.value)} />
           <button disabled={busy || !from || !to} className="h-11 px-5 rounded-xl bg-[var(--accent)] text-[var(--accent-foreground)] font-bold flex items-center justify-center gap-2 disabled:opacity-50"><Plus className="w-4 h-4" />افزودن</button>
@@ -312,7 +312,7 @@ function RedirectsTab() {
         {rows?.length === 0 && <p className="p-6 text-center text-[var(--muted-foreground)] text-sm">ریدایرکتی ثبت نشده</p>}
         {rows?.map((r) => (
           <div key={r.id} className="p-4 flex items-center gap-3 text-sm">
-            <div className="flex-1 min-w-0 grid sm:grid-cols-[1fr_auto_1fr] gap-1 sm:gap-3 items-center" dir="ltr">
+            <div className="flex-1 min-w-0 grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] gap-1 sm:gap-3 items-center" dir="ltr">
               <span className="truncate text-red-300/90">{r.fromPath}</span>
               <span className="text-[var(--muted-foreground)] hidden sm:inline">→</span>
               <span className="truncate text-emerald-700 dark:text-emerald-300">{r.toPath}</span>

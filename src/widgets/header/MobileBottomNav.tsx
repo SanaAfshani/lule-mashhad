@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { Headphones, Home, LayoutGrid, Phone, Tag } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import { useSiteSettings } from '@/shared/providers/SiteSettingsProvider';

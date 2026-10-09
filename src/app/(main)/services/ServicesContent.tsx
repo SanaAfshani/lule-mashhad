@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { Check, FileText, Headphones, Headset, Shield, Wrench } from 'lucide-react';
 import { PageHero } from '@/shared/ui/PageHero';
 import { useConsult } from '@/features/consult/ConsultProvider';
@@ -46,7 +46,7 @@ export function ServicesContent() {
 
       <section className="section-padding">
         <div className="container-main">
-          <ol className="grid md:grid-cols-2 gap-3 sm:gap-5">
+          <ol className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-5">
             {services.map(({ icon: Icon, title, desc, features }, i) => (
               <motion.li
                 key={title}

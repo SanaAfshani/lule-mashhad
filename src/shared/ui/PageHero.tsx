@@ -1,7 +1,3 @@
-'use client';
-
-import { motion } from 'framer-motion';
-
 interface PageHeroProps {
   label?: string;
   title: string;
@@ -21,12 +17,8 @@ export function PageHero({ label, title, description, aside }: PageHeroProps) {
 
       <div className="container-main page-hero relative z-10">
         <div className="flex items-start justify-between gap-8">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="max-w-2xl"
-          >
+          {/* بدون انیمیشن ورود: عنوان صفحه (معمولاً LCP) باید بدون انتظار برای جاوااسکریپت دیده شود */}
+          <div className="max-w-2xl">
             {label && <span className="eyebrow mb-2 sm:mb-3">{label}</span>}
             <h1 className="text-[1.65rem] sm:text-3xl md:text-[2.6rem] font-black text-white leading-snug sm:leading-tight">
               {title}
@@ -34,17 +26,8 @@ export function PageHero({ label, title, description, aside }: PageHeroProps) {
             {description && (
               <p className="mt-3 text-slate-300 text-sm sm:text-base md:text-lg leading-8">{description}</p>
             )}
-          </motion.div>
-          {aside && (
-            <motion.div
-              initial={{ opacity: 0, x: -16 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-              className="hidden md:block shrink-0"
-            >
-              {aside}
-            </motion.div>
-          )}
+          </div>
+          {aside && <div className="hidden md:block shrink-0">{aside}</div>}
         </div>
       </div>
 

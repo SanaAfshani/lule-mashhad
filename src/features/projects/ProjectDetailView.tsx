@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import Link from 'next/link';
 import { MapPin, Calendar, Building2, ArrowRight } from 'lucide-react';
 import type { Project } from '@/shared/types';
@@ -29,7 +29,7 @@ export function ProjectDetailView({ project }: Props) {
           <span className="text-[var(--foreground)] truncate">{project.title}</span>
         </nav>
 
-        <motion.article initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+        <motion.article>
           {heroImage && (
             <div className="relative h-64 md:h-80 rounded-2xl overflow-hidden mb-8">
               <Image src={heroImage} alt={project.title} fill className="object-cover" priority />

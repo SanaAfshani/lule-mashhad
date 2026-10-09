@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { ArrowLeft, Clock } from 'lucide-react';
 import { PageHero } from '@/shared/ui/PageHero';
 import { faDigits } from '@/shared/lib/utils';
@@ -36,8 +36,8 @@ export function BlogListClient({ posts }: { posts: BlogPostCard[] }) {
 
       <div className="container-main section-padding space-y-10">
         {featured && (
-          <motion.article initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
-            <Link href={`/blog/${featured.slug}`} className="group grid md:grid-cols-[1.2fr_1fr] rounded-[var(--radius-panel)] border border-[var(--border)] overflow-hidden">
+          <motion.article>
+            <Link href={`/blog/${featured.slug}`} className="group grid grid-cols-1 md:grid-cols-[1.2fr_1fr] rounded-[var(--radius-panel)] border border-[var(--border)] overflow-hidden">
               <div className="relative aspect-[16/10] md:aspect-auto md:min-h-[360px] bg-[var(--muted)]">
                 <Cover src={featured.coverImage} alt={featured.title} sizes="(max-width:768px) 100vw, 55vw" />
               </div>
@@ -58,7 +58,7 @@ export function BlogListClient({ posts }: { posts: BlogPostCard[] }) {
         )}
 
         {rest.length > 0 && (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
             {rest.map((post, i) => (
               <motion.article key={post.slug} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: (i % 3) * 0.06 }}>
                 <Link href={`/blog/${post.slug}`} className="group block">

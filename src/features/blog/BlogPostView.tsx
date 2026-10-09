@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import Link from 'next/link';
 import { Clock, Calendar, ArrowRight, ArrowLeft, BookOpen, Tag } from 'lucide-react';
 import type { BlogPost } from '@/shared/types';
@@ -26,7 +26,7 @@ export function BlogPostView({ post, relatedCategories = [] }: { post: BlogPost;
           <span className="text-[var(--foreground)] truncate min-w-0 max-w-full">{faDigits(post.title)}</span>
         </nav>
 
-        <motion.article initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+        <motion.article>
           {/* Meta */}
           <header className="max-w-3xl mb-8">
             <span className="text-sm font-bold text-[var(--accent)]">{tag}</span>

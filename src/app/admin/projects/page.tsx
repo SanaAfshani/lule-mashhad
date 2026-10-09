@@ -1,14 +1,17 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import Link from 'next/link';
 import { Plus, Search, Trash2, Building2, MapPin, Loader2, Pencil, Eye } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { formatPersianNumber } from '@/shared/lib/utils';
 import type { Project } from '@/shared/types';
+import { useConfirm } from '@/shared/ui/ConfirmDialog';
 
 export default function AdminProjectsPage() {
+  const confirm = useConfirm();
+
   const [search, setSearch] = useState('');
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -66,7 +69,7 @@ export default function AdminProjectsPage() {
   );
 
   const handleDelete = async (id: string, title: string) => {
-    if (!confirm(`پروژه «${title}» حذف شود؟`)) return;
+    if (!(await confirm({ title: `پروژه «${title}» حذف شود؟` }))) return;
 
     setDeletingId(id);
     try {

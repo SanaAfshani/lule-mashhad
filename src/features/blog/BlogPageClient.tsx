@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import Link from 'next/link';
 import { Search, Clock, ArrowLeft } from 'lucide-react';
 
@@ -89,7 +89,7 @@ export function BlogPageClient() {
       {/* Hero */}
       <div className="bg-gradient-to-br from-slate-900 to-slate-800 py-16">
         <div className="container-main">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl">
+          <motion.div className="max-w-2xl">
             <div className="text-[var(--accent)] text-sm font-semibold mb-3 flex items-center gap-2">
               <span className="w-8 h-0.5 bg-[var(--accent)]" />
               وبلاگ
@@ -103,7 +103,7 @@ export function BlogPageClient() {
       <div className="container-main py-10">
         {/* Featured post */}
         {featured && showFeatured && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-10">
+          <motion.div className="mb-10">
             <Link
               href={`/blog/${featured.slug}`}
               className="group block rounded-3xl bg-gradient-to-br from-slate-800 to-slate-900 overflow-hidden hover:-translate-y-1 transition-all duration-300 shadow-xl"

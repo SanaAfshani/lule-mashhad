@@ -1,10 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { Plus, Trash2, Star, Loader2, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import type { Testimonial } from '@/shared/types';
+import { useConfirm } from '@/shared/ui/ConfirmDialog';
 
 function StarRating({ rating }: { rating: number }) {
   return (
@@ -20,6 +21,8 @@ function StarRating({ rating }: { rating: number }) {
 }
 
 export default function AdminTestimonialsPage() {
+  const confirm = useConfirm();
+
   const [items, setItems] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -108,7 +111,7 @@ export default function AdminTestimonialsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('این نظر حذف شود؟')) return;
+    if (!(await confirm({ title: 'این نظر حذف شود؟' }))) return;
 
     setDeletingId(id);
     try {

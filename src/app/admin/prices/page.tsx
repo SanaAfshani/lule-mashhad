@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { WEEK_ORDER, WEEKDAY_LABEL, type MarketMode, type MarketSchedule, type MarketStatus } from '@/shared/lib/market';
 import { cn, formatPersianNumber, latinDigits } from '@/shared/lib/utils';
+import { useConfirm } from '@/shared/ui/ConfirmDialog';
 
 type Item = {
   id: string; productId: string; title: string; price: number | null; previousPrice: number | null;
@@ -81,21 +82,21 @@ function MarketPanel({ market, onChange }: { market: Market; onChange: (m: Marke
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="grid grid-cols-3 bg-[var(--muted)] rounded-xl p-1 gap-1">
+        <div className="grid grid-cols-1 min-[400px]:grid-cols-[1fr_auto] lg:flex items-center gap-2">
+          <div className="grid grid-cols-3 bg-[var(--muted)] rounded-xl p-1 gap-1 min-w-0">
             {MODES.map((m) => (
               <button
                 key={m.key}
                 disabled={saving}
                 onClick={() => market.mode !== m.key && save({ mode: m.key })}
-                className={cn('px-4 py-1.5 rounded-lg text-sm font-bold leading-tight', market.mode === m.key ? 'bg-[var(--accent)] text-[var(--accent-foreground)]' : 'text-[var(--foreground)] hover:text-white')}
+                className={cn('px-2 sm:px-4 py-1.5 rounded-lg text-sm font-bold leading-tight', market.mode === m.key ? 'bg-[var(--accent)] text-[var(--accent-foreground)]' : 'text-[var(--foreground)] hover:text-white')}
               >
                 {m.label}
                 <span className={cn('block text-[10px] font-normal', market.mode === m.key ? 'text-[var(--accent-foreground)]/70' : 'text-[var(--muted-foreground)]')}>{m.hint}</span>
               </button>
             ))}
           </div>
-          <button onClick={() => setOpen((o) => !o)} className="h-12 px-3 rounded-xl bg-[var(--muted)] text-[var(--foreground)] text-xs hover:text-[var(--foreground)] flex items-center gap-1">
+          <button onClick={() => setOpen((o) => !o)} className="h-12 px-3 justify-center rounded-xl bg-[var(--muted)] text-[var(--foreground)] text-xs whitespace-nowrap hover:text-[var(--foreground)] flex items-center gap-1">
             ساعت کاری <ChevronDown className={cn('w-4 h-4 transition-transform', open && 'rotate-180')} />
           </button>
         </div>
@@ -103,7 +104,7 @@ function MarketPanel({ market, onChange }: { market: Market; onChange: (m: Marke
 
       {open && (
         <div className="border-t border-[var(--border)] p-5">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
             {WEEK_ORDER.map((d) => {
               const slot = schedule[d];
               return (
@@ -221,6 +222,8 @@ function PriceInput({ item, onSaved, onEnter, inputRef }: {
 /* ─────────────────────────── جدول یک محصول ─────────────────────────── */
 
 function ProductBoard({ product, onChange }: { product: ProductRow; onChange: (items: Item[]) => void }) {
+  const confirm = useConfirm();
+
   const items = product.priceItems;
   const refs = useRef<(HTMLInputElement | null)[]>([]);
   const [q, setQ] = useState('');
@@ -261,7 +264,7 @@ function ProductBoard({ product, onChange }: { product: ProductRow; onChange: (i
   };
 
   const remove = async (i: Item) => {
-    if (!confirm(`ردیف «${i.title}» حذف شود؟`)) return;
+    if (!(await confirm({ title: `ردیف «${i.title}» حذف شود؟` }))) return;
     onChange(items.filter((x) => x.id !== i.id));
     await api(`/api/admin/prices/${i.id}`, { method: 'DELETE' }).catch((e) => toast.error(e.message));
   };
@@ -286,7 +289,7 @@ function ProductBoard({ product, onChange }: { product: ProductRow; onChange: (i
   const bulk = async () => {
     const n = Number(latinDigits(pct).replace(/[^\d.-]/g, ''));
     if (!n) return toast.error('درصد را وارد کنید، مثلاً ۳ یا -۲');
-    if (!confirm(`همه قیمت‌های «${product.name}» ${n > 0 ? 'افزایش' : 'کاهش'} ${formatPersianNumber(Math.abs(n))}٪ پیدا کند؟`)) return;
+    if (!(await confirm({ title: `همه قیمت‌های «${product.name}» ${n > 0 ? 'افزایش' : 'کاهش'} ${formatPersianNumber(Math.abs(n))}٪ پیدا کند؟`, tone: 'default', confirmLabel: 'اعمال' }))) return;
     setBusy(true);
     try {
       const r = await api<{ updated: number }>('/api/admin/prices/bulk', { method: 'POST', body: JSON.stringify({ productId: product.id, percent: n, roundTo }) });
@@ -307,7 +310,7 @@ function ProductBoard({ product, onChange }: { product: ProductRow; onChange: (i
       .filter((c) => c[0])
       .map(([title, price = '', weight = '', note = '']) => ({ title, price, weight, note }));
     if (!rows.length) return toast.error('ردیفی پیدا نشد — ستون‌ها را از اکسل کپی کنید');
-    if (replace && !confirm('جدول فعلی این محصول کامل جایگزین شود؟')) return;
+    if (replace && !(await confirm({ title: 'جدول فعلی این محصول کامل جایگزین شود؟', message: 'همه ردیف‌های فعلی حذف و ردیف‌های پیست‌شده جایگزین می‌شوند.', confirmLabel: 'جایگزینی' }))) return;
     setBusy(true);
     try {
       await api('/api/admin/prices/import', { method: 'POST', body: JSON.stringify({ productId: product.id, rows, replace }) });
@@ -322,7 +325,8 @@ function ProductBoard({ product, onChange }: { product: ProductRow; onChange: (i
   };
 
   return (
-    <div className={cn(card, 'overflow-hidden')}>
+    // @container: چیدمان ردیف‌ها به عرض همین پنل بستگی دارد نه عرض صفحه — در لپ‌تاپ ۱۰۲۴ پیکسلی، منو و فهرست محصول جا را می‌گیرند
+    <div className={cn(card, 'overflow-hidden @container')}>
       <div className="p-5 border-b border-[var(--border)] flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-xs text-[var(--muted-foreground)]">{product.category.name}</p>
@@ -344,17 +348,17 @@ function ProductBoard({ product, onChange }: { product: ProductRow; onChange: (i
           <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)]" />
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="جستجوی ردیف…" className={cn(inputCls, 'w-full pr-9')} />
         </div>
-        <div className="flex items-center gap-1.5">
-          <div className="relative">
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-1.5 w-full sm:w-auto">
+          <div className="relative shrink-0">
             <Percent className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--muted-foreground)]" />
             <input value={pct} onChange={(e) => setPct(e.target.value)} dir="ltr" placeholder="+3 / -2" className={cn(inputCls, 'w-24 text-left pl-8')} aria-label="درصد تغییر" />
           </div>
-          <select value={roundTo} onChange={(e) => setRoundTo(Number(e.target.value))} className={cn(inputCls, 'w-32')} aria-label="گرد کردن">
+          <select value={roundTo} onChange={(e) => setRoundTo(Number(e.target.value))} className={cn(inputCls, 'min-w-0 flex-1 sm:flex-none sm:w-32')} aria-label="گرد کردن">
             <option value={1}>بدون گرد کردن</option>
             <option value={100}>گرد به ۱۰۰</option>
             <option value={1000}>گرد به ۱٬۰۰۰</option>
           </select>
-          <button disabled={busy || !pct} onClick={bulk} className="h-10 px-4 rounded-xl bg-[var(--accent)] text-[var(--accent-foreground)] text-sm font-bold disabled:opacity-40">
+          <button disabled={busy || !pct} onClick={bulk} className="h-10 px-4 w-full sm:w-auto rounded-xl bg-[var(--accent)] text-[var(--accent-foreground)] text-sm font-bold whitespace-nowrap disabled:opacity-40">
             اعمال روی همه
           </button>
         </div>
@@ -377,14 +381,15 @@ function ProductBoard({ product, onChange }: { product: ProductRow; onChange: (i
           const idx = items.indexOf(i);
           const change = i.price != null && i.previousPrice ? ((i.price - i.previousPrice) / i.previousPrice) * 100 : 0;
           return (
-            <div key={i.id} className="p-3 sm:px-5 grid grid-cols-[1fr_auto] lg:grid-cols-[minmax(0,1fr)_200px_110px_minmax(0,220px)_auto] gap-2 items-center">
+            <div key={i.id} className="p-3 sm:px-5 grid grid-cols-2 @3xl:grid-cols-[minmax(0,1.4fr)_180px_100px_minmax(0,1fr)_auto] gap-2 items-center">
               <input
                 defaultValue={i.title}
                 onBlur={(e) => patchField(i, 'title', e.target.value.trim())}
-                className={cn(inputCls, 'w-full col-span-2 lg:col-span-1')}
+                className={cn(inputCls, 'w-full col-span-2 @3xl:col-span-1')}
                 aria-label="عنوان"
               />
-              <div className="col-span-2 sm:col-span-1">
+              {/* پنل باریک: عنوان / قیمت + دکمه‌ها / وزن + توضیحات — با order، چون ترتیب DOM مال چیدمان پهن است */}
+              <div className="min-w-0 order-1 @3xl:order-none">
                 <PriceInput
                   item={i}
                   onSaved={replaceItem}
@@ -401,9 +406,9 @@ function ProductBoard({ product, onChange }: { product: ProductRow; onChange: (i
                   {i.previousPrice != null && i.previousPrice !== i.price && <span>قبلی: {fmt(i.previousPrice)}</span>}
                 </p>
               </div>
-              <input defaultValue={i.weight} onBlur={(e) => patchField(i, 'weight', e.target.value.trim())} placeholder="وزن" className={cn(inputCls, 'w-full hidden lg:block')} aria-label="وزن" />
-              <input defaultValue={i.note} onBlur={(e) => patchField(i, 'note', e.target.value.trim())} placeholder="توضیحات" className={cn(inputCls, 'w-full hidden lg:block')} aria-label="توضیحات" />
-              <div className="flex items-center justify-end">
+              <input defaultValue={i.weight} onBlur={(e) => patchField(i, 'weight', e.target.value.trim())} placeholder="وزن" className={cn(inputCls, 'w-full order-3 @3xl:order-none')} aria-label="وزن" />
+              <input defaultValue={i.note} onBlur={(e) => patchField(i, 'note', e.target.value.trim())} placeholder="توضیحات" className={cn(inputCls, 'w-full order-4 @3xl:order-none')} aria-label="توضیحات" />
+              <div className="flex items-center justify-end self-start order-2 @3xl:order-none @3xl:self-center">
                 <button onClick={() => move(idx, -1)} disabled={idx === 0 || !!q} aria-label="بالا" className="w-8 h-9 grid place-items-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] disabled:opacity-20"><ChevronUp className="w-4 h-4" /></button>
                 <button onClick={() => move(idx, 1)} disabled={idx === items.length - 1 || !!q} aria-label="پایین" className="w-8 h-9 grid place-items-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] disabled:opacity-20"><ChevronDown className="w-4 h-4" /></button>
                 <button onClick={() => remove(i)} aria-label="حذف" className="w-8 h-9 grid place-items-center text-[var(--muted-foreground)] hover:text-red-700 dark:hover:text-red-400"><Trash2 className="w-4 h-4" /></button>
@@ -414,12 +419,12 @@ function ProductBoard({ product, onChange }: { product: ProductRow; onChange: (i
         {!shown.length && <p className="p-8 text-center text-sm text-[var(--muted-foreground)]">{q ? 'ردیفی پیدا نشد' : 'هنوز ردیفی ندارد — از فرم زیر یا «پیست از اکسل» اضافه کنید'}</p>}
       </div>
 
-      <form onSubmit={add} className="p-3 sm:px-5 border-t border-[var(--border)] bg-[var(--background)]/40 grid grid-cols-2 lg:grid-cols-[minmax(0,1fr)_200px_110px_minmax(0,220px)_auto] gap-2">
-        <input value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} placeholder="ردیف جدید — عنوان" className={cn(inputCls, 'col-span-2 lg:col-span-1')} />
+      <form onSubmit={add} className="p-3 sm:px-5 border-t border-[var(--border)] bg-[var(--background)]/40 grid grid-cols-2 @3xl:grid-cols-[minmax(0,1.4fr)_180px_100px_minmax(0,1fr)_auto] gap-2">
+        <input value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} placeholder="ردیف جدید — عنوان" className={cn(inputCls, 'col-span-2 @3xl:col-span-1')} />
         <input value={draft.price} onChange={(e) => setDraft({ ...draft, price: fmt(parse(e.target.value)) })} placeholder="قیمت (تومان)" dir="ltr" inputMode="numeric" className={cn(inputCls, 'text-left')} />
         <input value={draft.weight} onChange={(e) => setDraft({ ...draft, weight: e.target.value })} placeholder="وزن" className={inputCls} />
-        <input value={draft.note} onChange={(e) => setDraft({ ...draft, note: e.target.value })} placeholder="توضیحات" className={cn(inputCls, 'col-span-2 lg:col-span-1')} />
-        <button className="h-10 px-4 rounded-xl bg-emerald-500 text-black text-sm font-bold flex items-center justify-center gap-1.5 col-span-2 lg:col-span-1"><Plus className="w-4 h-4" />افزودن</button>
+        <input value={draft.note} onChange={(e) => setDraft({ ...draft, note: e.target.value })} placeholder="توضیحات" className={cn(inputCls, 'col-span-2 @3xl:col-span-1')} />
+        <button className="h-10 px-4 rounded-xl bg-emerald-500 text-black text-sm font-bold flex items-center justify-center gap-1.5 col-span-2 @3xl:col-span-1"><Plus className="w-4 h-4" />افزودن</button>
       </form>
     </div>
   );
@@ -467,7 +472,7 @@ function PriceBoardPage() {
 
       <MarketPanel market={market} onChange={setMarket} />
 
-      <div className="grid lg:grid-cols-[260px_1fr] gap-5 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-5 items-start">
         <aside className={cn(card, 'p-3 lg:sticky lg:top-20')}>
           <input value={filter} onChange={(e) => setFilter(e.target.value)} placeholder="جستجوی محصول…" className={cn(inputCls, 'w-full mb-2')} />
           <div className="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible lg:max-h-[70vh] lg:overflow-y-auto">

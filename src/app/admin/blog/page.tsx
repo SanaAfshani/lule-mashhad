@@ -2,10 +2,11 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { Plus, Search, Pencil, Trash2, Eye, FileText, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { formatDate } from '@/shared/lib/utils';
+import { useConfirm } from '@/shared/ui/ConfirmDialog';
 
 type BlogRow = {
   id: string;
@@ -19,6 +20,8 @@ type BlogRow = {
 };
 
 export default function AdminBlogPage() {
+  const confirm = useConfirm();
+
   const [search, setSearch] = useState('');
   const [posts, setPosts] = useState<BlogRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -47,7 +50,7 @@ export default function AdminBlogPage() {
   const filtered = posts.filter((p) => p.title.includes(search));
 
   const handleDelete = async (slug: string, title: string) => {
-    if (!confirm(`مقاله «${title}» حذف شود؟`)) return;
+    if (!(await confirm({ title: `مقاله «${title}» حذف شود؟` }))) return;
 
     try {
       const res = await fetch(`/api/blog/${encodeURIComponent(slug)}`, { method: 'DELETE' });

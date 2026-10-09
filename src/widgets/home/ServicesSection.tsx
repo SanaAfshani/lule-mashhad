@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { FileText, Headphones, MessageCircle, Phone, Scissors, ShieldCheck, Truck } from 'lucide-react';
 import { useSiteSettings } from '@/shared/providers/SiteSettingsProvider';
 import { useConsult } from '@/features/consult/ConsultProvider';
@@ -25,7 +25,7 @@ export function ServicesSection() {
         <div className="relative overflow-hidden rounded-[var(--radius-panel)] bg-[var(--ink)] text-white">
           <div className="absolute inset-0 bp-grid opacity-70" />
 
-          <div className="relative grid lg:grid-cols-[1fr_1.15fr] gap-8 lg:gap-12 p-6 sm:p-10 lg:p-14">
+          <div className="relative grid grid-cols-1 lg:grid-cols-[1fr_1.15fr] gap-8 lg:gap-12 p-6 sm:p-10 lg:p-14">
             <div className="flex flex-col min-w-0">
               <span className="eyebrow">چرا ما</span>
               <h2 id="why-title" className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-black leading-snug text-white">

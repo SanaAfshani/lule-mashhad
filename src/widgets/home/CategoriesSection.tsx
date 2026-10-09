@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { ArrowLeft, LayoutGrid } from 'lucide-react';
 import { SectionHeading } from '@/shared/ui/SectionHeading';
 import { CategoryThumb } from '@/widgets/header/Header';

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m as motion } from 'framer-motion';
 import { Loader2, X } from 'lucide-react';
 import { cn, faDigits } from '@/shared/lib/utils';
 import type { HistoryPoint, HistoryRange } from '@/shared/lib/price-board-types';

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { Save, Globe, Phone, Mail, MapPin, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 

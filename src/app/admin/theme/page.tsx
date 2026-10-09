@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { Palette, Check } from 'lucide-react';
 import { useThemeColor, themeColors } from '@/shared/providers/ThemeColorProvider';
 import toast from 'react-hot-toast';

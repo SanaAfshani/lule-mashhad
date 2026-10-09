@@ -83,9 +83,9 @@ export function HtmlContentEditor({ value, onChange, rows = 14, placeholder, lab
 
   return (
     <div>
-      <div className="flex items-center justify-between gap-3 mb-1.5">
+      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 mb-1.5">
         {label && <label className="block text-sm font-medium text-[var(--foreground)]">{label}</label>}
-        <div className="flex items-center gap-1.5">
+        <div className="flex flex-wrap items-center gap-1.5">
           <button
             type="button"
             onClick={() => setBannerOpen(true)}

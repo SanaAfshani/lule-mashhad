@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { ChevronLeft, Search } from 'lucide-react';
 import { SearchInput } from '@/shared/ui/SearchInput';
 import { useConsult } from '@/features/consult/ConsultProvider';
@@ -51,7 +51,7 @@ export function CategoryProductsClient({ category, products, board, priceProduct
             <ChevronLeft className="w-3 h-3 shrink-0" />
             <span className="text-[var(--accent)]">{category.name}</span>
           </nav>
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
+          <motion.div>
             <span className="h-7 px-3 rounded-lg border border-[var(--accent)]/40 bg-[var(--accent)]/10 text-[var(--accent)] text-xs font-bold inline-flex items-center num">
               {category.comingSoon ? 'به زودی' : `${faDigits(products.length)} محصول`}
             </span>
@@ -79,7 +79,7 @@ export function CategoryProductsClient({ category, products, board, priceProduct
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
           {filtered.map((product, i) => (
-            <motion.div key={product.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 8) * 0.04 }}>
+            <motion.div key={product.id}>
               <ProductCard product={product} />
             </motion.div>
           ))}

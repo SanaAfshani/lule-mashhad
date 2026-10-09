@@ -16,18 +16,18 @@ export function PdfViewer({ url, title }: PdfViewerProps) {
     <div className="mt-10 rounded-2xl overflow-hidden border border-[var(--border)] shadow-xl">
 
       {/* ── Header ── */}
-      <div className="flex items-center justify-between px-5 py-4 bg-[var(--card)] border-b border-[var(--border)]">
-        <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between gap-3 px-4 sm:px-5 py-4 bg-[var(--card)] border-b border-[var(--border)]">
+        <div className="flex items-center gap-3 min-w-0">
           <div className="w-9 h-9 rounded-xl bg-[var(--accent)]/10 flex items-center justify-center flex-shrink-0">
             <FileText className="w-5 h-5 text-[var(--accent)]" />
           </div>
-          <div>
+          <div className="min-w-0">
             <p className="text-[var(--foreground)] font-semibold text-sm leading-tight">کاتالوگ محصول</p>
-            <p className="text-[var(--muted-foreground)] text-xs mt-0.5 truncate max-w-[180px] sm:max-w-xs">{label}</p>
+            <p className="text-[var(--muted-foreground)] text-xs mt-0.5 truncate sm:max-w-xs">{label}</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <a
             href={url}
             target="_blank"
@@ -48,7 +48,7 @@ export function PdfViewer({ url, title }: PdfViewerProps) {
           </a>
           <button
             onClick={() => setExpanded(v => !v)}
-            className="w-8 h-8 rounded-lg bg-slate-800/60 flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+            className="w-8 h-8 rounded-lg bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
           >
             {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>

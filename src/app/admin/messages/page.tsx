@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { cn, faDigits, formatDate, safeDecode } from '@/shared/lib/utils';
 import { phoneHref, whatsappFromMobile } from '@/shared/lib/site-settings';
 import { useAdminNotifications } from '@/widgets/admin/AdminNotifications';
+import { useConfirm } from '@/shared/ui/ConfirmDialog';
 
 type ContactMessage = {
   id: string;
@@ -29,6 +30,8 @@ const FILTERS: { key: Filter; label: string }[] = [
 ];
 
 function MessagesInbox() {
+  const confirm = useConfirm();
+
   const router = useRouter();
   const selected = useSearchParams().get('id');
   const { refresh: refreshBell } = useAdminNotifications();
@@ -87,7 +90,7 @@ function MessagesInbox() {
   };
 
   const remove = async (id: string) => {
-    if (!confirm('این پیام برای همیشه حذف شود؟')) return;
+    if (!(await confirm({ title: 'این پیام برای همیشه حذف شود؟' }))) return;
     setBusyId(id);
     try {
       const res = await fetch(`/api/contact/${id}`, { method: 'DELETE' });

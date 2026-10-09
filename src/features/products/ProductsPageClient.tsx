@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { Search } from 'lucide-react';
 import { PageHero } from '@/shared/ui/PageHero';
 import { SearchInput } from '@/shared/ui/SearchInput';
@@ -66,7 +66,7 @@ export function ProductsPageClient({ categories, products: allProducts }: Produc
 
         <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-5">
           {displayed.map((product, i) => (
-            <motion.div key={product.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 8) * 0.03 }}>
+            <motion.div key={product.id}>
               <ProductCard product={product} />
             </motion.div>
           ))}

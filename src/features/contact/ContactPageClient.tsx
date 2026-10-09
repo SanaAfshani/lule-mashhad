@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { Building2, Clock, Factory, Loader2, Mail, MapPin, MessageCircle, Navigation, Phone, Send, type LucideIcon } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { PageHero } from '@/shared/ui/PageHero';
@@ -77,7 +77,7 @@ export function ContactPageClient({ contactInfo, locations, whatsappUrl }: Props
       </div>
 
       <section className="section-padding">
-        <div className="container-main grid lg:grid-cols-[1fr_1.4fr] gap-8 lg:gap-12 items-start">
+        <div className="container-main grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-8 lg:gap-12 items-start">
           <div className="space-y-3">
             {contactInfo.map(({ icon, title, items }, i) => {
               const Icon = iconMap[icon];
@@ -128,7 +128,7 @@ export function ContactPageClient({ contactInfo, locations, whatsappUrl }: Props
               یا مستقیم تماس بگیرید: <a href={phoneHref} dir="ltr" className="font-bold text-[var(--foreground)] num">{faDigits(phone)}</a>
             </p>
             <form onSubmit={handleSubmit} className="mt-6 space-y-3" noValidate>
-              <div className="grid sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <input className={fieldCls} value={form.name} onChange={set('name')} placeholder="نام و نام‌خانوادگی *" autoComplete="name" aria-label="نام" />
                 <input className={`${fieldCls} ltr-field`} type="tel" inputMode="tel" value={form.phone} onChange={set('phone')} placeholder="شماره موبایل" autoComplete="tel" aria-label="شماره موبایل" />
               </div>
@@ -149,7 +149,7 @@ export function ContactPageClient({ contactInfo, locations, whatsappUrl }: Props
         <div className="container-main">
           <p className="tech-label">آدرس‌ها</p>
           <h2 id="locations-title" className="mt-2 text-xl sm:text-2xl font-black">دفتر مرکزی و کارخانه</h2>
-          <div className="mt-6 grid lg:grid-cols-[1fr_1.6fr] gap-4">
+          <div className="mt-6 grid grid-cols-1 lg:grid-cols-[1fr_1.6fr] gap-4">
             {locations.map((l) => {
               const Icon = l.kind === 'factory' ? Factory : Building2;
               return (

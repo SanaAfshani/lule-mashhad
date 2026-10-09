@@ -1,10 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { Plus, Search, Pencil, Trash2, Shield, User, Loader2, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { formatDate } from '@/shared/lib/utils';
+import { useConfirm } from '@/shared/ui/ConfirmDialog';
 
 type UserRow = {
   id: string;
@@ -29,6 +30,8 @@ const emptyForm = {
 };
 
 export default function AdminUsersPage() {
+  const confirm = useConfirm();
+
   const [search, setSearch] = useState('');
   const [users, setUsers] = useState<UserRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -114,7 +117,7 @@ export default function AdminUsersPage() {
   };
 
   const handleDelete = async (user: UserRow) => {
-    if (!confirm(`کاربر «${user.name}» حذف شود؟`)) return;
+    if (!(await confirm({ title: `کاربر «${user.name}» حذف شود؟` }))) return;
     setDeletingId(user.id);
     try {
       const res = await fetch(`/api/users/${user.id}`, { method: 'DELETE' });

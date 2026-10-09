@@ -2,6 +2,7 @@
 
 import { ThemeProvider as NextThemesProvider } from 'next-themes';
 import { ThemeColorProvider } from './ThemeColorProvider';
+import { MotionProvider } from './MotionProvider';
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   return (
@@ -12,7 +13,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       disableTransitionOnChange={false}
     >
       <ThemeColorProvider>
-        {children}
+        <MotionProvider>{children}</MotionProvider>
       </ThemeColorProvider>
     </NextThemesProvider>
   );

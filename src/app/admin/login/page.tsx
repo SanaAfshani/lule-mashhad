@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { Eye, EyeOff, LogIn, Lock, Mail, AlertCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 

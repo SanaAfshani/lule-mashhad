@@ -2,7 +2,7 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m as motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { Search, Package, FileText, Building2, ArrowLeft, TrendingUp, Loader2 } from 'lucide-react';
 import { SearchInput } from '@/shared/ui/SearchInput';

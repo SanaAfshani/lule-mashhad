@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowLeft, Check, Eye, Heart, Target } from 'lucide-react';
 import { PageHero } from '@/shared/ui/PageHero';
@@ -67,7 +67,7 @@ export function AboutContent() {
 
       {/* داستان */}
       <section className="section-padding">
-        <div className="container-main grid lg:grid-cols-[1.1fr_1fr] gap-12 lg:gap-16 items-start">
+        <div className="container-main grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-12 lg:gap-16 items-start">
           <motion.div {...reveal}>
             <span className="eyebrow">داستان ما</span>
             <h2 className="mt-3 text-2xl sm:text-[2rem] font-black leading-snug">از انبار کوچک تا تامین‌کننده بزرگ خراسان</h2>
@@ -77,7 +77,7 @@ export function AboutContent() {
             <p className="mt-4 text-[15px] leading-8 text-[var(--muted-foreground)]">
               امروز با گسترش دامنه محصولات به لوله پلی‌اتیلن، چدن داکتیل، منهول، اتصالات و شیرآلات صنعتی، به یکی از بزرگ‌ترین عرضه‌کنندگان آب و فاضلاب در شمال‌شرق ایران تبدیل شده‌ایم.
             </p>
-            <ul className="mt-8 grid sm:grid-cols-2 gap-x-6 gap-y-3">
+            <ul className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
               {advantages.map((adv) => (
                 <li key={adv} className="flex items-start gap-2.5 text-sm leading-7">
                   <span className="mt-1.5 grid place-items-center w-4 h-4 rounded-full bg-[var(--foreground)] text-[var(--background)] shrink-0">
@@ -112,7 +112,7 @@ export function AboutContent() {
             <span className="eyebrow">تیم ما</span>
             <h2 className="mt-2 text-2xl sm:text-3xl font-black">متخصصان ما</h2>
           </div>
-          <div className="grid sm:grid-cols-3 gap-3 sm:gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-5">
             {team.map((m, i) => (
               <motion.div key={m.name} {...reveal} transition={{ ...reveal.transition, delay: i * 0.08 }} className="p-6 rounded-3xl bg-[var(--background)] border border-[var(--border)]">
                 <span className="grid place-items-center w-12 h-12 rounded-full bg-[var(--ink)] text-white font-black">

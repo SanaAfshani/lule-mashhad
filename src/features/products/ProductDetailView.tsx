@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import {
   CalendarClock, Check, ChevronLeft, Clock, Headphones, MessageCircle, Phone, ShieldCheck, Table2, Truck, X,
 } from 'lucide-react';
@@ -62,7 +62,7 @@ function Gallery({ images, name }: { images: string[]; name: string }) {
       {/* دسکتاپ: تصویر اصلی + بندانگشتی */}
       <div className="hidden lg:block">
         <div className="relative aspect-[4/3] rounded-3xl overflow-hidden bg-[var(--muted)] border border-[var(--border)]">
-          <Image src={images[active]} alt={name} fill sizes="50vw" className="object-cover" priority />
+          <Image src={images[active]} alt={name} fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover" priority />
         </div>
         {images.length > 1 && (
           <div className="mt-3 grid grid-cols-5 gap-2">
@@ -149,12 +149,12 @@ export function ProductDetailView({ product, related = [], board: initialBoard, 
       </div>
 
       <div className="container-main pt-4 lg:pt-10">
-        <div className="grid lg:grid-cols-2 gap-6 lg:gap-12">
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12">
+          <motion.div>
             <Gallery images={images} name={product.name} />
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.08 }} className="flex flex-col">
+          <motion.div className="flex flex-col">
             <div className="flex flex-wrap items-center gap-2">
               <Link href={`/products/${product.category.slug}`} className="h-7 px-3 rounded-lg bg-[var(--accent)]/12 text-[var(--accent)] text-xs font-bold flex items-center">
                 {product.category.name}
@@ -292,7 +292,7 @@ export function ProductDetailView({ product, related = [], board: initialBoard, 
         </div>
       )}
 
-      <div className="container-main mt-8 grid lg:grid-cols-[1fr_320px] gap-8 lg:gap-10 items-start">
+      <div className="container-main mt-8 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 lg:gap-10 items-start">
         <div className="min-w-0 space-y-12">
           {summary.count > 0 && (
             <section id="price-table" aria-labelledby="price-table-title" className="scroll-mt-40">

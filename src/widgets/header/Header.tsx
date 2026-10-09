@@ -4,7 +4,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m as motion } from 'framer-motion';
 import {
   ArrowLeft, Building2, ChartLine, ChevronDown, ChevronLeft, CircleHelp, Clock, Factory, Headphones, House, LayoutGrid, Menu, MessageCircle,
   Moon, Newspaper, Phone, Search, Sun, Truck, Wrench, X, type LucideIcon,
@@ -434,7 +434,7 @@ export function CategoryThumb({ category, className }: { category: Pick<NavCateg
   if (category.image) {
     return (
       <span className={cn('relative block overflow-hidden bg-[var(--muted)] shrink-0', className)}>
-        <Image src={category.image} alt={category.name} fill sizes="200px" className="object-cover" />
+        <Image src={category.image} alt={category.name} fill sizes="200px" quality={60} className="object-cover" />
       </span>
     );
   }

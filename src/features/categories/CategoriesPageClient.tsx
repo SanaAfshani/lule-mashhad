@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { PageHero } from '@/shared/ui/PageHero';
 import { CategoryThumb } from '@/widgets/header/Header';
@@ -25,7 +25,7 @@ export function CategoriesPageClient({ categories }: { categories: CategoryCard[
       <div className="container-main section-padding-sm">
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
           {categories.map((cat, i) => (
-            <motion.div key={cat.slug} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+            <motion.div key={cat.slug}>
               <div className="h-full rounded-3xl">
                 <Link href={`/products/${cat.slug}`} className="group h-full flex flex-col rounded-3xl border border-[var(--border)] bg-[var(--background)] overflow-hidden hover:border-[var(--accent)]/50 transition-colors">
                   <div className="relative aspect-[4/3] sm:aspect-[16/10] overflow-hidden">

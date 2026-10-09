@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { SectionHeading } from '@/shared/ui/SectionHeading';
 import { ProductCard } from '@/features/products/ProductCard';
 import type { ProductListItem } from '@/shared/lib/serializers';

@@ -21,7 +21,7 @@ export function BlogPreview({ posts }: { posts: BlogPost[] }) {
           </Link>
         </div>
 
-        <ul className="grid lg:grid-cols-3 gap-2.5 lg:gap-4">
+        <ul className="grid grid-cols-1 lg:grid-cols-3 gap-2.5 lg:gap-4">
           {posts.map((post) => (
             <li key={post.id}>
               <Link href={`/blog/${post.slug}`} className="group flex items-center gap-3.5 p-2.5 rounded-2xl border border-[var(--border)] bg-[var(--background)] hover:border-[var(--foreground)]/25 transition-colors">

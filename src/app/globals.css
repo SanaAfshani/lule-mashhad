@@ -31,7 +31,7 @@
   --warning:         #F59E0B;
 
   /* Typography */
-  --font-sans: 'Vazirmatn', 'Tahoma', system-ui, sans-serif;
+  --font-sans: var(--font-vazirmatn), 'Tahoma', system-ui, sans-serif;
   --font-mono: 'Courier New', monospace;
 
   /* Spacing */
@@ -89,6 +89,11 @@
 @layer base {
   *, *::before, *::after {
     box-sizing: border-box;
+  }
+
+  /* فیلدهای فرم پهنای ذاتی دارند (حدود ۲۰ کاراکتر) و داخل ردیف flex جمع نمی‌شوند — در موبایل صفحه را عریض می‌کرد */
+  input, select, textarea {
+    min-width: 0;
   }
 
   input:focus,

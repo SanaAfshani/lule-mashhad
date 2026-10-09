@@ -15,6 +15,8 @@ const nextConfig: NextConfig = {
       },
     ],
     formats: ['image/avif', 'image/webp'],
+    // کیفیت‌های مجاز (Next 16 فقط همین‌ها را می‌پذیرد): ۵۰ برای تصویر پس‌زمینه زیر لایه تیره، ۶۰ برای کاشی دسته‌ها
+    qualities: [50, 60, 75],
   },
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion'],

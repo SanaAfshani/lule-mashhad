@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import Link from 'next/link';
 import { Package, Phone, MessageCircle, Share2, CheckCircle, XCircle, ChevronDown, ArrowRight } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -96,7 +96,7 @@ export function ProductDetailClient({ slug }: Props) {
 
         {/* Product info */}
         <div className="lg:col-span-3 space-y-6">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+          <motion.div>
             <div className="text-[var(--accent)] text-sm font-medium mb-2">{product.category}</div>
             <h1 className="text-3xl font-black text-[var(--foreground)] mb-3">{product.name}</h1>
             <p className="text-[var(--muted-foreground)] leading-relaxed">{product.shortDesc}</p>
@@ -128,7 +128,7 @@ export function ProductDetailClient({ slug }: Props) {
 
           {/* Applications */}
           {product.applications && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+            <motion.div>
               <div className="text-sm font-medium text-[var(--foreground)] mb-2">کاربردها:</div>
               <div className="flex flex-wrap gap-2">
                 {product.applications.map((app) => (

@@ -18,7 +18,7 @@ export function FactorySection({ address, factoryAddress, companyPhones, mapUrl 
       <div className="absolute inset-0 bp-grid" aria-hidden />
       <div className="relative h-1.5 hazard" aria-hidden />
 
-      <div className="relative container-main py-12 lg:py-16 grid lg:grid-cols-[1.15fr_1fr] gap-10 lg:gap-14 items-start">
+      <div className="relative container-main py-12 lg:py-16 grid grid-cols-1 lg:grid-cols-[1.15fr_1fr] gap-10 lg:gap-14 items-start">
         <div>
           <p className="eyebrow">کارخانه و انبار</p>
           <h2 id="factory-title" className="mt-2 text-[1.35rem] sm:text-2xl lg:text-3xl font-black text-white leading-snug">
@@ -29,7 +29,7 @@ export function FactorySection({ address, factoryAddress, companyPhones, mapUrl 
             کارخانه بارگیری و بدون واسطه به سراسر کشور ارسال می‌شوند.
           </p>
 
-          <ol className="mt-8 grid sm:grid-cols-3 border border-white/10 rounded-2xl overflow-hidden">
+          <ol className="mt-8 grid grid-cols-1 sm:grid-cols-3 border border-white/10 rounded-2xl overflow-hidden">
             {STEPS.map((s, i) => (
               <li key={s.title} className="p-4 border-b sm:border-b-0 sm:border-s first:border-s-0 border-white/10 last:border-b-0 bg-white/[0.03]">
                 <span className="text-2xl font-black text-[var(--accent)] num leading-none">{faDigits(String(i + 1).padStart(2, '0'))}</span>

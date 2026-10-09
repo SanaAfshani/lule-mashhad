@@ -1,15 +1,18 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { Plus, Search, Trash2, Layers, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { slugify } from '@/shared/lib/utils';
 import type { Category } from '@/shared/types';
+import { useConfirm } from '@/shared/ui/ConfirmDialog';
 
 type CategoryRow = Category & { _count?: { products: number } };
 
 export default function AdminCategoriesPage() {
+  const confirm = useConfirm();
+
   const [search, setSearch] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [newName, setNewName] = useState('');
@@ -103,12 +106,11 @@ export default function AdminCategoriesPage() {
 
   const handleDelete = async (cat: CategoryRow) => {
     const productCount = cat._count?.products ?? 0;
-    const message =
-      productCount > 0
-        ? `دسته‌بندی «${cat.name}» و ${productCount} محصول مرتبط حذف شوند؟ این عمل قابل بازگشت نیست.`
-        : `دسته‌بندی «${cat.name}» حذف شود؟`;
-
-    if (!confirm(message)) return;
+    const ok = await confirm({
+      title: `دسته‌بندی «${cat.name}» حذف شود؟`,
+      message: productCount > 0 ? `${productCount} محصول مرتبط هم حذف می‌شود. این کار قابل بازگشت نیست.` : undefined,
+    });
+    if (!ok) return;
 
     setDeletingId(cat.id);
     try {

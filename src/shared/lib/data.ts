@@ -1,4 +1,5 @@
 import { existsSync } from 'fs';
+import { cache } from 'react';
 import path from 'path';
 import { prisma } from '@/shared/lib/prisma';
 import { getMarketNow } from '@/shared/lib/price-board';
@@ -10,15 +11,18 @@ import {
   toProductListItem,
 } from '@/shared/lib/serializers';
 
-/** دسته‌های فعال (siteConfig.activeCategorySlugs) همیشه اول؛ بقیه به ترتیب پنل ادمین */
-export async function getPublishedCategories() {
+/**
+ * دسته‌های فعال (siteConfig.activeCategorySlugs) همیشه اول؛ بقیه به ترتیب پنل ادمین.
+ * با cache: layout (منو و فوتر) و صفحه در یک درخواست فقط یک بار به دیتابیس می‌روند.
+ */
+export const getPublishedCategories = cache(async () => {
   const categories = await prisma.category.findMany({
     where: { published: true },
     include: { _count: { select: { products: { where: { published: true } } } } },
     orderBy: { order: 'asc' },
   });
   return categories.sort((a, b) => categoryRank(a.slug) - categoryRank(b.slug));
-}
+});
 
 /**
  * تصویر دسته: اگر در دیتابیس ثبت نشده، فایل هم‌نام اسلاگ در public/images/categories

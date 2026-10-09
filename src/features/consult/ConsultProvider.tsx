@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m as motion } from 'framer-motion';
 import { CheckCircle2, Headphones, Loader2, X } from 'lucide-react';
 import { useSiteSettings } from '@/shared/providers/SiteSettingsProvider';
 import { faDigits } from '@/shared/lib/utils';

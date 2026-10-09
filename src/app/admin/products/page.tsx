@@ -1,14 +1,17 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import Link from 'next/link';
 import { Plus, Search, Pencil, Trash2, Package, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { formatPersianNumber } from '@/shared/lib/utils';
 import type { Product } from '@/shared/types';
+import { useConfirm } from '@/shared/ui/ConfirmDialog';
 
 export default function AdminProductsPage() {
+  const confirm = useConfirm();
+
   const [search, setSearch] = useState('');
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,7 +45,7 @@ export default function AdminProductsPage() {
   );
 
   const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`محصول «${name}» حذف شود؟`)) return;
+    if (!(await confirm({ title: `محصول «${name}» حذف شود؟` }))) return;
 
     setDeletingId(id);
     try {

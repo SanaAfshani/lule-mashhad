@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import Link from 'next/link';
 import { Clock, User, Share2, MessageCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -112,7 +112,7 @@ export function BlogPostClient({ slug }: Props) {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
             className="prose prose-slate dark:prose-invert max-w-none text-[var(--foreground)] leading-loose"
-            style={{ fontFamily: 'Vazirmatn, sans-serif' }}
+            style={{ fontFamily: 'var(--font-sans)' }}
           >
             <div
               dangerouslySetInnerHTML={{ __html: post.content }}

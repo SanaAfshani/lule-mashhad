@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import Link from 'next/link';
 import { MapPin, Calendar } from 'lucide-react';
 import { PageHero } from '@/shared/ui/PageHero';
@@ -26,7 +26,7 @@ export function ProjectsPageClient({ projects }: Props) {
           {projects.length === 0 ? (
             <p className="text-center text-[var(--muted-foreground)] py-16">پروژه‌ای ثبت نشده است.</p>
           ) : (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
               {projects.map((project, i) => (
                 <motion.article
                   key={project.id}

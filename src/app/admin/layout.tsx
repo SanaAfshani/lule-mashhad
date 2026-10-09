@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { AdminSidebar } from '@/widgets/admin/AdminSidebar';
 import { AdminHeader } from '@/widgets/admin/AdminHeader';
 import { AdminNotificationsProvider } from '@/widgets/admin/AdminNotifications';
+import { ConfirmProvider } from '@/shared/ui/ConfirmDialog';
 import { cn } from '@/shared/lib/utils';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -22,6 +23,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     // .site: همان لایه طراحی سایت عمومی (پالت، گوشه‌ها، رنگ آکسنت) — پنل و سایت یک تم دارند
     <div className="site contents">
       <AdminNotificationsProvider>
+        <ConfirmProvider>
         <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex" dir="rtl">
           <AdminSidebar
             collapsed={collapsed}
@@ -34,6 +36,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <main className="flex-1 p-3 sm:p-5 md:p-6 min-w-0">{children}</main>
           </div>
         </div>
+        </ConfirmProvider>
       </AdminNotificationsProvider>
     </div>
   );

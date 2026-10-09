@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { useCounter } from '@/shared/hooks/useCounter';
 import { Users, Package, Building2, Award } from 'lucide-react';
 
