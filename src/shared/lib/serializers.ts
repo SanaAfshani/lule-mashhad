@@ -1,5 +1,6 @@
 import type { FaqItem, BlogPost, Category, Product, Project } from '@/shared/types';
 import { formatPersianNumber } from '@/shared/lib/utils';
+import { isComingSoon } from '@/shared/lib/catalog';
 
 export function parseJsonArray(value: string): string[] {
   try {
@@ -73,6 +74,8 @@ export type ProductListItem = {
   featured: boolean;
   specs: Record<string, string>;
   image?: string;
+  /** دسته فعلاً فروش ندارد — کارت «به زودی» بدون قیمت */
+  comingSoon: boolean;
   /** خلاصه جدول قیمت: تعداد ردیف، کمترین قیمت و تاریخ آخرین به‌روزرسانی */
   priceRows: number;
   priceFrom: number | null;
@@ -85,6 +88,9 @@ export function toProductListItem(
 ): ProductListItem {
   const specs = parseJsonObject(p.specifications);
   const images = parseJsonArray(p.images);
+  const comingSoon = isComingSoon(p.category.slug);
+  // دسته «به زودی» هیچ قیمتی (تکی یا جدول) بیرون نمی‌دهد
+  const withPrices = showPrices && !comingSoon;
   return {
     id: p.id,
     slug: p.slug,
@@ -92,18 +98,19 @@ export function toProductListItem(
     category: p.category.slug,
     categoryName: p.category.name,
     // بیرون از ساعت کاری قیمت تکی هم مثل جدول قیمت پنهان است
-    price: showPrices ? formatProductPrice(p.price) : '۰',
+    price: withPrices ? formatProductPrice(p.price) : '۰',
     inStock: p.inStock,
     featured: p.featured,
+    comingSoon,
     specs,
     image: images[0] || p.category.image || undefined,
     ...(() => {
-      const items = p.priceItems ?? [];
+      const items = comingSoon ? [] : (p.priceItems ?? []);
       const prices = items.map((i) => i.price).filter((x): x is number => x != null);
       const latest = items.reduce<Date | null>((a, i) => (!a || i.priceChangedAt > a ? i.priceChangedAt : a), null);
       return {
         priceRows: items.length,
-        priceFrom: showPrices && prices.length ? Math.min(...prices) : null,
+        priceFrom: withPrices && prices.length ? Math.min(...prices) : null,
         priceUpdatedAt: latest?.toISOString() ?? null,
       };
     })(),

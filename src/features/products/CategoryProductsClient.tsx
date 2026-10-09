@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ChevronLeft, Search } from 'lucide-react';
 import { SearchInput } from '@/shared/ui/SearchInput';
+import { useConsult } from '@/features/consult/ConsultProvider';
 import { ProductCard } from '@/features/products/ProductCard';
 import { LivePriceTable } from '@/features/prices/LivePriceTable';
 import { MarketStatus } from '@/features/prices/MarketStatus';
@@ -18,6 +19,8 @@ type CategoryInfo = {
   description: string | null;
   image: string | null;
   productCount: number;
+  /** دسته فعلاً فروش ندارد */
+  comingSoon: boolean;
 };
 
 type Props = {
@@ -29,6 +32,7 @@ type Props = {
 
 export function CategoryProductsClient({ category, products, board, priceProductIds }: Props) {
   const [search, setSearch] = useState('');
+  const { open } = useConsult();
 
   const term = latinDigits(search.trim());
   const filtered = products.filter(
@@ -49,7 +53,7 @@ export function CategoryProductsClient({ category, products, board, priceProduct
           </nav>
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
             <span className="h-7 px-3 rounded-lg border border-[var(--accent)]/40 bg-[var(--accent)]/10 text-[var(--accent)] text-xs font-bold inline-flex items-center num">
-              {faDigits(products.length)} محصول
+              {category.comingSoon ? 'به زودی' : `${faDigits(products.length)} محصول`}
             </span>
             <h1 className="mt-3 text-[1.7rem] sm:text-4xl font-black text-white">خرید {category.name}</h1>
             {category.description && <p className="mt-2 text-slate-300 text-sm sm:text-base leading-8 max-w-2xl">{faDigits(category.description)}</p>}
@@ -58,6 +62,17 @@ export function CategoryProductsClient({ category, products, board, priceProduct
       </div>
 
       <div className="container-main py-6 sm:py-10">
+        {category.comingSoon && (
+          <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-[var(--accent)]/30 bg-[var(--accent)]/8 px-4 py-3">
+            <p className="text-sm leading-7">
+              <span className="font-bold">عرضه {category.name} به زودی آغاز می‌شود.</span>{' '}
+              <span className="text-[var(--muted-foreground)]">برای استعلام قیمت و اطلاع از زمان عرضه درخواست ثبت کنید.</span>
+            </p>
+            <button type="button" onClick={() => open(category.name)} className="shrink-0 h-10 px-5 rounded-xl bg-[var(--foreground)] text-[var(--background)] text-sm font-bold">
+              استعلام قیمت
+            </button>
+          </div>
+        )}
         {products.length > 4 && (
           <SearchInput value={search} onValueChange={setSearch} placeholder={`جستجو در ${category.name}…`} wrapperClassName="mb-6 max-w-md" />
         )}

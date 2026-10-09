@@ -8,7 +8,7 @@ import { NavigationProgress } from '@/shared/ui/NavigationProgress';
 
 const baseMetadata: Metadata = {
   title: {
-    default: siteConfig.name + ' | خرید لوله و اتصالات آب و فاضلاب',
+    default: siteConfig.name + ' | خرید لوله کاروگیت از کارخانه',
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
@@ -26,7 +26,7 @@ const baseMetadata: Metadata = {
     type: 'website',
     locale: 'fa_IR',
     url: siteConfig.url,
-    title: siteConfig.name + ' | خرید لوله و اتصالات آب و فاضلاب',
+    title: siteConfig.name + ' | خرید لوله کاروگیت از کارخانه',
     description: siteConfig.description,
     siteName: siteConfig.name,
   },

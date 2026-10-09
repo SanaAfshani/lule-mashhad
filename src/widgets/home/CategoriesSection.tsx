@@ -19,7 +19,7 @@ export function CategoriesSection({ categories }: { categories: NavCategory[] })
           align="right"
           label="دسته‌بندی محصولات"
           title="خرید لوله و اتصالات"
-          description="دسته مورد نظرتان را انتخاب کنید؛ قیمت روز و مشخصات فنی همه محصولات در دسترس است."
+          description="لوله کاروگیت با قیمت روز و مشخصات فنی؛ سایر دسته‌ها به زودی عرضه می‌شوند."
           action={{ href: '/categories', label: 'همه دسته‌ها' }}
         />
 
@@ -45,6 +45,9 @@ export function CategoriesSection({ categories }: { categories: NavCategory[] })
                   >
                     <CategoryThumb category={c} className="absolute inset-0 w-full h-full transition-transform duration-700 group-hover:scale-105" />
                     <span className="absolute inset-0 bg-gradient-to-t from-[var(--ink)] via-[var(--ink)]/40 to-transparent" />
+                    {c.comingSoon && (
+                      <span className="absolute top-3 right-3 h-7 px-2.5 rounded-lg bg-[var(--accent)] text-[var(--accent-foreground)] text-[11px] font-bold flex items-center">به زودی</span>
+                    )}
                     <span className="relative mt-auto w-full p-4 sm:p-5 flex items-end justify-between gap-3">
                       <span className="min-w-0">
                         <span className={cn('block font-black text-white leading-snug', big ? 'text-2xl sm:text-3xl' : 'text-[15px] sm:text-lg')}>

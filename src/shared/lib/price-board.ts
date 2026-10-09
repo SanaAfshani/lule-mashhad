@@ -3,6 +3,8 @@ import { prisma } from '@/shared/lib/prisma';
 import { getSiteSettingsMap } from '@/shared/lib/site-settings-store';
 import { getMarketStatus, parseMarketConfig, type MarketStatus } from '@/shared/lib/market';
 import type { PriceBoard } from '@/shared/lib/price-board-types';
+import { categoryRank } from '@/shared/lib/catalog';
+import { siteConfig } from '@/shared/config/site';
 
 export * from '@/shared/lib/price-board-types';
 
@@ -23,7 +25,12 @@ export const getPriceBoard = cache(async (): Promise<PriceBoard> => {
   const [market, products, version] = await Promise.all([
     getMarketNow(),
     prisma.product.findMany({
-      where: { published: true, category: { published: true }, priceItems: { some: {} } },
+      // فقط دسته‌های فعال — قیمت دسته‌های «به زودی» حتی در API زنده هم بیرون نمی‌رود
+      where: {
+        published: true,
+        category: { published: true, slug: { in: [...siteConfig.activeCategorySlugs] } },
+        priceItems: { some: {} },
+      },
       select: {
         id: true,
         slug: true,
@@ -36,7 +43,7 @@ export const getPriceBoard = cache(async (): Promise<PriceBoard> => {
   ]);
 
   const lines = products
-    .sort((a, b) => a.category.order - b.category.order || a.name.localeCompare(b.name, 'fa'))
+    .sort((a, b) => categoryRank(a.category.slug) - categoryRank(b.category.slug) || a.category.order - b.category.order || a.name.localeCompare(b.name, 'fa'))
     .map((p) => ({
       productId: p.id,
       productSlug: p.slug,

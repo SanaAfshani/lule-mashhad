@@ -6,11 +6,12 @@ import { getPublishedCategories, resolveCategoryImage } from '@/shared/lib/data'
 import { siteConfig } from '@/shared/config/site';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { breadcrumbSchema } from '@/shared/lib/seo';
+import { isComingSoon } from '@/shared/lib/catalog';
 
 export const metadata: Metadata = {
-  title: 'دسته‌بندی محصولات | لوله، اتصالات و شیرآلات',
+  title: 'دسته‌بندی محصولات | لوله کاروگیت و لوله آب و فاضلاب',
   description:
-    'دسته‌بندی کامل محصولات: لوله پلیکا، پلی اتیلن، چدن داکتیل، منهول، اتصالات و شیرآلات صنعتی. انتخاب سریع دسته و مشاهده قیمت.',
+    'دسته‌بندی محصولات قدیر لوله آنلاین: لوله کاروگیت (دوجداره پلی اتیلن) با قیمت روز؛ لوله پلیکا، پلی اتیلن، چدن داکتیل، منهول و اتصالات به زودی.',
   alternates: { canonical: `${siteConfig.url}/categories` },
 };
 
@@ -24,6 +25,7 @@ export default async function CategoriesPage() {
     image: resolveCategoryImage(c),
     icon: c.icon,
     productCount: c._count?.products ?? 0,
+    comingSoon: isComingSoon(c.slug),
   }));
 
   return (

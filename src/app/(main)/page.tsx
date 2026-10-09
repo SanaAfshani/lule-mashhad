@@ -22,9 +22,9 @@ import { siteConfig } from '@/shared/config/site';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { localBusinessSchema, organizationSchema, websiteSchema } from '@/shared/lib/seo';
 
-const HOME_TITLE = 'خرید لوله و اتصالات با قیمت روز | قدیر لوله آنلاین';
+const HOME_TITLE = 'خرید لوله کاروگیت با قیمت روز از کارخانه | قدیر لوله آنلاین';
 const HOME_DESCRIPTION =
-  'قیمت و مشخصات لوله پلیکا، پلی اتیلن، کاروگیت، چدن داکتیل، منهول و اتصالات را بررسی کنید. تامین پروژه‌ای، مشاوره فنی و ارسال از گرمسار به سراسر ایران.';
+  'قیمت روز و مشخصات لوله کاروگیت (دوجداره پلی اتیلن) مستقیم از کارخانه قدیر لوله پاسارگاد. تامین پروژه‌ای، مشاوره فنی و ارسال از گرمسار به سراسر ایران.';
 
 export const metadata: Metadata = {
   // absolute: وگرنه قالب «%s | نام سایت» لایه روت نام سایت را دوباره اضافه می‌کند

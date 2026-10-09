@@ -14,6 +14,7 @@ export type CategoryCard = {
   image: string | null;
   icon: string | null;
   productCount: number;
+  comingSoon: boolean;
 };
 
 export function CategoriesPageClient({ categories }: { categories: CategoryCard[] }) {
@@ -29,9 +30,13 @@ export function CategoriesPageClient({ categories }: { categories: CategoryCard[
                 <Link href={`/products/${cat.slug}`} className="group h-full flex flex-col rounded-3xl border border-[var(--border)] bg-[var(--background)] overflow-hidden hover:border-[var(--accent)]/50 transition-colors">
                   <div className="relative aspect-[4/3] sm:aspect-[16/10] overflow-hidden">
                     <CategoryThumb category={cat} className="absolute inset-0 w-full h-full transition-transform duration-700 group-hover:scale-105" />
-                    <span className="absolute top-3 right-3 h-7 px-3 rounded-lg bg-white/90 text-slate-900 text-[11px] font-bold flex items-center num">
-                      {faDigits(cat.productCount)} محصول
-                    </span>
+                    {cat.comingSoon ? (
+                      <span className="absolute top-3 right-3 h-7 px-3 rounded-lg bg-[var(--accent)] text-[var(--accent-foreground)] text-[11px] font-bold flex items-center">به زودی</span>
+                    ) : (
+                      <span className="absolute top-3 right-3 h-7 px-3 rounded-lg bg-white/90 text-slate-900 text-[11px] font-bold flex items-center num">
+                        {faDigits(cat.productCount)} محصول
+                      </span>
+                    )}
                   </div>
                   <div className="flex-1 flex flex-col p-4 sm:p-5">
                     <h2 className="font-black text-[15px] sm:text-lg group-hover:text-[var(--accent)] transition-colors">{cat.name}</h2>

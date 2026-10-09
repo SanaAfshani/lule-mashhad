@@ -10,6 +10,7 @@ import { getPriceBoard } from '@/shared/lib/price-board';
 import { siteConfig } from '@/shared/config/site';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { absoluteUrl, breadcrumbSchema, toMetaDescription } from '@/shared/lib/seo';
+import { isComingSoon } from '@/shared/lib/catalog';
 
 type Props = { params: Promise<{ category: string }> };
 
@@ -26,7 +27,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const image = category.image ? absoluteUrl(category.image) : undefined;
   return {
     // دسته = نیت «قیمت و انتخاب سایز»؛ صفحه محصول = «مشخصات یک مدل» — عنوان‌ها هم‌پوشانی نکنند
-    title: `قیمت ${category.name} | جدول سایز و خرید عمده`,
+    // دسته «به زودی» جدول قیمت ندارد؛ عنوان نباید وعده قیمت بدهد
+    title: isComingSoon(category.slug)
+      ? `${category.name} | مشخصات و استعلام (به زودی)`
+      : `قیمت ${category.name} | جدول سایز و خرید عمده`,
     description: desc,
     alternates: { canonical },
     openGraph: {
@@ -90,6 +94,7 @@ export default async function CategoryPage({ params }: Props) {
         description: category.description,
         image: resolveCategoryImage(category),
         productCount: category._count?.products ?? 0,
+        comingSoon: isComingSoon(category.slug),
       }}
       products={products}
       board={board}

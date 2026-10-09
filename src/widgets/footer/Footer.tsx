@@ -72,7 +72,12 @@ export function Footer({ categories }: { categories: NavCategory[] }) {
           <Column title="دسته‌بندی محصولات">
             <ul>
               {categories.map((c) => (
-                <li key={c.slug}><Link href={`/products/${c.slug}`} className={linkCls}>{c.name}</Link></li>
+                <li key={c.slug}>
+                  <Link href={`/products/${c.slug}`} className={linkCls}>
+                    {c.name}
+                    {c.comingSoon && <span className="ms-1.5 text-[11px] text-[var(--accent)]">(به زودی)</span>}
+                  </Link>
+                </li>
               ))}
             </ul>
           </Column>

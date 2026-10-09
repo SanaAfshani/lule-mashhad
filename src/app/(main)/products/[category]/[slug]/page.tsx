@@ -10,6 +10,7 @@ import { getPriceBoard, summarizeLine } from '@/shared/lib/price-board';
 import { siteConfig } from '@/shared/config/site';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { absoluteUrl, breadcrumbSchema, faqPageSchema, toMetaDescription } from '@/shared/lib/seo';
+import { isComingSoon } from '@/shared/lib/catalog';
 
 type Props = { params: Promise<{ category: string; slug: string }> };
 
@@ -80,6 +81,9 @@ export default async function ProductDetailPage({ params }: Props) {
   const canonical = `${siteConfig.url}/products/${encodeURIComponent(category)}/${encodeURIComponent(slug)}`;
 
   const board = await getPriceBoard();
+  // دسته «به زودی»: نه قیمت در صفحه، نه offer در schema (قیمت ساختگی/قدیمی به گوگل نمی‌رود)
+  const comingSoon = isComingSoon(product.category.slug);
+  const showPrice = board.market.open && !comingSoon;
   // بیرون از ساعت کاری سرور قیمت نمی‌فرستد؛ پس schema هم فقط در ساعت کاری offer دارد
   const priceSummary = summarizeLine(board.lines.find((l) => l.productId === product.id)?.items ?? []);
   const related = (await getPublishedProducts({ categorySlug: product.category.slug, limit: 5 }))
@@ -117,7 +121,7 @@ export default async function ProductDetailPage({ params }: Props) {
             seller: { '@type': 'Organization', name: siteConfig.name, url: siteConfig.url },
           },
         }
-      : board.market.open && typeof product.price === 'number' && product.price > 0
+      : showPrice && typeof product.price === 'number' && product.price > 0
         ? {
             offers: {
               '@type': 'Offer',
@@ -148,7 +152,7 @@ export default async function ProductDetailPage({ params }: Props) {
           { name: product.name, path: `/products/${encodeURIComponent(category)}/${encodeURIComponent(slug)}` },
         ])}
       />
-      <ProductDetailView product={board.market.open ? product : { ...product, price: undefined }} related={related} board={board} />
+      <ProductDetailView product={showPrice ? product : { ...product, price: undefined }} related={related} board={board} comingSoon={comingSoon} />
     </>
   );
 }

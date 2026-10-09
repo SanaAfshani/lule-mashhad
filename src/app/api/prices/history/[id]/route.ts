@@ -4,6 +4,7 @@ import { getMarketNow } from '@/shared/lib/price-board';
 import { getDailyHistory, HISTORY_RANGES } from '@/shared/lib/price-history';
 import { serverErrorResponse } from '@/shared/lib/api-errors';
 import type { HistoryRange } from '@/shared/lib/price-board-types';
+import { isComingSoon } from '@/shared/lib/catalog';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,14 +25,15 @@ export async function GET(request: NextRequest, { params }: Props) {
       getMarketNow(),
       prisma.priceItem.findUnique({
         where: { id: id.slice(0, 64) },
-        select: { price: true, product: { select: { published: true } } },
+        select: { price: true, product: { select: { published: true, category: { select: { slug: true } } } } },
       }),
     ]);
     if (!item || !item.product.published) {
       return NextResponse.json({ success: false, error: 'ردیف یافت نشد' }, { status: 404, headers });
     }
     if (!market.open) return NextResponse.json({ success: true, data: { closed: true } }, { headers });
-    if (item.price == null) return NextResponse.json({ success: true, data: { inquiry: true } }, { headers });
+    // دسته «به زودی» مثل ردیف استعلامی: تاریخچه قیمت هم ندارد
+    if (item.price == null || isComingSoon(item.product.category.slug)) return NextResponse.json({ success: true, data: { inquiry: true } }, { headers });
 
     return NextResponse.json({ success: true, data: { range, points: await getDailyHistory(id, range) } }, { headers });
   } catch (error) {

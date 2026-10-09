@@ -38,9 +38,15 @@ export function ProductCard({ product, className }: { product: ProductListItem; 
             <CategoryThumb category={{ name: product.name, image: null }} className="absolute inset-0 w-full h-full" />
           )}
           <span className="absolute top-3 right-3 flex gap-1.5">
-            <span className={cn('h-7 px-2.5 rounded-lg text-[11px] font-bold flex items-center backdrop-blur', product.inStock ? 'bg-emerald-500/90 text-white' : 'bg-slate-900/70 text-slate-200')}>
-              {product.inStock ? 'موجود در انبار' : 'ناموجود'}
-            </span>
+            {product.comingSoon ? (
+              <span className="h-7 px-2.5 rounded-lg text-[11px] font-bold flex items-center backdrop-blur bg-[var(--accent)] text-[var(--accent-foreground)]">
+                به زودی
+              </span>
+            ) : (
+              <span className={cn('h-7 px-2.5 rounded-lg text-[11px] font-bold flex items-center backdrop-blur', product.inStock ? 'bg-emerald-500/90 text-white' : 'bg-slate-900/70 text-slate-200')}>
+                {product.inStock ? 'موجود در انبار' : 'ناموجود'}
+              </span>
+            )}
             {product.priceRows > 0 && (
               <span className="h-7 px-2.5 rounded-lg text-[11px] font-bold flex items-center gap-1 bg-white/90 text-slate-900 backdrop-blur">
                 <Table2 className="w-3.5 h-3.5" />
@@ -75,7 +81,7 @@ export function ProductCard({ product, className }: { product: ProductListItem; 
                   <span className="text-[11px] font-medium text-[var(--muted-foreground)]">تومان</span>
                 </p>
               ) : (
-                <p className="font-bold text-sm text-[var(--muted-foreground)]">استعلام قیمت</p>
+                <p className="font-bold text-sm text-[var(--muted-foreground)]">{product.comingSoon ? 'به زودی' : 'استعلام قیمت'}</p>
               )}
               {product.priceUpdatedAt && (
                 <p className="mt-0.5 flex items-center gap-1 text-[11px] text-[var(--muted-foreground)] num">

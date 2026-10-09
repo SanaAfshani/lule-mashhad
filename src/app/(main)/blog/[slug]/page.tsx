@@ -61,13 +61,17 @@ export default async function BlogPostPage({ params }: Props) {
     notFound();
   }
 
-  // مقاله اطلاعاتی بن‌بست نباشد: دسته‌هایی که نامشان در مقاله آمده، به صفحه خرید همان دسته لینک می‌شوند
+  // مقاله اطلاعاتی بن‌بست نباشد: دسته‌هایی که در مقاله از آن‌ها نام برده شده، به صفحه خرید همان دسته لینک می‌شوند.
+  // نام کامل دسته («منهول و دریچه») در متن کم می‌آید؛ هسته نام («منهول») جستجو می‌شود و پرتکرارترها اول می‌آیند
   const norm = (s: string) => s.replace(/[\u200c\s]+/g, ' ');
   const text = norm(`${post.title} ${post.tags.join(' ')} ${stripHtml(post.content)}`);
+  const mentions = (name: string) => text.split(norm(name).replace(/^لوله /, '').split(' و ')[0]).length - 1;
   const relatedCategories = (await getNavCategories())
-    .filter((c) => text.includes(norm(c.name)))
+    .map((c) => ({ slug: c.slug, name: c.name, comingSoon: c.comingSoon, count: mentions(c.name) }))
+    .filter((c) => c.count > 0)
+    .sort((a, b) => b.count - a.count)
     .slice(0, 4)
-    .map((c) => ({ slug: c.slug, name: c.name }));
+    .map(({ slug, name, comingSoon }) => ({ slug, name, comingSoon }));
 
   const articleSchema = {
     '@context': 'https://schema.org',

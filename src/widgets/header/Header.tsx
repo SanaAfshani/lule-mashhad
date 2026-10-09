@@ -243,7 +243,11 @@ export function Header({ categories }: { categories: NavCategory[] }) {
                           <CategoryThumb category={c} className="w-12 h-12 rounded-xl" />
                           <span className="min-w-0">
                             <span className="block font-bold text-sm truncate group-hover:text-[var(--accent)]">{c.name}</span>
-                            <span className="block text-xs text-[var(--muted-foreground)] num">{faDigits(c.productCount)} محصول</span>
+                            {c.comingSoon ? (
+                              <span className="block text-xs font-bold text-[var(--accent)]">به زودی</span>
+                            ) : (
+                              <span className="block text-xs text-[var(--muted-foreground)] num">{faDigits(c.productCount)} محصول</span>
+                            )}
                           </span>
                         </Link>
                       ))}
@@ -352,7 +356,11 @@ export function Header({ categories }: { categories: NavCategory[] }) {
                         <CategoryThumb category={c} className="w-11 h-11 rounded-lg" />
                         <span className="flex-1 min-w-0">
                           <span className="block text-[14px] font-bold truncate">{c.name}</span>
-                          <span className="block text-[11px] text-[var(--muted-foreground)] num">{faDigits(c.productCount)} محصول</span>
+                          {c.comingSoon ? (
+                            <span className="block text-[11px] font-bold text-[var(--accent)]">به زودی</span>
+                          ) : (
+                            <span className="block text-[11px] text-[var(--muted-foreground)] num">{faDigits(c.productCount)} محصول</span>
+                          )}
                         </span>
                         <ChevronLeft className="w-4 h-4 text-[var(--muted-foreground)]" />
                       </Link>

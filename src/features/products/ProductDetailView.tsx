@@ -83,7 +83,15 @@ function Gallery({ images, name }: { images: string[]; name: string }) {
   );
 }
 
-export function ProductDetailView({ product, related = [], board: initialBoard }: { product: Product; related?: ProductListItem[]; board: PriceBoard }) {
+type Props = {
+  product: Product;
+  related?: ProductListItem[];
+  board: PriceBoard;
+  /** دسته فعلاً فروش ندارد — بدون قیمت، با برچسب «به زودی» */
+  comingSoon?: boolean;
+};
+
+export function ProductDetailView({ product, related = [], board: initialBoard, comingSoon = false }: Props) {
   const { phone, phoneHref, whatsappUrl, mobile, mobileHref } = useSiteSettings();
   const { open } = useConsult();
 
@@ -151,10 +159,14 @@ export function ProductDetailView({ product, related = [], board: initialBoard }
               <Link href={`/products/${product.category.slug}`} className="h-7 px-3 rounded-lg bg-[var(--accent)]/12 text-[var(--accent)] text-xs font-bold flex items-center">
                 {product.category.name}
               </Link>
-              <span className={cn('h-7 px-3 rounded-lg text-xs font-bold flex items-center gap-1', product.inStock ? 'bg-emerald-500/12 text-emerald-600 dark:text-emerald-400' : 'bg-[var(--muted)] text-[var(--muted-foreground)]')}>
-                {product.inStock ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
-                {product.inStock ? 'موجود' : 'ناموجود'}
-              </span>
+              {comingSoon ? (
+                <span className="h-7 px-3 rounded-lg text-xs font-bold flex items-center bg-[var(--accent)] text-[var(--accent-foreground)]">به زودی</span>
+              ) : (
+                <span className={cn('h-7 px-3 rounded-lg text-xs font-bold flex items-center gap-1', product.inStock ? 'bg-emerald-500/12 text-emerald-600 dark:text-emerald-400' : 'bg-[var(--muted)] text-[var(--muted-foreground)]')}>
+                  {product.inStock ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
+                  {product.inStock ? 'موجود' : 'ناموجود'}
+                </span>
+              )}
             </div>
 
             <h1 className="mt-3 text-2xl sm:text-3xl lg:text-[2.1rem] font-black leading-[1.45]">{faDigits(product.name)}</h1>
@@ -210,6 +222,14 @@ export function ProductDetailView({ product, related = [], board: initialBoard }
                     مشاهده جدول کامل قیمت ←
                   </button>
                 </>
+              ) : comingSoon ? (
+                <div>
+                  <p className="text-xs text-[var(--muted-foreground)]">قیمت</p>
+                  <p className="mt-1 text-xl font-black">به زودی</p>
+                  <p className="mt-1 text-xs leading-6 text-[var(--muted-foreground)]">
+                    عرضه این محصول به زودی آغاز می‌شود. برای استعلام قیمت و اطلاع از زمان عرضه درخواست ثبت کنید.
+                  </p>
+                </div>
               ) : (
                 <div>
                   <p className="text-xs text-[var(--muted-foreground)]">قیمت</p>
@@ -225,7 +245,7 @@ export function ProductDetailView({ product, related = [], board: initialBoard }
             <div className="hidden lg:flex gap-3 mt-5">
               <button onClick={() => open(product.name)} className="flex-1 h-13 rounded-2xl bg-[var(--accent)] text-[var(--accent-foreground)] font-black shadow-accent flex items-center justify-center gap-2 hover:-translate-y-0.5 transition-transform">
                 <Headphones className="w-5 h-5" />
-                ثبت درخواست مشاوره و خرید
+                {comingSoon ? 'استعلام و اطلاع از زمان عرضه' : 'ثبت درخواست مشاوره و خرید'}
               </button>
               <a href={phoneHref} className="h-13 px-5 rounded-2xl border border-[var(--border)] font-bold flex items-center gap-2 hover:border-[var(--accent)]">
                 <Phone className="w-4.5 h-4.5 text-[var(--accent)]" />
@@ -361,7 +381,7 @@ export function ProductDetailView({ product, related = [], board: initialBoard }
         <div className="flex gap-2">
           <button onClick={() => open(product.name)} className="flex-1 h-12 rounded-2xl bg-[var(--accent)] text-[var(--accent-foreground)] font-black flex items-center justify-center gap-2 shadow-accent">
             <Headphones className="w-5 h-5" />
-            مشاوره و خرید
+            {comingSoon ? 'استعلام قیمت' : 'مشاوره و خرید'}
           </button>
           <a href={phoneHref} aria-label="تماس" className="w-12 h-12 rounded-2xl bg-[var(--ink)] text-white grid place-items-center"><Phone className="w-5 h-5" /></a>
           <a href={whatsappUrl} target="_blank" rel="noopener" aria-label="واتس‌اپ" className="w-12 h-12 rounded-2xl bg-[#25D366] text-white grid place-items-center"><MessageCircle className="w-5 h-5" /></a>

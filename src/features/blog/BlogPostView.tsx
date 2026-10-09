@@ -9,7 +9,7 @@ import { faDigits, formatDate } from '@/shared/lib/utils';
 import { PdfViewer } from '@/shared/ui/PdfViewer';
 import { FaqAccordion } from '@/shared/ui/FaqAccordion';
 
-type RelatedCategory = { slug: string; name: string };
+type RelatedCategory = { slug: string; name: string; comingSoon: boolean };
 
 export function BlogPostView({ post, relatedCategories = [] }: { post: BlogPost; relatedCategories?: RelatedCategory[] }) {
   const tag = post.tags[0] || 'مقاله';
@@ -92,7 +92,7 @@ export function BlogPostView({ post, relatedCategories = [] }: { post: BlogPost;
                   <li key={c.slug}>
                     <Link href={`/products/${c.slug}`} className="h-10 px-4 rounded-xl border border-[var(--border)] text-sm font-bold inline-flex items-center gap-1.5 hover:border-[var(--accent)] hover:text-[var(--accent)] transition-colors">
                       <Tag className="w-4 h-4" />
-                      قیمت {c.name}
+                      {c.comingSoon ? <>{c.name} (به زودی)</> : <>قیمت {c.name}</>}
                     </Link>
                   </li>
                 ))}

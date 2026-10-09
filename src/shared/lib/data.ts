@@ -2,6 +2,7 @@ import { existsSync } from 'fs';
 import path from 'path';
 import { prisma } from '@/shared/lib/prisma';
 import { getMarketNow } from '@/shared/lib/price-board';
+import { categoryRank, isComingSoon } from '@/shared/lib/catalog';
 import {
   serializeBlogPost,
   serializeProduct,
@@ -9,12 +10,14 @@ import {
   toProductListItem,
 } from '@/shared/lib/serializers';
 
+/** دسته‌های فعال (siteConfig.activeCategorySlugs) همیشه اول؛ بقیه به ترتیب پنل ادمین */
 export async function getPublishedCategories() {
-  return prisma.category.findMany({
+  const categories = await prisma.category.findMany({
     where: { published: true },
     include: { _count: { select: { products: { where: { published: true } } } } },
     orderBy: { order: 'asc' },
   });
+  return categories.sort((a, b) => categoryRank(a.slug) - categoryRank(b.slug));
 }
 
 /**
@@ -27,7 +30,7 @@ export function resolveCategoryImage(cat: { slug: string; image: string | null }
   return existsSync(path.join(process.cwd(), 'public', file)) ? file : null;
 }
 
-export type NavCategory = { slug: string; name: string; image: string | null; productCount: number };
+export type NavCategory = { slug: string; name: string; image: string | null; productCount: number; comingSoon: boolean };
 
 export async function getNavCategories(): Promise<NavCategory[]> {
   const cats = await getPublishedCategories();
@@ -36,6 +39,7 @@ export async function getNavCategories(): Promise<NavCategory[]> {
     name: c.name,
     image: resolveCategoryImage(c),
     productCount: c._count?.products ?? 0,
+    comingSoon: isComingSoon(c.slug),
   }));
 }
 
@@ -75,13 +79,14 @@ export async function getPublishedProducts(options?: {
       where,
       include: { category: true, priceItems: { select: { price: true, priceChangedAt: true } } },
       orderBy: [{ featured: 'desc' }, { createdAt: 'desc' }],
-      take: options?.limit,
     }),
     getMarketNow(),
   ]);
 
+  // محصولات دسته‌های فعال اول؛ limit بعد از مرتب‌سازی، وگرنه با take دیتابیس ممکن بود کاروگیت اصلاً نیاید (کاتالوگ کوچک است)
+  const sorted = products.sort((a, b) => categoryRank(a.category.slug) - categoryRank(b.category.slug));
   // بیرون از ساعت کاری قیمت در کارت‌ها هم نمایش داده نمی‌شود
-  return products.map((p) => toProductListItem(p, { showPrices: market.open }));
+  return sorted.slice(0, options?.limit).map((p) => toProductListItem(p, { showPrices: market.open }));
 }
 
 export async function getProductBySlug(slug: string, categorySlug?: string) {

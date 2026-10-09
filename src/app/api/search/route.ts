@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/shared/lib/prisma';
 import { serializeBlogPost, toProductListItem } from '@/shared/lib/serializers';
 import { getMarketNow } from '@/shared/lib/price-board';
+import { categoryRank } from '@/shared/lib/catalog';
 
 export async function GET(request: NextRequest) {
   try {
@@ -58,7 +59,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: {
-        products: products.map((p) => toProductListItem(p, { showPrices: market.open })),
+        products: products
+          .sort((a, b) => categoryRank(a.category.slug) - categoryRank(b.category.slug))
+          .map((p) => toProductListItem(p, { showPrices: market.open })),
         posts: posts.map(serializeBlogPost),
         projects: projects.map((p) => ({
           id: p.id,
